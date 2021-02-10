@@ -1,6 +1,6 @@
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
-import Apogee from "/apogeeapp/Apogee.js";
-import WorkspaceManager from "/apogeeapp/WorkspaceManager.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
+import Apogee from "/apogeejs-app-lib/src/Apogee.js";
+import WorkspaceManager from "/apogeejs-app-lib/src/WorkspaceManager.js";
 
 /** Open Workspace Command
  *

@@ -1,4 +1,4 @@
-import apogeeutil from "/apogeeutil/apogeeUtilLib.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
 /** This file contains some methods for creating commands to do updates for component members.
  * There are 

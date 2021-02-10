@@ -1,5 +1,5 @@
-import apogeeutil from "/apogeeutil/apogeeUtilLib.js";
-import ParentComponent from "/apogeeapp/component/ParentComponent.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
+import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js";
 
 /** This component represents a folderFunction, which is a function that is programmed using
  *apogee tables rather than writing code. */

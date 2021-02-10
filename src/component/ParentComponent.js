@@ -1,7 +1,7 @@
-import Component from "/apogeeapp/component/Component.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import "/apogeeapp/commands/literatepagetransaction.js";
-import { createFolderSchema, createEditorState, EMPTY_DOC_JSON } from "/apogeeapp/document/apogeeSchema.js";
+import "/apogeejs-app-lib/src/commands/literatepagetransaction.js";
+import { createFolderSchema, createEditorState, EMPTY_DOC_JSON } from "/apogeejs-app-lib/src/document/apogeeSchema.js";
 
 /** This is the base class for a parent component (an object that has children),
  * It extends the component class. */

@@ -1,9 +1,9 @@
-import EsModuleEntry from "/apogeeapp/references/EsModuleEntry.js";
-import NpmModuleEntry from "/apogeeapp/references/NpmModuleEntry.js";
-import JsScriptEntry from "/apogeeapp/references/JsScriptEntry.js";
-import CssEntry from "/apogeeapp/references/CssEntry.js";
+import EsModuleEntry from "/apogeejs-app-lib/src/references/EsModuleEntry.js";
+import NpmModuleEntry from "/apogeejs-app-lib/src/references/NpmModuleEntry.js";
+import JsScriptEntry from "/apogeejs-app-lib/src/references/JsScriptEntry.js";
+import CssEntry from "/apogeejs-app-lib/src/references/CssEntry.js";
 
-import ReferenceManager from "/apogeeapp/references/ReferenceManager.js";
+import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
 
 /** This file initializes the reference class types available. */
 

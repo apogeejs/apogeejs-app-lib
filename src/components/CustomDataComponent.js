@@ -1,6 +1,6 @@
-import apogeeutil from "/apogeeutil/apogeeUtilLib.js";
-import Component from "/apogeeapp/component/Component.js";
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This attempt has a single form edit page which returns an object. */
 // To add - I should make it so it does not call set data until after it is initialized. I will cache it rather 

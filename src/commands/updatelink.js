@@ -1,4 +1,4 @@
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** Update Link Command
  *

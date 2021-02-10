@@ -1,5 +1,5 @@
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
-import { attachPluginsToEditorState } from "/apogeeapp/document/apogeeSchema.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
+import { attachPluginsToEditorState } from "/apogeejs-app-lib/src/document/apogeeSchema.js";
 
 /** Set plugins
  * This command is needed because of a small philosophy difference between apogee and prosemirror

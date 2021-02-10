@@ -1,4 +1,4 @@
-import Component from "/apogeeapp/component/Component.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This component is similar to the JsonTableComponent except that it
  * also supports function elements. When displaying them it replaces the function

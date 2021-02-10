@@ -1,5 +1,5 @@
-import apogeeutil from "/apogeeutil/apogeeUtilLib.js";
-import Component from "/apogeeapp/component/Component.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This component represents a table object. */
 export default class FunctionComponent extends Component {

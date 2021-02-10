@@ -3,9 +3,9 @@
 // Apogee Schema
 //===================================
 
-import { Schema } from "/prosemirror/dist/prosemirror-model.es.js";
-import { EditorState } from "/prosemirror/dist/prosemirror-state.es.js";
-import { Node as ProseMirrorNode } from "/prosemirror/dist/prosemirror-model.es.js";
+import { Schema } from "/prosemirror-admin/dist/prosemirror-model.es.js";
+import { EditorState } from "/prosemirror-admin/dist/prosemirror-state.es.js";
+import { Node as ProseMirrorNode } from "/prosemirror-admin/dist/prosemirror-model.es.js";
 
 // :: Schema
 // This the schema for the apogee page editor

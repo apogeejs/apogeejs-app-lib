@@ -1,6 +1,6 @@
-import {doAction} from "/apogee/apogeeCoreLib.js";
+import {doAction} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /**
  * This command is intended to run asynchronous commands, for which no undo is given.

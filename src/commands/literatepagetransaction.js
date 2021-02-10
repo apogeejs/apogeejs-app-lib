@@ -1,7 +1,7 @@
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
-import { Step } from "/prosemirror/dist/prosemirror-transform.es.js";
-import { TextSelection, NodeSelection }  from "/prosemirror/dist/prosemirror-state.es.js";
-import { GapCursor } from "/prosemirror/dist/prosemirror-gapcursor.es.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
+import { Step } from "/prosemirror-admin/dist/prosemirror-transform.es.js";
+import { TextSelection, NodeSelection }  from "/prosemirror-admin/dist/prosemirror-state.es.js";
+import { GapCursor } from "/prosemirror-admin/dist/prosemirror-gapcursor.es.js";
 
 /** Update Component Command
  *

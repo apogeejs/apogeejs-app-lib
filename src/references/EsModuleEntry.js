@@ -1,5 +1,5 @@
-import ReferenceEntry from "/apogeeapp/references/ReferenceEntry.js";
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
+import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /* 
  * To change this license header, choose License Headers in Project Properties.

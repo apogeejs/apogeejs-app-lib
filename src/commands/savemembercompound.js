@@ -1,7 +1,7 @@
-import {doAction} from "/apogee/apogeeCoreLib.js";
+import {doAction} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
-import {getSaveDataAction, getMemberStateUndoCommand} from  "/apogeeapp/commands/membersave.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
+import {getSaveDataAction, getMemberStateUndoCommand} from  "/apogeejs-app-lib/src/commands/membersave.js";
 
 
 /** Compound Update Member Command

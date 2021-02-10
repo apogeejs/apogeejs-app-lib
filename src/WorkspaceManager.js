@@ -1,8 +1,8 @@
-import {FieldObject} from "/apogeebase/apogeeBaseLib.js";
+import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
-import ReferenceManager from "/apogeeapp/references/ReferenceManager.js";
-import ModelManager from "/apogeeapp/ModelManager.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
+import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
+import ModelManager from "/apogeejs-app-lib/src/ModelManager.js";
 
 
 /** This class manages the workspace. */

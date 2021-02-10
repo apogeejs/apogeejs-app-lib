@@ -1,4 +1,4 @@
-import ReferenceEntry from "/apogeeapp/references/ReferenceEntry.js";
+import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
 
 /* 
  * To change this license header, choose License Headers in Project Properties.

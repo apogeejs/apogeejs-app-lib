@@ -1,4 +1,4 @@
-import Component from "/apogeeapp/component/Component.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This component represents a table object. */
 export default class DynamicForm extends Component {

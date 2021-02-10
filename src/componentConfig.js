@@ -1,18 +1,18 @@
-import JsonTableComponent from "/apogeeapp/components/JsonTableComponent.js";
-import FunctionComponent from "/apogeeapp/components/FunctionComponent.js";
-import FolderComponent from "/apogeeapp/components/FolderComponent.js";
-import FolderFunctionComponent from "/apogeeapp/components/FolderFunctionComponent.js";
-import DynamicForm from "/apogeeapp/components/DynamicForm.js";
-import FormDataComponent from "/apogeeapp/components/FormDataComponent.js";
-import CustomComponent from "/apogeeapp/components/CustomComponent.js";
-import CustomDataComponent from "/apogeeapp/components/CustomDataComponent.js";
-import ErrorComponent from "/apogeeapp/components/ErrorComponent.js";
+import JsonTableComponent from "/apogeejs-app-lib/src/components/JsonTableComponent.js";
+import FunctionComponent from "/apogeejs-app-lib/src/components/FunctionComponent.js";
+import FolderComponent from "/apogeejs-app-lib/src/components/FolderComponent.js";
+import FolderFunctionComponent from "/apogeejs-app-lib/src/components/FolderFunctionComponent.js";
+import DynamicForm from "/apogeejs-app-lib/src/components/DynamicForm.js";
+import FormDataComponent from "/apogeejs-app-lib/src/components/FormDataComponent.js";
+import CustomComponent from "/apogeejs-app-lib/src/components/CustomComponent.js";
+import CustomDataComponent from "/apogeejs-app-lib/src/components/CustomDataComponent.js";
+import ErrorComponent from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 
-import ActionFormComponent from "/apogeeapp/components/ActionFormComponent.js";
-import DataFormComponent from "/apogeeapp/components/DataFormComponent.js";
+import ActionFormComponent from "/apogeejs-app-lib/src/components/ActionFormComponent.js";
+import DataFormComponent from "/apogeejs-app-lib/src/components/DataFormComponent.js";
 
 //JSON PLUS COMPONENT
-import JsonPlusTableComponent from "/apogeeapp/components/JsonPlusTableComponent.js";
+import JsonPlusTableComponent from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
 
 /** This module initializes the default component classes. */
 

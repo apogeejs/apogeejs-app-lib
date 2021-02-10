@@ -1,6 +1,6 @@
-import apogeeutil from "/apogeeutil/apogeeUtilLib.js";
-import {FieldObject} from "/apogeebase/apogeeBaseLib.js";
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
+import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This class manages references for the web page.*/
 export default class ReferenceEntry extends FieldObject {

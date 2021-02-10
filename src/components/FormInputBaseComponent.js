@@ -1,5 +1,5 @@
-import Component from "/apogeeapp/component/Component.js";
-import {defineHardcodedJsonTable, getSerializedHardcodedTable} from "/apogee/apogeeCoreLib.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
+import {defineHardcodedJsonTable, getSerializedHardcodedTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 /** This is a simple custom component example. */
 export default class FormInputBaseComponent extends Component {

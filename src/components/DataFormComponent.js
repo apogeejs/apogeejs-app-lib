@@ -1,5 +1,5 @@
-import Component from "/apogeeapp/component/Component.js";
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This is a custom resource component. 
  * To implement it, the resource script must have the methods "run()" which will

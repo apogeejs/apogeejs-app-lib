@@ -1,9 +1,9 @@
-import apogeeutil from "/apogeeutil/apogeeUtilLib.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
-import {EventManager} from "/apogeebase/apogeeBaseLib.js";
-import CommandManager from "/apogeeapp/commands/CommandManager.js";
-import ReferenceManager from "/apogeeapp/references/ReferenceManager.js";
-import WorkspaceManager from "/apogeeapp/WorkspaceManager.js";
+import {EventManager} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
+import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
+import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
+import WorkspaceManager from "/apogeejs-app-lib/src/WorkspaceManager.js";
 
 /** @private */
 let apogeeInstance = null;

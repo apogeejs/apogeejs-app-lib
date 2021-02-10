@@ -1,5 +1,5 @@
 
-import ParentComponent from "/apogeeapp/component/ParentComponent.js";
+import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js";
 
 /** This component represents a table object. */
 export default class FolderComponent extends ParentComponent {

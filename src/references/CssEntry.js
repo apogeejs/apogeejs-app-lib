@@ -1,5 +1,5 @@
-import ReferenceEntry from "/apogeeapp/references/ReferenceEntry.js";
-import {getLinkLoader} from "/apogeeapp/references/LinkLoader.js";
+import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
+import {getLinkLoader} from "/apogeejs-app-lib/src/references/LinkLoader.js";
 
 /* 
  * To change this license header, choose License Headers in Project Properties.

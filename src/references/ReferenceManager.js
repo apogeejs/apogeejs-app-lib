@@ -1,5 +1,5 @@
 
-import {FieldObject} from "/apogeebase/apogeeBaseLib.js";
+import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 
 /** This class manages links and other reference entries, loading the references and
  * creating the UI tree elements for display of the references.
