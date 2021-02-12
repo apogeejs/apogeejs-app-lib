@@ -1,0 +1,23 @@
+{
+    "name": "apogeejs-app-lib",
+    "version": "2.0.0-p1",
+    "description": "This library forms the model layer of the apogee app.",
+    "homepage": "https://www.apogeejs.com",
+    "license": "MIT",
+    "author": "Dave Sutter",
+    "main": "apogeejs-app-lib.js",
+    "module": "apogeeAppLib.js",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sutter-dave/apogeejs-app-lib.git"
+    },
+    "dependencies": {
+        "apogeejs-base-lib": "^2.0.0",
+        "apogeejs-util-lib": "^2.0.0",
+        "apogeejs-model-lib": "^2.0.0",
+        "prosemirror-model": "^1.0.0",
+        "prosemirror-state": "^1.0.0",
+        "prosemirror-transform": "^1.0.0",
+        "prosemirror-gapcursor": "^1.0.0"
+    }
+}
