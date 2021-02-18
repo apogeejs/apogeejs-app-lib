@@ -10,17 +10,6 @@ export default class BaseFileAccess {
         
     }
 
-    /** 
-     * This method should return a list of menu options for opening and closing
-     * the workspace. The format should be a array with each entry being a
-     * two entry array. The first item is the menu entry text and the second 
-     * is the callback for the menu item action. 
-     * Example: [["Open",openCallback],["Save",saveCallback]]
-     * */
-    getWorkspaceOpenSaveMenuOptions(app) {
-        
-    }
-
     //===============================
     // The following methods must be implmented by the extending class
     //===============================
