@@ -1,8 +1,8 @@
 {
     "repoName": "apogeejs-app-lib",
-    "isProductionRelease": false,
 
     "makeEsModule": true,
+
     "esModuleFileName": "apogeeAppLib.js",
     "esFilesToCopyUrls": [
         "/apogeejs-view-lib/versionInfo.json"
