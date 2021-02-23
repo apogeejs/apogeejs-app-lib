@@ -1,6 +1,6 @@
 /** 
- * This is a base class for workspace opening and saveing, or whatever actions
- * are appropriate. It should be extended to provide functionality.
+ * This is the format for the FileAccess classes, responsible for opening and saveing files.
+ * It is recommended to not extend this class but to instead just reproduce the needed functions.
  */
 export default class BaseFileAccess {
     /**
