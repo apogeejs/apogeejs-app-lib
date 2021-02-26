@@ -15,7 +15,11 @@
                 "externalLibs": [
                     "/apogeejs-base-lib/src/apogeeBaseLib.js",
                     "/apogeejs-util-lib/src/apogeeUtilLib.js",
-                    "/apogeejs-model-lib/src/apogeeModelLib.js"
+                    "/apogeejs-model-lib/src/apogeeModelLib.js",
+                    "/prosemirror-admin/dist/prosemirror-model.es.js",
+                    "/prosemirror-admin/dist/prosemirror-state.es.js",
+                    "/prosemirror-admin/dist/prosemirror-transform.es.js",
+                    "/prosemirror-admin/dist/prosemirror-gapcursor.es.js"
                 ]
             }
         ]
