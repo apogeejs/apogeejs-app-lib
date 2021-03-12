@@ -6,6 +6,7 @@ import DynamicForm from "/apogeejs-app-lib/src/components/DynamicForm.js";
 import FormDataComponent from "/apogeejs-app-lib/src/components/FormDataComponent.js";
 import CustomComponent from "/apogeejs-app-lib/src/components/CustomComponent.js";
 import CustomDataComponent from "/apogeejs-app-lib/src/components/CustomDataComponent.js";
+import WebRequestComponent from "/apogeejs-app-lib/src/components/WebRequestComponent.js";
 import ErrorComponent from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 
 import ActionFormComponent from "/apogeejs-app-lib/src/components/ActionFormComponent.js";
@@ -94,8 +95,9 @@ componentInfo.getPageComponentNames = function() {
 componentInfo.registerStandardComponent(JsonTableComponent);
 componentInfo.registerStandardComponent(FunctionComponent);
 componentInfo.registerStandardComponent(FolderFunctionComponent);
-componentInfo.registerStandardComponent(DynamicForm);
-componentInfo.registerStandardComponent(FormDataComponent);
+componentInfo.registerStandardComponent(ActionFormComponent);
+componentInfo.registerStandardComponent(DataFormComponent);
+componentInfo.registerStandardComponent(WebRequestComponent);
 
 //additional child components
 componentInfo.registerComponent(CustomComponent);
@@ -108,9 +110,9 @@ componentInfo.registerPageComponent(FolderFunctionComponent);
 componentInfo.FOLDER_COMPONENT_CLASS = FolderComponent;
 componentInfo.ERROR_COMPONENT_CLASS = ErrorComponent;
 
-//test for new formS
-componentInfo.registerComponent(ActionFormComponent);
-componentInfo.registerComponent(DataFormComponent);
+//legacy forms
+componentInfo.registerComponent(DynamicForm);
+componentInfo.registerComponent(FormDataComponent);
 
 //JSON PLUS COMPONENT
 componentInfo.registerComponent(JsonPlusTableComponent);
