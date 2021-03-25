@@ -15,13 +15,13 @@ export default class NpmModuleEntry extends ReferenceEntry {
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
 
-        //synchronous loading
         try {
             let module = require(this.getUrl());
             if((module)&&(module.initApogeeModule)) module.initApogeeModule();
             this.setField("module",module);
             
-            onLoad();
+            //we need to call this asynchronously
+            setTimeout(onLoad,0);
         }
         catch(error) {
             if(error.stack) console.error(error.stack);
