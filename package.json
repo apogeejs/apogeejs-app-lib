@@ -15,9 +15,9 @@
         "apogeejs-util-lib": "[APOGEE_UTIL_DEP_VERSION]",
         "apogeejs-base-lib": "[APOGEE_BASE_DEP_VERSION]",
         "apogeejs-model-lib": "[APOGEE_MODEL_DEP_VERSION]",
-        "prosemirror-model": "^1.0.0",
-        "prosemirror-state": "^1.0.0",
-        "prosemirror-transform": "^1.0.0",
-        "prosemirror-gapcursor": "^1.0.0"
+        "prosemirror-model": "^1.10.0",
+        "prosemirror-state": "^1.3.3",
+        "prosemirror-transform": "^1.2.6",
+        "prosemirror-gapcursor": "^1.1.5"
     }
 }
