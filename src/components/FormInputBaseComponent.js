@@ -1,5 +1,5 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import {defineHardcodedJsonTable, getSerializedHardcodedTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
+import {getSerializedHardcodedTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 /** This is a simple custom component example. */
 export default class FormInputBaseComponent extends Component {
@@ -30,12 +30,7 @@ export default class FormInputBaseComponent extends Component {
 
     /** A class should be made to extend this base class. Then this initializer should be called with
      * the state class object to complete initialization of the class. */
-    static initializeClass(classObject,cellDisplayName,cellUniqueName,dataProcessingFunctionBody) {
-
-        //this defines the hardcoded type we will use
-        let dataMemberDisplayName = cellUniqueName + "-data";
-        let dataMemberTypeName = cellUniqueName + "-data";
-        defineHardcodedJsonTable(dataMemberDisplayName,dataMemberTypeName,dataProcessingFunctionBody);
+    static initializeClass(classObject,cellDisplayName,cellUniqueName,dataMemberTypeName) {
 
         //here we initialize some constants on the class
         classObject.displayName = cellDisplayName;

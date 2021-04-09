@@ -1,4 +1,4 @@
-//These are in lieue of the import statements
+import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import FormInputBaseComponent from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
 
 /** This is a simple custom component example. */
@@ -102,4 +102,9 @@ const DATA_MEMBER_FUNCTION_BODY = `
     }
 `
 
-FormInputBaseComponent.initializeClass(WebRequestComponent,"Web Request Cell","apogeeapp.WebRequestCell",DATA_MEMBER_FUNCTION_BODY);
+//this defines the hardcoded type we will use
+let dataMemberTypeName = "apogee.WebRequestMember";
+defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
+
+//here we define the component
+FormInputBaseComponent.initializeClass(WebRequestComponent,"Web Request Cell","apogeeapp.WebRequestCell",dataMemberTypeName);
