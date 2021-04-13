@@ -15,8 +15,8 @@ export default class EsModuleEntry extends ReferenceEntry {
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError,workspaceManager) {
         let localOnLoad = (module) => {
-            if(module) {
-                if(module.initApogeeModule) module.initApogeeModule();
+            if((module)&&(module.default)) {
+                if(module.default.initApogeeModule) module.default.initApogeeModule();
             
                 let commandData = {
                     type: "setEsModule",
