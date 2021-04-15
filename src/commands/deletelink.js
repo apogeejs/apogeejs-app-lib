@@ -17,18 +17,16 @@ let deletelink = {};
 
 deletelink.createUndoCommand = function(workspaceManager,commandData) {
     
-    var nickname;
+    var undoCommandJson;
 
     var referenceManager = workspaceManager.getReferenceManager();
     var referenceEntry = referenceManager.lookupEntry(commandData.entryType,commandData.url);
-    
-    if(referenceEntry) nickname = referenceEntry.getNickname();
 
-    var undoCommandJson = {};
-    undoCommandJson.type = "addLink";
-    undoCommandJson.entryType = commandData.entryType;
-    undoCommandJson.url = commandData.url;
-    undoCommandJson.nickname = nickname;
+    if(referenceEntry) {
+        undoCommandJson = {};
+        undoCommandJson.type = "addLink";
+        undoCommandJson.data = referenceEntry.getData();
+    }
     
     return undoCommandJson;
 }

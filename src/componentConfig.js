@@ -64,10 +64,22 @@ componentInfo.registerPageComponent = function(componentClass) {
     }
 }
 
-/** This method registers a new component. It will be exposed when the user
- * requests to create a new component */
+/** This method unregisters a component. Note this method does not fire
+ * a event (for now at least) */
 componentInfo.unregisterComponent = function(componentClass) {
-    //implement this
+    var name = componentClass.uniqueName;
+ 
+    delete componentClasses[name];
+    let stdIndex = standardComponents.indexOf(name);
+    if(stdIndex >= 0) {
+        standardComponents.splice(stdIndex,1);
+    }
+    else {
+        let pageIndex = pageComponents.indexOf(name);
+        if(pageIndex >= 0) {
+            standardComponents.splice(pageIndex,1);
+        }
+    }
 }
 
 /** This method returns a component generator of a given name. */

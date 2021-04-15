@@ -1,5 +1,5 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import {defineHardcodedJsonTable, getSerializedHardcodedTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
+import {getSerializedHardcodedTable,defineHardcodedJsonTable,Model} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 /** This is a simple custom component example. */
 export default class FormInputBaseComponent extends Component {
@@ -30,12 +30,20 @@ export default class FormInputBaseComponent extends Component {
 
     /** A class should be made to extend this base class. Then this initializer should be called with
      * the state class object to complete initialization of the class. */
-    static initializeClass(classObject,cellDisplayName,cellUniqueName,dataProcessingFunctionBody) {
+    static initializeClass(classObject,cellDisplayName,cellUniqueName,dataMemberTypeName) {
 
-        //this defines the hardcoded type we will use
-        let dataMemberDisplayName = cellUniqueName + "-data";
-        let dataMemberTypeName = cellUniqueName + "-data";
-        defineHardcodedJsonTable(dataMemberDisplayName,dataMemberTypeName,dataProcessingFunctionBody);
+        ////////////////////////////////////////////////////////////////////////////////////////
+        // LEGACY CODE CONSIDERATION
+        // Briefly the last argument was the function body of the hard coded table. This code section accounts for 
+        // any module made before then. (There were probably just two - chartjs, <= 3.1.1, and csv, <= 1.0.1)
+        if(!Model.getMemberGenerator(dataMemberTypeName)) {
+            //as called (legacy module usage) the last arg is the function body
+            let functionBody = dataMemberTypeName
+            dataMemberTypeName = cellUniqueName + "-data";
+            defineHardcodedJsonTable(dataMemberTypeName,functionBody);
+        }
+        // END LEGACY CODE CONSIDERATION
+        //////////////////////////////////////////////////////////////////////////////////////////
 
         //here we initialize some constants on the class
         classObject.displayName = cellDisplayName;
