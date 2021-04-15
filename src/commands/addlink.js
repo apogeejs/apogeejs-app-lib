@@ -19,7 +19,7 @@ let addlink = {};
 addlink.createUndoCommand = function(workspaceManager,commandData) {
     var undoCommandJson = {};
     undoCommandJson.type = "deleteLink";
-    undoCommandJson.entryType = commandData.entryType;
+    undoCommandJson.entryType = commandData.data.entryType;
     undoCommandJson.url = commandData.url;
     return undoCommandJson;
 }
@@ -27,7 +27,7 @@ addlink.createUndoCommand = function(workspaceManager,commandData) {
 addlink.executeCommand = function(workspaceManager,commandData) {
     let referenceManager = workspaceManager.getMutableReferenceManager();
     //this creates the entry but does not load it
-    let referenceEntry = referenceManager.createEntry(commandData);
+    let referenceEntry = referenceManager.createEntry(commandData.data);
     //this loads the entry - it will cause an asynchronouse command on completion
     referenceEntry.loadEntry(workspaceManager);
 }

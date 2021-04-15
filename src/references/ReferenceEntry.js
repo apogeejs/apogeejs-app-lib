@@ -22,15 +22,15 @@ export default class ReferenceEntry extends FieldObject {
         //==============
         //Initailize these if this is a new instance
         if(!instanceToCopy) {
-            this.setField("url",referenceData.url);
+            if(!referenceData.nickname) {
+                //assigne a nickname if there isnot one
+                referenceData = this.createNewDataWithNickname(referenceData);
+            }
+            this.setField("data",referenceData);
 
             //we create in a pending state because the link is not loaded.
             this.setField("state",apogeeutil.STATE_PENDING);
             this.setField("stateMsg",PENDING_STATE_MSG);
-
-            let nickname = referenceData.nickname;
-            if(!nickname) nickname = this.createNickname(referenceData.url); 
-            this.setField("nickname",nickname);
         }
 
         //==============
@@ -56,12 +56,16 @@ export default class ReferenceEntry extends FieldObject {
         return this.getField("stateMsg");
     }
 
+    getData() {
+        return this.getField("data");
+    }
+
     getUrl() {
-        return this.getField("url");
+        return this.getData().url;
     }
 
     getNickname() {
-        return this.getField("nickname");
+        return this.getData().nickname;
     }
 
     setViewStateCallback(viewStateCallback) {
@@ -134,9 +138,7 @@ export default class ReferenceEntry extends FieldObject {
      * resolves when the link is loaded. */
     toJson() {
         var entryJson = {};
-        entryJson.url = this.getUrl();
-        if(this.nickname != NO_NICKNAME_EMPTY_STRING) entryJson.nickname = this.getNickname();
-        entryJson.entryType = this.referenceType;
+        Object.assign(entryJson,this.getData());
         return entryJson;
     }
 
@@ -145,27 +147,25 @@ export default class ReferenceEntry extends FieldObject {
     //-------------------------
 
     /** This method removes and reloads the link, returning a promise. */
-    updateData(workspaceManager,url,nickname) {
+    updateData(workspaceManager,data) {
+        let promise;
 
-        //update nickname
-        if(!nickname) nickname = NO_NICKNAME_EMPTY_STRING;
-        if(this.nickname != nickname) {
-            this.setField("nickname",nickname);
+        //create a nickname if there is not one
+        if(!data.nickname) {
+            data = this.createNewDataWithNickname(data);
         }
 
-        //update url
-        if(this.url != url) {
+        let oldUrl = this.getUrl();
+        let oldNickname = this.getNickname();
+
+        //save data
+        this.setField("data",data);
+
+        //load new url
+        if(oldUrl != data.url) {
             this.removeEntry();
-            this.setField("url",url);
-            var promise = this.loadEntry(workspaceManager);
+            promise = this.loadEntry(workspaceManager);
         }
-
-        //if we didn't do a URL update, make a promise that says update was successful
-        if(!promise) promise = Promise.resolve({
-            cmdDone: true,
-            target: this,
-            eventAction: "updated"
-        });
 
         return promise;
     }
@@ -200,7 +200,8 @@ export default class ReferenceEntry extends FieldObject {
         }
     }
 
-    createNickname(url) {
+    createNewDataWithNickname(oldData) {
+        let url = oldData.url;
         let lastSeperatorIndex = url.lastIndexOf("/");
         if(lastSeperatorIndex == 0) return url.substr(0,MAX_AUTO_NICKNAME_LENGTH);
 
@@ -212,7 +213,12 @@ export default class ReferenceEntry extends FieldObject {
         if(fileName.length > MAX_AUTO_NICKNAME_LENGTH) {
             fileName = fileName.substring(0,MAX_AUTO_NICKNAME_LENGTH);
         }
-        return fileName;
+
+        let newData = {};
+        Object.assign(newData,oldData);
+        newData.nickname = fileName;
+
+        return newData;
     }
 
 }
@@ -225,8 +231,6 @@ let MAX_AUTO_NICKNAME_LENGTH = 24;
 
 
 ReferenceEntry.ELEMENT_ID_BASE = "__apogee_link_element_";
-
-let NO_NICKNAME_EMPTY_STRING = "";
 
 //=====================================
 // Status Commands

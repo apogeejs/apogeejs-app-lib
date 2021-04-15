@@ -4,32 +4,29 @@ import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
  *
  * Command JSON format:
  * {
- *   "type":"updateLink",
- *   "entryType":(entry type),
- *   "oldUrl":(original url),
- *   "newUrl":(new url - optional),
- *   "newNickname":(new nickname - optional)
+ *    "type":"updateLink",
+ *    "data": {
+ *        "entryType":(entry type),
+ *        "url":(new url - optional),
+ *        "nickname":(new nickname - optional),
+ *        (other?)
+ *    },
+ *    "initialUrl": (original url)
  * }
  */ 
 let updatelink = {};
 
 
 updatelink.createUndoCommand = function(workspaceManager,commandData) {
-    var undoCommandJson = {};
-    undoCommandJson.type = updatelink.commandInfo.type;
+    var undoCommandJson;
     
-    undoCommandJson.entryType = commandData.entryType;
-    undoCommandJson.oldUrl = commandData.newUrl;
-    
-    if(commandData.newUrl != commandData.oldUrl) undoCommandJson.newUrl = commandData.oldUrl;
-    
-    if(commandData.newNickname !== undefined) {
-        //look up the pre-command entry (we change back gto this)
-        var referenceManager = workspaceManager.getReferenceManager();
-        var referenceEntry = referenceManager.lookupEntry(commandData.entryType,commandData.oldUrl);
-        if((referenceEntry)&&(commandData.newNickname != referenceEntry.getNickname())) {
-            undoCommandJson.newNickname = referenceEntry.getNickname();
-        }
+    var referenceManager = workspaceManager.getReferenceManager();
+    var referenceEntry = referenceManager.lookupEntry(commandData.data.entryType,commandData.oldUrl);
+    if(referenceEntry) {
+        undoCommandJson = {};
+        undoCommandJson.type = updatelink.commandInfo.type;
+        undoCommandJson.data = referenceEntry.getData();
+        undoCommandJson.initialUrl = commandData.data.url;
     }
     
     return undoCommandJson;
@@ -38,16 +35,14 @@ updatelink.createUndoCommand = function(workspaceManager,commandData) {
 updatelink.executeCommand = function(workspaceManager,commandData) {
     let referenceManager = workspaceManager.getMutableReferenceManager();
 
-    let refEntryId = referenceManager.lookupRefEntryId(commandData.entryType,commandData.oldUrl);
-    if(!refEntryId) throw new Error("Reference entry not found. " + entryType + ":" + url);
+    let refEntryId = referenceManager.lookupRefEntryId(commandData.data.entryType,commandData.initialUrl);
+    if(!refEntryId) throw new Error("Reference entry not found. " + commandData.data.entryType + ":" + commandData.initialUrl);
 
     let referenceEntry = referenceManager.getMutableRefEntryById(refEntryId);
-    if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
+    if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + commandData.data.entryType);
 
     //update entry
-    let targetUrl = (commandData.newUrl !== undefined) ? commandData.newUrl : referenceEntry.getUrl();
-    let targetNickname = (commandData.newNickname !== undefined) ? commandData.newNickname : referenceEntry.getNickname();
-    referenceEntry.updateData(workspaceManager,targetUrl,targetNickname);
+    referenceEntry.updateData(workspaceManager,commandData.data);
 
     referenceManager.registerRefEntry(referenceEntry);
 }
