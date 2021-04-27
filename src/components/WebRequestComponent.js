@@ -47,7 +47,7 @@ const DATA_MEMBER_FUNCTION_BODY = `
             let bodyFormat;
             if(formResult.outputFormat == "mime") {
                 let contentType = meta.headers["content-type"];
-                if(contentType.startsWith("application/json")) bodyFormat = "json";
+                if((conttentType)&&(contentType.startsWith("application/json"))) bodyFormat = "json";
                 else if(contentType !== undefined) bodyFormat = "text";
                 else bodyFormat = "none";
             }
