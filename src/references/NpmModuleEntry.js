@@ -26,7 +26,7 @@ export default class NpmModuleEntry extends ReferenceEntry {
         catch(error) {
             if(error.stack) console.error(error.stack);
             
-            onError(errorMsg);
+            onError(error);
         }
 
     }

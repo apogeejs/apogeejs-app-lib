@@ -66,7 +66,7 @@ export default class Apogee {
         //----------------------------------
         var appConfigPromise = this.appConfigManager.getConfigPromise(this);
         
-        appConfigPromise.then(() => this.initApp()).catch(errorMsg => apogeeUserAlert("Fatal error configuring application: " + errorMsg));
+        appConfigPromise.then(() => this.initApp()).catch(error => apogeeUserAlert("Fatal error configuring application: " + error.toString()));
         
     }
 
@@ -253,7 +253,7 @@ export default class Apogee {
             openEntriesPromise = Promise.resolve();
         }
         
-        var onLoadReferenceError = errorMsg => apogeeUserAlert("Error setting application level modules - some functionality may not be available: " + errorMsg);
+        var onLoadReferenceError = error => apogeeUserAlert("Error setting application level modules - some functionality may not be available: " + error.toString());
         
         //if there is an error loading the promise, print a mesage and continue.
         return openEntriesPromise.catch(onLoadReferenceError);
@@ -286,7 +286,7 @@ export default class Apogee {
                 this.executeCommand(commandData);
             };
             
-            workspaceFilePromise.then(openInitialWorkspace).catch(errorMsg => apogeeUserAlert("Error downloading initial workspace: " + errorMsg));
+            workspaceFilePromise.then(openInitialWorkspace).catch(error => apogeeUserAlert("Error downloading initial workspace: " + error.toString()));
         }
         else {
             var commandData = {};

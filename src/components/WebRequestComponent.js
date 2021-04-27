@@ -86,15 +86,9 @@ const DATA_MEMBER_FUNCTION_BODY = `
                         nominalType: "application/json",
                         stringified: false
                     }
-                    return error;
-                    //throw error;
+                    return Promise.reject(error)
                 }
             })
-        })
-        .catch(errMsg => {
-            console.log("in final catch: " + errMsg);
-            //throw new Error(errMsg);
-            return new Error(errMsg);
         })
     }
     else {
