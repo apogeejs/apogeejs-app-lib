@@ -30,13 +30,19 @@ WebRequestCell.formResultToRequest = function(formResult) {
                 options.body = formResult.body;
             }
         }
-        //headers
-        let headersIn = formResult.headers;
-        if((headersIn)&&(headersIn.length > 0)) {
-            let headers = {};
-            headersIn.forEach(entry => headers[entry.headerKey] = entry.headerValue);
-            options.headers = headers;
+        //content type (header)
+        //note - if they specify a content type here and below we will just include both
+        let headers;
+        if((formResult.contentType)&&(formResult.contentType != "none")&&(formResult.contentType != "other")) {
+            headers = {};
+            headers["content-type"] = formResult.contentType;
         }
+        //headers
+        if((formResult.headers)&&(formResult.headers.length > 0)) {
+            if(!headers) headers = {};
+            formResult.headers.forEach(entry => headers[entry.headerKey] = entry.headerValue);
+        }
+        if(headers) options.headers = headers;
 
         //make the request, with apogee specific error handling
         let bodyFormat = formResult.outputFormat;
