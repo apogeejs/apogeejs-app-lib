@@ -42,7 +42,7 @@ export default class EsModuleEntry extends ReferenceEntry {
         //allow for an optional module remove step
         let module = this.getField("module");
         if(module) {
-            if(module.removeApogeeModule) module.removeApogeeModule();
+            if((module.default)&&(module.default.removeApogeeModule)) module.default.removeApogeeModule();
             this.clearField("module");
         }
         return true;
