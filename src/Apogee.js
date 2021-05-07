@@ -14,14 +14,12 @@ let apogeeInstance = null;
 
 /** This is the main class of the apogee application. 
  * This constuctor should not be called externally, the static creation method 
- * should be used. This is a singlet.
- * 
- * @param appConfigManager - An instance of an AppConfigManager on configure the application.
+ * should be used. This is a singleton.
  * 
  * @private */
 export default class Apogee {
 
-    constructor(appConfigManager) {
+    constructor() {
 
         //mixin initialization
         this.eventManagerMixinInit();
@@ -33,8 +31,6 @@ export default class Apogee {
         else {
             apogeeInstance = this;
         }
-        
-        this.appConfigManager = appConfigManager;
         
         //---------------------------------
         //construct the base app structures
@@ -52,22 +48,14 @@ export default class Apogee {
         //default settings
         this.appSettings = {};
         
-        //reference manager
-        this.referenceManager = new ReferenceManager(this);
-        
         //command manager
         this.commandManager = new CommandManager(this);
 
         //subscribe to app events
         this.subscribeToAppEvents()
         
-        //----------------------------------
-        //configure the application
-        //----------------------------------
-        var appConfigPromise = this.appConfigManager.getConfigPromise(this);
-        
-        appConfigPromise.then(() => this.initApp()).catch(error => apogeeUserAlert("Fatal error configuring application: " + error.toString()));
-        
+        //initialize application
+        this._initApp();
     }
 
     /** This subscribes to all events needed by this class. On close, all listeners will be removed. This will 
@@ -85,13 +73,6 @@ export default class Apogee {
     static getInstance() {
         return apogeeInstance;
     }
-
-    // /** This function initializes the default classes for the application. */
-    // static setBaseClassLists(standardComponents, additionalComponents, errorComponentClass) {
-    //     Apogee.standardComponents = standardComponents;
-    //     Apogee.additionalComponents = additionalComponents;
-    //     Apogee.errorComponentClass = errorComponentClass;
-    // }
 
     //==================================
     // Workspace Management
@@ -193,90 +174,31 @@ export default class Apogee {
         }
     }
 
-    
-    //======================================
-    // configuration methods methods
-    //======================================
-
-    /** This method returns the app settings json. */
-    getAppSettings() {
-        return this.appSettings;
-    }
-
-    /** This mehod return the application ReferenceManager. */
-    getAppReferenceManager() {
-        return this.referenceManager;
-    }
-
-    /** This method sets the file access object. */
-    setFileAccessObject(fileAccessObject) {
-        this.fileAccessObject = fileAccessObject;
-    }
-
-    /** This method retrieves the file access object for the application. */
-    getFileAccessObject() {
-        return this.fileAccessObject;
-    }
-
-
-
     //==================================
     // App Initialization
     //==================================
 
-    /** This should be called to set any settings, if there are any. If there are
-     * no settings, this may be omitted.
-     * 
-     * configJson format:
-     * {
-     *   "settings": { (settings json - settings keys with associated settings value) },
-     *   "references": [ (array of references - same format as refernces in workspace.) ]
-     * }
-     * 
-     * References may include self-installing modules, for example a custom file
-     * access method or custom components. See info on self installing modules.
-     */ 
-    getConfigurationPromise(configJson) {   
-        if(!configJson) return;
-        
-        //set the settings JSON
-        this.appSettings = configJson.settings;
-        if(!this.appSettings) this.appSettings = {};
-        
-        //load references
-        var openEntriesPromise;
-        if(configJson.references) {
-            openEntriesPromise = this.referenceManager.getOpenEntriesPromise(configJson.references);
+    /** This returns the JSON file for the initial workspace. It reads it from the URL. */
+    async _getInitialWorkspace() {
+        var workspaceUrl = apogeeutil.readQueryField("url",document.URL);
+        if(workspaceUrl) {
+            return apogeeutil.jsonRequest(workspaceUrl);
         }
         else {
-            //instant resolve promise (with no meaningful return)
-            openEntriesPromise = Promise.resolve();
+            return null;
         }
-        
-        var onLoadReferenceError = error => apogeeUserAlert("Error setting application level modules - some functionality may not be available: " + error.toString());
-        
-        //if there is an error loading the promise, print a mesage and continue.
-        return openEntriesPromise.catch(onLoadReferenceError);
     }
         
     /** This completes application initialization after any settings have been set. 
      * @private
      * */    
-    initApp() {
-        
-        //file accessor - load the default if it wasn't loaded in cofiguration
-        if(!this.fileAccessObject) {
-            this.fileAccessObject = this.appConfigManager.getDefaultFileAccessObject(this);
-        }
-        
-        //open the initial workspace or create a new workspace
-        var workspaceFilePromise = this.appConfigManager.getInitialWorkspaceFilePromise(this);
-        if(workspaceFilePromise) {
-            var workspaceFileMetadata = this.appConfigManager.getInitialWorkspaceFileMetadata(this);
+    async _initApp() {
             
-            var openInitialWorkspace = workspaceText => {
-                let workspaceJson = JSON.parse(workspaceText);
+        try {
+            //open the initial workspace or create a new workspace
+            let workspaceJson = await this._getInitialWorkspace();
 
+            if(workspaceJson) {
                 //open workspace
                 var commandData = {};
                 commandData.type = "openWorkspace";
@@ -284,15 +206,19 @@ export default class Apogee {
                 commandData.fileMetadata = workspaceFileMetadata;
 
                 this.executeCommand(commandData);
-            };
-            
-            workspaceFilePromise.then(openInitialWorkspace).catch(error => apogeeUserAlert("Error downloading initial workspace: " + error.toString()));
+            }
+            else {
+                var commandData = {};
+                commandData.type = "openWorkspace";
+                
+                this.executeCommand(commandData);
+            }
         }
-        else {
-            var commandData = {};
-            commandData.type = "openWorkspace";
-            
-            this.executeCommand(commandData);
+        catch(error) {
+            if(error.stack) console.error(error.stack);
+
+            let errorMsg = error.message ? error.message : error.toString();
+            apogeeUserAlert("Error loading initial workspace: " + errorMsg);
         }
         
     }
