@@ -203,7 +203,6 @@ export default class Apogee {
                 var commandData = {};
                 commandData.type = "openWorkspace";
                 commandData.workspaceJson = workspaceJson;
-                commandData.fileMetadata = workspaceFileMetadata;
 
                 this.executeCommand(commandData);
             }
