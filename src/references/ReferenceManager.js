@@ -109,6 +109,20 @@ export default class ReferenceManager extends FieldObject {
         }
     }
 
+    /** This returns a list of urls loaded for the given module type. (Note that
+     * url for a NPM module is just the module name). */
+    getModuleList(moduleType) {
+       let moduleList = [];
+        let referenceEntryMap = this.getField("referenceEntryMap");
+        for(let entryId in referenceEntryMap) {
+            let entry = referenceEntryMap[entryId];
+            if(entry.getEntryType() == moduleType) {
+                moduleList.push(entry.getUrl());
+            }
+        }
+        return moduleList;
+    }
+
     //====================================
     // Reference Owner Functionality
     //====================================
