@@ -26,7 +26,8 @@ export default class NpmModuleEntry extends ReferenceEntry {
         catch(error) {
             if(error.stack) console.error(error.stack);
             
-            onError(error);
+            //we need to call this asynchronously
+            setTImeout(onError(error),0);
         }
 
     }

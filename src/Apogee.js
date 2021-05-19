@@ -2,7 +2,6 @@ import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
 import {EventManager} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
-import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
 import WorkspaceManager from "/apogeejs-app-lib/src/WorkspaceManager.js";
 
 /** @private */
@@ -50,6 +49,9 @@ export default class Apogee {
         
         //command manager
         this.commandManager = new CommandManager(this);
+
+        //module manager
+        this.moduleManager = new (apogeeplatform.getModuleManagerClass())(this);
 
         //subscribe to app events
         this.subscribeToAppEvents()
@@ -171,6 +173,26 @@ export default class Apogee {
         }
         else {
             return false;
+        }
+    }
+
+    //====================================
+    // Module Management
+    //====================================
+
+    openModuleManager() {
+        if(this.moduleManager) {
+            try {
+                this.moduleManager.openModuleManager();
+            }
+            catch(error) {
+                if(error.stack) console.error(error.stack);
+                let errorMsg = error.messsage ? error.message : error.toString();
+                apogeeUserAlert("Error opening module manager: " + errorMsg);
+            }
+        }
+        else {
+            apogeeUserAlert("Module manager service not available!");
         }
     }
 
