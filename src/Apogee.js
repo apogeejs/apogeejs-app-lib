@@ -182,14 +182,7 @@ export default class Apogee {
 
     openModuleManager() {
         if(this.moduleManager) {
-            try {
-                this.moduleManager.openModuleManager();
-            }
-            catch(error) {
-                if(error.stack) console.error(error.stack);
-                let errorMsg = error.messsage ? error.message : error.toString();
-                apogeeUserAlert("Error opening module manager: " + errorMsg);
-            }
+            this.moduleManager.openModuleManager();
         }
         else {
             apogeeUserAlert("Module manager service not available!");
