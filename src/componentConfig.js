@@ -12,6 +12,8 @@ import ErrorComponent from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 import ActionFormComponent from "/apogeejs-app-lib/src/components/ActionFormComponent.js";
 import DataFormComponent from "/apogeejs-app-lib/src/components/DataFormComponent.js";
 
+import MakerDataFormComponent from "/apogeejs-app-lib/src/components/MakerDataFormComponent.js";
+
 //JSON PLUS COMPONENT
 import JsonPlusTableComponent from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
 
@@ -110,6 +112,8 @@ componentInfo.registerStandardComponent(FolderFunctionComponent);
 componentInfo.registerStandardComponent(ActionFormComponent);
 componentInfo.registerStandardComponent(DataFormComponent);
 componentInfo.registerStandardComponent(WebRequestComponent);
+
+componentInfo.registerStandardComponent(MakerDataFormComponent);
 
 //additional child components
 componentInfo.registerComponent(CustomComponent);
