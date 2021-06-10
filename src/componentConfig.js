@@ -13,6 +13,7 @@ import ActionFormComponent from "/apogeejs-app-lib/src/components/ActionFormComp
 import DataFormComponent from "/apogeejs-app-lib/src/components/DataFormComponent.js";
 
 import MakerDataFormComponent from "/apogeejs-app-lib/src/components/MakerDataFormComponent.js";
+import MakerActionFormComponent from "/apogeejs-app-lib/src/components/MakerActionFormComponent.js";
 
 //JSON PLUS COMPONENT
 import JsonPlusTableComponent from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
@@ -109,15 +110,16 @@ componentInfo.getPageComponentNames = function() {
 componentInfo.registerStandardComponent(JsonTableComponent);
 componentInfo.registerStandardComponent(FunctionComponent);
 componentInfo.registerStandardComponent(FolderFunctionComponent);
-componentInfo.registerStandardComponent(ActionFormComponent);
-componentInfo.registerStandardComponent(DataFormComponent);
 componentInfo.registerStandardComponent(WebRequestComponent);
 
 componentInfo.registerStandardComponent(MakerDataFormComponent);
+componentInfo.registerStandardComponent(MakerActionFormComponent);
 
 //additional child components
 componentInfo.registerComponent(CustomComponent);
 componentInfo.registerComponent(CustomDataComponent);
+componentInfo.registerComponent(ActionFormComponent);
+componentInfo.registerComponent(DataFormComponent);
 
 componentInfo.registerPageComponent(FolderComponent);
 componentInfo.registerPageComponent(FolderFunctionComponent);
