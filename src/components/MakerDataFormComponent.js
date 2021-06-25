@@ -79,7 +79,7 @@ export default class MakerDataFormComponent extends FormInputBaseComponent {
 }
 
 const DATA_MEMBER_FUNCTION_BODY = `
-if(formResult.formData) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult.formData);
+if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
 else return [];
 `
 

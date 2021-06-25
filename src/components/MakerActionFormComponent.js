@@ -22,38 +22,42 @@ export default class MakerActionFormComponent extends FormInputBaseComponent {
 
     /** This method compiles the layout function entered by the user. It returns
      * the fields  {formLayoutFunction,validatorFunction,errorMessage}. */
-     createActionFunctions() {
+     createActionFunctions(useSubmit,useCancel) {
         let saveCodeText = this.getField("onSubmitCode");
         let cancelCodeText = this.getField("onCancelCode");
         let onSubmitFunction, onCancelFunction
         let errorMessages = [];
 
-        if((saveCodeText !== undefined)&&(saveCodeText !== null))  {
-            try {
-                //create the validator function
-                onSubmitFunction = new Function("cmdMsngr","formValue","formObject",saveCodeText);
+        if(useSubmit) {
+            if((saveCodeText !== undefined)&&(saveCodeText !== null))  {
+                try {
+                    //create the validator function
+                    onSubmitFunction = new Function("cmdMsngr","formValue","formObject",saveCodeText);
+                }
+                catch(error) {
+                    errorMessages.push("Error parsing validator function code: " + error.toString());
+                    if(error.stack) console.error(error.stack);
+                }
             }
-            catch(error) {
-                errorMessages.push("Error parsing validator function code: " + error.toString());
-                if(error.stack) console.error(error.stack);
+            else {
+                onSubmitFunction = () => "";
             }
-        }
-        else {
-            onSubmitFunction = () => "";
         }
 
-        if((cancelCodeText !== undefined)&&(cancelCodeText !== null))  {
-            try {
-                //create the validator function
-                onCancelFunction = new Function("cmdMsngr","formObject",cancelCodeText);
+        if(useCancel) {
+            if((cancelCodeText !== undefined)&&(cancelCodeText !== null))  {
+                try {
+                    //create the validator function
+                    onCancelFunction = new Function("cmdMsngr","formObject",cancelCodeText);
+                }
+                catch(error) {
+                    errorMessages.push("Error parsing validator function code: " + error.toString());
+                    if(error.stack) console.error(error.stack);
+                }
             }
-            catch(error) {
-                errorMessages.push("Error parsing validator function code: " + error.toString());
-                if(error.stack) console.error(error.stack);
+            else {
+                onCancelFunction = () => "";
             }
-        }
-        else {
-            onCancelFunction = () => "";
         }
 
         let errorMessage;
@@ -102,7 +106,7 @@ export default class MakerActionFormComponent extends FormInputBaseComponent {
 }
 
 const DATA_MEMBER_FUNCTION_BODY = `
-if(formResult.formData) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult.formData);
+if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
 else return [];
 `
 
