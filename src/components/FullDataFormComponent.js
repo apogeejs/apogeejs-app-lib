@@ -1,26 +1,35 @@
-import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
-import FormInputBaseComponent from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
-import apogeeutil from "/apogeejs-util-lib/src/apogeeUtiLlib.js"
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
-/** This is a simple custom component example. */
-export default class MakerDataFormComponent extends FormInputBaseComponent {
+/** This is a custom resource component. 
+ * To implement it, the resource script must have the methods "run()" which will
+ * be called when the component is updated. It also must have any methods that are
+ * confugred with initialization data from the model. */
+export default class FullDataFormComponent extends Component {
+
     constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
         super(member,modelManager,instanceToCopy,keepUpdatedFixed);
 
+        //this should be present in the json that builds the folder, but in case it isn't (for one, because of a previous mistake)
+        member.setChildrenWriteable(false);
+        
+        let model = modelManager.getModel();
         //==============
         //Fields
         //==============
-        //Add a field to the base class
-        let model = modelManager.getModel();
+        //Initailize these if this is a new instance
         if(!instanceToCopy) {
+            this.setField("layoutCode","return []");
             this.setField("validatorCode","return true");
 
             //internal tables
             let valueMember = member.lookupChild(model,"value");
-            if(valueMember) this.registerMember(modelManager,valueMember,"member.value",false);
+            this.registerMember(modelManager,valueMember,"member.value",false);
+
+            let inputMember = member.lookupChild(model,"input");
+            this.registerMember(modelManager,inputMember,"member.input",false);
         }
-    }
+    };
 
     //==============================
     //Resource Accessors
@@ -28,9 +37,24 @@ export default class MakerDataFormComponent extends FormInputBaseComponent {
 
     /** This method compiles the layout function entered by the user. It returns
      * the fields  {formLayoutFunction,validatorFunction,errorMessage}. */
-     createValidatorFunction() {
+    createFormFunctions() {
+        var layoutCodeText = this.getField("layoutCode");
         var validatorCodeText = this.getField("validatorCode");
-        var validatorFunction, errorMessage;
+        var layoutFunction, validatorFunction, errorMessage;
+
+        if((layoutCodeText !== undefined)&&(layoutCodeText !== null)) {
+            try {
+                //create the layout function
+                layoutFunction = new Function("commandMessenger","inputData",layoutCodeText);
+            }
+            catch(error) {
+                errorMessage = "Error parsing layout function code: " + error.toString()
+                if(error.stack) console.error(error.stack);
+            }
+        }
+        else {
+            layoutFunction = () => [];
+        }
 
         if((validatorCodeText !== undefined)&&(validatorCodeText !== null))  {
             try {
@@ -46,12 +70,19 @@ export default class MakerDataFormComponent extends FormInputBaseComponent {
             validatorFunction = () => true;
         }
 
-        return {validatorFunction, errorMessage};
+        return { layoutFunction, validatorFunction, errorMessage};
     }
 
     //=============================
     // Action
     //=============================
+
+    updateLayoutCode(layoutCodeText) { 
+        let oldLayoutCodeText = this.getField("layoutCode");
+        if(layoutCodeText != oldLayoutCodeText) {
+            this.setField("layoutCode",layoutCodeText);
+        }
+    }
 
     updateValidatorCode(validatorCodeText) { 
         let oldValidatorCodeText = this.getField("validatorCode");
@@ -66,6 +97,11 @@ export default class MakerDataFormComponent extends FormInputBaseComponent {
 
     readPropsFromJson(json) {
         if(!json) return;
+        
+        //load the resource
+        if(json.layoutCode) { 
+            this.updateLayoutCode(json.layoutCode); 
+        }
 
         if(json.validatorCode) {
             this.updateValidatorCode(json.validatorCode)
@@ -74,34 +110,39 @@ export default class MakerDataFormComponent extends FormInputBaseComponent {
 
     /** This serializes the table component. */
     writeToJson(json,modelManager) {
+        //store the for code text
+        json.layoutCode = this.getField("layoutCode");
         json.validatorCode = this.getField("validatorCode");
     }
+
 }
 
-const DATA_MEMBER_FUNCTION_BODY = `
-if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
-else return [];
-`
+//======================================
+// This is the control generator, to register the control
+//======================================
 
-
-//this defines the hardcoded type we will use
-let dataMemberTypeName = "apogee.MakerDataFormMember";
-defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
-
-//here we define the component
-FormInputBaseComponent.initializeClass(MakerDataFormComponent,"Maker Data Form Cell","apogeeapp.MakerDataFormCell",dataMemberTypeName);
-
-//add an additional member table by modifying the default json
-let defaultJson = apogeeutil.jsonCopy(MakerDataFormComponent.DEFAULT_MEMBER_JSON);
-defaultJson.children.value = {
-    "name": "value",
-    "type": "apogee.JsonMember",
-    "updateData": {
-        "data": ""
+FullDataFormComponent.displayName = "Full Data Form Cell";
+FullDataFormComponent.uniqueName = "apogeeapp.FullDataFormCell";
+FullDataFormComponent.DEFAULT_MEMBER_JSON = {
+    "type": "apogee.Folder",
+    "childrenNotWriteable": true,
+    "children": {
+        "input": {
+            "name": "input",
+            "type": "apogee.JsonMember",
+            "updateData": {
+                "data": "",
+            }
+        },
+        "value": {
+            "name": "value",
+            "type": "apogee.JsonMember",
+            "updateData": {
+                "data": "",
+            }
+        }
     }
-}
-MakerDataFormComponent.DEFAULT_MEMBER_JSON =  defaultJson;
-
+};
 
 //=====================================
 // Update Data Command
@@ -113,16 +154,16 @@ MakerDataFormComponent.DEFAULT_MEMBER_JSON =  defaultJson;
  * {
  *   "type":"actionFormComponentUpdateCommand",
  *   "memberId":(main member ID),
- *   "field": (field to update "validator")
+ *   "field": (field to update, "layout" or "validator")
  *   "initialValue":(original fields value)
  *   "targetValue": (desired fields value)
  * }
  */ 
-let makerDataFormUpdateCommand = {};
+let fullDataFormUpdateCommand = {};
 
-makerDataFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
+fullDataFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
     let undoCommandData = {};
-    undoCommandData.type = makerDataFormUpdateCommand.commandInfo.type;
+    undoCommandData.type = fullDataFormUpdateCommand.commandInfo.type;
     undoCommandData.memberId = commandData.memberId;
     undoCommandData.field = commandData.field;
     undoCommandData.initialValue = commandData.targetValue;
@@ -130,14 +171,17 @@ makerDataFormUpdateCommand.createUndoCommand = function(workspaceManager,command
     return undoCommandData;
 }
 
-makerDataFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
+fullDataFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getMutableModelManager();
     let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     let component = modelManager.getMutableComponentByComponentId(componentId);
     var commandResult = {};
     if(component) {
         try {
-            if(commandData.field == "validator") {
+            if(commandData.field == "layout") {
+                component.updateLayoutCode(commandData.targetValue);
+            }
+            else if(commandData.field == "validator") {
                 component.updateValidatorCode(commandData.targetValue);
             }
             else {
@@ -163,12 +207,18 @@ makerDataFormUpdateCommand.executeCommand = function(workspaceManager,commandDat
     return commandResult;
 }
 
-makerDataFormUpdateCommand.commandInfo = {
-    "type": "makerDataFormUpdateCommand",
+fullDataFormUpdateCommand.commandInfo = {
+    "type": "fullDataFormUpdateCommand",
     "targetType": "component",
     "event": "updated"
 }
 
 
-CommandManager.registerCommand(makerDataFormUpdateCommand);
+CommandManager.registerCommand(fullDataFormUpdateCommand);
+
+
+
+
+
+
 

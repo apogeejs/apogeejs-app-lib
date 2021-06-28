@@ -3,7 +3,7 @@ import FormInputBaseComponent from "/apogeejs-app-lib/src/components/FormInputBa
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This is a simple custom component example. */
-export default class MakerActionFormComponent extends FormInputBaseComponent {
+export default class DesignerActionFormComponent extends FormInputBaseComponent {
     constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
         super(member,modelManager,instanceToCopy,keepUpdatedFixed);
 
@@ -112,11 +112,11 @@ else return [];
 
 
 //this defines the hardcoded type we will use
-let dataMemberTypeName = "apogee.MakerActionFormMember";
+let dataMemberTypeName = "apogee.DesignerActionFormMember";
 defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 
 //here we define the component
-FormInputBaseComponent.initializeClass(MakerActionFormComponent,"Maker Action Form Cell","apogeeapp.MakerActionFormCell",dataMemberTypeName);
+FormInputBaseComponent.initializeClass(DesignerActionFormComponent,"Action Form Cell","apogeeapp.DesignerActionFormCell",dataMemberTypeName);
 
 
 
@@ -135,11 +135,11 @@ FormInputBaseComponent.initializeClass(MakerActionFormComponent,"Maker Action Fo
  *   "targetValue": (desired fields value)
  * }
  */ 
-let makerActionFormUpdateCommand = {};
+let designerActionFormUpdateCommand = {};
 
-makerActionFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
+designerActionFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
     let undoCommandData = {};
-    undoCommandData.type = makerActionFormUpdateCommand.commandInfo.type;
+    undoCommandData.type = designerActionFormUpdateCommand.commandInfo.type;
     undoCommandData.memberId = commandData.memberId;
     undoCommandData.field = commandData.field;
     undoCommandData.initialValue = commandData.targetValue;
@@ -147,7 +147,7 @@ makerActionFormUpdateCommand.createUndoCommand = function(workspaceManager,comma
     return undoCommandData;
 }
 
-makerActionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
+designerActionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getMutableModelManager();
     let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     let component = modelManager.getMutableComponentByComponentId(componentId);
@@ -183,12 +183,12 @@ makerActionFormUpdateCommand.executeCommand = function(workspaceManager,commandD
     return commandResult;
 }
 
-makerActionFormUpdateCommand.commandInfo = {
-    "type": "makerActionFormUpdateCommand",
+designerActionFormUpdateCommand.commandInfo = {
+    "type": "designerActionFormUpdateCommand",
     "targetType": "component",
     "event": "updated"
 }
 
 
-CommandManager.registerCommand(makerActionFormUpdateCommand);
+CommandManager.registerCommand(designerActionFormUpdateCommand);
 

@@ -40,7 +40,7 @@ export default class FormDataComponent extends Component {
 // This is the component generator, to register the component
 //======================================
 
-FormDataComponent.displayName = "Form Cell - Data";
+FormDataComponent.displayName = "Legacy Data Form Cell (deprecated)";
 FormDataComponent.uniqueName = "apogeeapp.DataFormCell";
 FormDataComponent.DEFAULT_MEMBER_JSON = {
         "type": "apogee.Folder",

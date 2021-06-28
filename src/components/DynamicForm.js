@@ -14,7 +14,7 @@ export default class DynamicForm extends Component {
 // This is the component generator, to register the component
 //======================================
 
-DynamicForm.displayName = "Form Cell - Action";
+DynamicForm.displayName = "Legacy Action Form Cell (deprecated)";
 DynamicForm.uniqueName = "apogeeapp.ActionFormCell";
 DynamicForm.DEFAULT_MEMBER_JSON = {
     "type": "apogee.FunctionMember",

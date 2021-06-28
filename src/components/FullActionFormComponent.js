@@ -6,7 +6,7 @@ import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
  * To implement it, the resource script must have the methods "run()" which will
  * be called when the component is updated. It also must have any methods that are
  * confugred with initialization data from the model. */
-export default class ActionFormComponent extends Component {
+export default class FullActionFormComponent extends Component {
 
     constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
         super(member,modelManager,instanceToCopy,keepUpdatedFixed);
@@ -86,9 +86,9 @@ export default class ActionFormComponent extends Component {
 // This is the control generator, to register the control
 //======================================
 
-ActionFormComponent.displayName = "New Action Form Cell";
-ActionFormComponent.uniqueName = "apogeeapp.NewActionFormCell";
-ActionFormComponent.DEFAULT_MEMBER_JSON = {
+FullActionFormComponent.displayName = "Full Action Form Cell";
+FullActionFormComponent.uniqueName = "apogeeapp.FullActionFormCell";
+FullActionFormComponent.DEFAULT_MEMBER_JSON = {
     "type": "apogee.JsonMember"
 };
 
@@ -106,18 +106,18 @@ ActionFormComponent.DEFAULT_MEMBER_JSON = {
  *   "targetValue": (desired fields value)
  * }
  */ 
-let actionFormUpdateCommand = {};
+let fullActionFormUpdateCommand = {};
 
-actionFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
+fullActionFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
     let undoCommandData = {};
-    undoCommandData.type = actionFormUpdateCommand.commandInfo.type;
+    undoCommandData.type = fullActionFormUpdateCommand.commandInfo.type;
     undoCommandData.memberId = commandData.memberId;
     undoCommandData.initialValue = commandData.targetValue;
     undoCommandData.targetValue = commandData.initialValue;
     return undoCommandData;
 }
 
-actionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
+fullActionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getMutableModelManager();
     let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     let component = modelManager.getMutableComponentByComponentId(componentId);
@@ -145,13 +145,13 @@ actionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) 
     return commandResult;
 }
 
-actionFormUpdateCommand.commandInfo = {
-    "type": "actionFormUpdateCommand",
+fullActionFormUpdateCommand.commandInfo = {
+    "type": "fullActionFormUpdateCommand",
     "targetType": "component",
     "event": "updated"
 }
 
-CommandManager.registerCommand(actionFormUpdateCommand);
+CommandManager.registerCommand(fullActionFormUpdateCommand);
 
 
 

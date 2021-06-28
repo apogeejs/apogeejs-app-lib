@@ -9,11 +9,11 @@ import CustomDataComponent from "/apogeejs-app-lib/src/components/CustomDataComp
 import WebRequestComponent from "/apogeejs-app-lib/src/components/WebRequestComponent.js";
 import ErrorComponent from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 
-import ActionFormComponent from "/apogeejs-app-lib/src/components/ActionFormComponent.js";
-import DataFormComponent from "/apogeejs-app-lib/src/components/DataFormComponent.js";
+import FullActionFormComponent from "/apogeejs-app-lib/src/components/FullActionFormComponent.js";
+import FullDataFormComponent from "/apogeejs-app-lib/src/components/FullDataFormComponent.js";
 
-import MakerDataFormComponent from "/apogeejs-app-lib/src/components/MakerDataFormComponent.js";
-import MakerActionFormComponent from "/apogeejs-app-lib/src/components/MakerActionFormComponent.js";
+import DesignerDataFormComponent from "/apogeejs-app-lib/src/components/DesignerDataFormComponent.js";
+import DesignerActionFormComponent from "/apogeejs-app-lib/src/components/DesignerActionFormComponent.js";
 
 //JSON PLUS COMPONENT
 import JsonPlusTableComponent from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
@@ -112,14 +112,14 @@ componentInfo.registerStandardComponent(FunctionComponent);
 componentInfo.registerStandardComponent(FolderFunctionComponent);
 componentInfo.registerStandardComponent(WebRequestComponent);
 
-componentInfo.registerStandardComponent(MakerDataFormComponent);
-componentInfo.registerStandardComponent(MakerActionFormComponent);
+componentInfo.registerStandardComponent(DesignerDataFormComponent);
+componentInfo.registerStandardComponent(DesignerActionFormComponent);
 
 //additional child components
 componentInfo.registerComponent(CustomComponent);
 componentInfo.registerComponent(CustomDataComponent);
-componentInfo.registerComponent(ActionFormComponent);
-componentInfo.registerComponent(DataFormComponent);
+componentInfo.registerComponent(FullActionFormComponent);
+componentInfo.registerComponent(FullDataFormComponent);
 
 componentInfo.registerPageComponent(FolderComponent);
 componentInfo.registerPageComponent(FolderFunctionComponent);
