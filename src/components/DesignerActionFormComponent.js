@@ -16,6 +16,19 @@ export default class DesignerActionFormComponent extends FormInputBaseComponent 
         }
     }
 
+    getAllowInputExpressions() {
+        let allowInputExpressions = this.getField("allowInputExpressions");
+        if(allowInputExpressions === undefined) allowInputExpressions = DEFAULT_ALLOW_INPUT_EXPRESSIONS;
+        return allowInputExpressions;
+    }
+
+    setAllowInputExpressions(allowInputExpressions) {
+        let oldAllowInputExpressions = this.getField("allowInputExpressions");
+        if(oldAllowInputExpressions != allowInputExpressions) {
+            this.setField("allowInputExpressions",allowInputExpressions);
+        }
+    }
+
     //==============================
     //Resource Accessors
     //==============================
@@ -69,7 +82,7 @@ export default class DesignerActionFormComponent extends FormInputBaseComponent 
     // Action
     //=============================
 
-    updateonSubmitCode(saveCodeText) { 
+    updateOnSubmitCode(saveCodeText) { 
         let oldSaveCodeText = this.getField("onSubmitCode");
         if(saveCodeText != oldSaveCodeText) {
             this.setField("onSubmitCode",saveCodeText);
@@ -91,10 +104,13 @@ export default class DesignerActionFormComponent extends FormInputBaseComponent 
         if(!json) return;
 
         if(json.onSubmitCode) {
-            this.updateonSubmitCode(json.onSubmitCode)
+            this.updateOnSubmitCode(json.onSubmitCode)
         }
         if(json.onCancelCode) {
             this.updateOnCancelCode(json.onCancelCode)
+        }
+        if(json.allowInputExpressions !== undefined) {
+            this.setAllowInputExpressions(json.allowInputExpressions);
         }
     }
 
@@ -102,8 +118,25 @@ export default class DesignerActionFormComponent extends FormInputBaseComponent 
     writeToJson(json,modelManager) {
         json.onSubmitCode = this.getField("onSubmitCode");
         json.onCancelCode = this.getField("onCancelCode");
+        json.allowInputExpressions = this.getAllowInputExpressions();
+    }
+
+    /** This returns the current values for the member and component properties in the  
+     * proeprties dialog. */
+    readExtendedProperties(values) {
+        values.allowInputExpressions = this.getAllowInputExpressions();
+    }
+
+    /** This optional static function reads property input from the property 
+     * dialog and copies it into a component property json. */
+     static transferComponentProperties(inputValues,propertyJson) {
+        if(inputValues.allowInputExpressions !== undefined) {
+            propertyJson.allowInputExpressions = inputValues.allowInputExpressions;
+        }
     }
 }
+
+const DEFAULT_ALLOW_INPUT_EXPRESSIONS = true;
 
 const DATA_MEMBER_FUNCTION_BODY = `
 if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
@@ -155,7 +188,7 @@ designerActionFormUpdateCommand.executeCommand = function(workspaceManager,comma
     if(component) {
         try {
             if(commandData.field == "onSubmit") {
-                component.updateonSubmitCode(commandData.targetValue);
+                component.updateOnSubmitCode(commandData.targetValue);
             }
             else if(commandData.field == "onCancel") {
                 component.updateOnCancelCode(commandData.targetValue);

@@ -22,6 +22,19 @@ export default class DesignerDataFormComponent extends FormInputBaseComponent {
         }
     }
 
+    getAllowInputExpressions() {
+        let allowInputExpressions = this.getField("allowInputExpressions");
+        if(allowInputExpressions === undefined) allowInputExpressions = DEFAULT_ALLOW_INPUT_EXPRESSIONS;
+        return allowInputExpressions;
+    }
+
+    setAllowInputExpressions(allowInputExpressions) {
+        let oldAllowInputExpressions = this.getField("allowInputExpressions");
+        if(oldAllowInputExpressions != allowInputExpressions) {
+            this.setField("allowInputExpressions",allowInputExpressions);
+        }
+    }
+
     //==============================
     //Resource Accessors
     //==============================
@@ -70,13 +83,34 @@ export default class DesignerDataFormComponent extends FormInputBaseComponent {
         if(json.validatorCode) {
             this.updateValidatorCode(json.validatorCode)
         }
+
+        if(json.allowInputExpressions !== undefined) {
+            this.setAllowInputExpressions(json.allowInputExpressions);
+        }
     }
 
     /** This serializes the table component. */
     writeToJson(json,modelManager) {
         json.validatorCode = this.getField("validatorCode");
+        json.allowInputExpressions = this.getAllowInputExpressions();
+    }
+
+    /** This returns the current values for the member and component properties in the  
+     * proeprties dialog. */
+     readExtendedProperties(values) {
+        values.allowInputExpressions = this.getAllowInputExpressions();
+    }
+
+    /** This optional static function reads property input from the property 
+     * dialog and copies it into a component property json. */
+     static transferComponentProperties(inputValues,propertyJson) {
+        if(inputValues.allowInputExpressions !== undefined) {
+            propertyJson.allowInputExpressions = inputValues.allowInputExpressions;
+        }
     }
 }
+
+const DEFAULT_ALLOW_INPUT_EXPRESSIONS = true;
 
 const DATA_MEMBER_FUNCTION_BODY = `
 if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
