@@ -18,7 +18,7 @@ export function getMemberStateUndoCommand(model, memberId) {
         command.type = "saveMemberCode";
         command.argList = member.getArgList();
         command.functionBody = member.getFunctionBody();
-        command.supplemental = member.getSupplementalCode();      
+        command.supplementalCode = member.getSupplementalCode();      
     }
     else {
         command.type = "saveMemberData";
@@ -62,24 +62,14 @@ export function getSaveDataAction(model,memberId,data) {
     return actionData;
 }
 
-export function getSetCodeAction(model,memberId,argList,functionBody,supplementalCode,optionalClearCodeDataValue) {
+export function getSetCodeAction(model,memberId,argList,functionBody,supplementalCode) {
      
     var actionData = {};
-
-    if((optionalClearCodeDataValue != undefined)&&(functionBody == "")&&(supplementalCode == "")) {
-        //special case - clear code
-        actionData.action = "updateData";
-        actionData.memberId = memberId;
-        actionData.data = optionalClearCodeDataValue;
-    }
-    else {
-        //standard case - edit code
-        actionData.action = "updateCode";
-        actionData.memberId = memberId;
-        actionData.argList = argList;
-        actionData.functionBody = functionBody;
-        actionData.supplementalCode = supplementalCode;  
-    }
+    actionData.action = "updateCode";
+    actionData.memberId = memberId;
+    actionData.argList = argList;
+    actionData.functionBody = functionBody;
+    actionData.supplementalCode = supplementalCode;  
 
     return actionData;
 }

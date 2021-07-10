@@ -13,7 +13,6 @@ import {getSetCodeAction, getMemberStateUndoCommand} from  "/apogeejs-app-lib/sr
  *   "argList":(argument list json array),
  *   "functionBody":(function body)
  *   "supplementalCode":(supplementalCode code - optional)
- *   "clearCodeDataValue":(value to set data is code cleared - optional)
  * }
  */ 
 let savemembercode = {};
@@ -38,8 +37,7 @@ savemembercode.executeCommand = function(workspaceManager,commandData) {
         commandData.memberId,
         commandData.argList,
         commandData.functionBody,
-        commandData.supplementalCode,
-        commandData.clearCodeDataValue);
+        commandData.supplementalCode);
     
     var actionResult = doAction(model,actionData);
     if(!actionResult.actionDone) {

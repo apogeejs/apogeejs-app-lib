@@ -19,7 +19,6 @@ import {getSaveDataAction, getMemberStateUndoCommand} from  "/apogeejs-app-lib/s
  *              "argList":(argument list json array),
  *              "functionBody":(function body)
  *              "supplementalCode":(supplementalCode code - optional)
- *              "clearCodeDataValue":(value to set data is code cleared - optional)
 *          }
 *    ]
 * }
@@ -61,8 +60,7 @@ savemembercompound.executeCommand = function(workspaceManager,commandData) {
                 updateEntry.memberId,
                 updateEntry.argList,
                 updateEntry.functionBody,
-                updateEntry.supplementalCode,
-                updateEntry.clearCodeDataValue);
+                updateEntry.supplementalCode);
         }
     })
     
