@@ -58,7 +58,7 @@ export default class ParentComponent extends Component {
     //==============================
 
     /** This serializes the table component. */
-    writeToJson(json,modelManager) {
+    writeExtendedData(json,modelManager) {
         //save the editor state
         let editorState = this.getField("editorState");
         if(editorState) {
@@ -87,7 +87,7 @@ export default class ParentComponent extends Component {
         return json;
     }
 
-    readDataFromJson(json) {
+    loadExtendedData(json) {
         let editorState;
         let docJson;
         //read the editor state

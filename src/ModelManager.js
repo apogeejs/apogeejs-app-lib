@@ -117,7 +117,7 @@ export default class ModelManager extends FieldObject {
 
             //apply any serialized values
             if(componentJson) {
-                component.loadStoredData(componentJson);
+                component.loadFromJson(componentJson);
             }
         }
 
@@ -127,7 +127,7 @@ export default class ModelManager extends FieldObject {
             componentClass = componentInfo.ERROR_COMPONENT_CLASS;
             component = new componentClass(member,this);
             if(componentJson) {
-                component.loadStoredData(componentJson);
+                component.loadFromJson(componentJson);
             }
         }
 

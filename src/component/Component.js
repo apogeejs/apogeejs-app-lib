@@ -157,11 +157,20 @@ export default class Component extends FieldObject {
         if(this.displayState) {
             json.displayState = this.displayState;
         }
-        
-        //allow the specific component implementation to write to the json
+
+        if(this.writeExtendedData) {
+            this.writeExtendedData(json,modelManager);
+        }
+        if(this.writeExtendedProps) {
+            this.writeExtendedProps(json,modelManager);
+        }
+
+        /////////////////////////////////////////////////////////////////////////
+        //legacy name - kept for legacy support
         if(this.writeToJson) {
             this.writeToJson(json,modelManager);
         }
+        //////////////////////////////////////////////////////////////////////////
 
         if(this.viewStateCallback) {
             this.cachedViewState = this.viewStateCallback();
@@ -172,32 +181,44 @@ export default class Component extends FieldObject {
     }
 
     /** This is used to deserialize the component. */
-    loadStoredData(json) {
+    loadFromJson(json) {
         if(!json) json = {};
-        
-        //take any immediate needed actions
         
         //set the tree state
         if(json.viewState !== undefined) {
             this.cachedViewState = json.viewState;
         }
         
-        //allow the component implemnetation ro read from the json
-        if(this.readDataFromJson) {
-            this.readDataFromJson(json);
+        //allow the component implemnetation to read data (non-props) from the json
+        if(this.loadExtendedData) {
+            this.loadExtendedData(json);
         }
 
-        //allow the component implemnetation ro read from the json
+        //allow the component implemnetation to read properties from the json
+        if(this.loadExtendedProps) {
+            this.loadExtendedProps(json);
+        }
+
+        //////////////////////////////////////////////////////////////////
+        //legacy name kept for legacy support
         if(this.readPropsFromJson) {
             this.readPropsFromJson(json);
         }
+        //////////////////////////////////////////////////////////////////
     }
 
     /** This is used to update properties, such as from the set properties form. */
-    loadPropertyValues(json) {     
+    loadPropertyValues(json) {
+        if(this.loadExtendedProps) {
+            this.loadExtendedProps(json);
+        }  
+
+        //////////////////////////////////////////////////////////////////
+        //legacy name - kept for legacy support   
         if(this.readPropsFromJson) {
             this.readPropsFromJson(json);
         }
+        //////////////////////////////////////////////////////////////////
     }
     //==============================
     // Protected Instance Methods
@@ -206,17 +227,25 @@ export default class Component extends FieldObject {
     //This method should optionally be populated by an extending object.
     //** This method reads any necessary component implementation-specific stored data
     // * from the json. This should be used for stored data that is NOT updated when properties are updated. OPTIONAL */
-    //readDataFromJson(json);
+    //loadExtendedData(json);
 
     //This method should optionally be populated by an extending object.
     //** This method reads any necessary component implementation-specific properties data
     // * from the json. This is also use when updating properties. OPTIONAL */
-    //readPropsFromJson(json);
+    //loadExtendedProps(json);
 
     //This method should optionally be populated by an extending object.
-    //** This method writes any necessary component implementation-specific data
+    //** This method writes any necessary component implementation-specific data (excluding properties)
     // * to the json. OPTIONAL */
-    //writeToJson(json,modelManager);
+    //writeExtendedData(json,modelManager);
+
+    //This method should optionally be populated by an extending object.
+    //** This method writes component implementation-specific properties
+    // * to the json. OPTIONAL */
+    //writeExtendedProps(json,moduleManager);
+
+    //static transferMemberProperties(inputValues,propertyJson);
+    //static transferComponentProperties(inputValues,propertyJson);
 
     /** This method cleans up after a delete. Any extending object that has delete
      * actions should pass a callback function to the method "addClenaupAction" */
@@ -256,8 +285,8 @@ export default class Component extends FieldObject {
         if(member.constructor.generator.readProperties) {
             member.constructor.generator.readProperties(member,values);
         }
-        if(this.readExtendedProperties) {
-            this.readExtendedProperties(values);
+        if(this.writeExtendedProps) {
+            this.writeExtendedProps(values);
         }
         return values;
     }
@@ -322,6 +351,19 @@ export default class Component extends FieldObject {
 }
 
 //======================================
-// All components should have a generator to create the component
-// from a json. See existing components for examples.
+// Implementation specific component static members
 //======================================
+
+/** This is the display name for the type of component */
+//Component.displayName;
+
+/** This is the univeral uniaue name for the component, used to deserialize the component. */
+//Component.uniqueName;
+
+//Component.DEFAULT_MEMBER_JSON
+
+//Component.COMPONENT_PROPERTY_MAP
+
+//JsonTableComponent.COMPONENT_DATA_MAP
+
+//JsonTableComponent.MEMBER_PROPERTY_LIST

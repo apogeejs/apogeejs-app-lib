@@ -47,3 +47,7 @@ FunctionComponent.DEFAULT_MEMBER_JSON = {
     "type": "apogee.FunctionMember"
 };
 
+//FunctionComponent.COMPONENT_PROPERTY_MAP
+//FunctionComponent.COMPONENT_DATA_MAP
+//FunctionComponent.MEMBER_PROPERTY_LIST - CUSTOM!!!
+

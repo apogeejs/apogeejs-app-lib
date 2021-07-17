@@ -32,32 +32,19 @@ export default class JsonTableComponent extends Component {
     }
 
     //==============================
-    // serialization
+    // serialization and properties
     //==============================
 
-    writeToJson(json,modelManager) {
+    writeExtendedProps(json,modelManager) {
         json.dataView = this.getDataView();
     }
 
-    readPropsFromJson(json) {
+    loadExtendedProps(json) {
         if(json.dataView !== undefined) {
             this.setDataView(json.dataView);
         }
     }
 
-    //======================================
-    // properties
-    //======================================
-
-    /** This returns the current values for the member and component properties in the  
-     * proeprties dialog. */
-    readExtendedProperties(values) {
-        values.dataView = this.getDataView();
-    }
-
-    //======================================
-    // Static methods
-    //======================================
 
     /** This optional static function reads property input from the property 
      * dialog and copies it into a member property json. It is not needed for
@@ -78,6 +65,8 @@ export default class JsonTableComponent extends Component {
 // This is the component generator, to register the component
 //======================================
 
+const DEFAULT_DATA_VIEW = "Colorized";
+
 
 /** This is the display name for the type of component */
 JsonTableComponent.displayName = "Data Cell";
@@ -87,3 +76,14 @@ JsonTableComponent.uniqueName = "apogeeapp.JsonCell";
 JsonTableComponent.DEFAULT_MEMBER_JSON = {
     "type": "apogee.JsonMember"
 };
+
+JsonTableComponent.COMPONENT_PROPERTY_MAP = {
+    "dataView": DEFAULT_DATA_VIEW
+}
+//JsonTableComponent.COMPONENT_DATA_MAP
+//JsonTableComponent.MEMBER_PROPERTY_LIST
+
+
+
+
+

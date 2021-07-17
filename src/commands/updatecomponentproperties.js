@@ -6,19 +6,19 @@ import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
  *
  * Command JSON format:
  * {
- *   "type":"updateComponent",
+ *   "type":"updateComponentProperties",
  *   "memberId":(main member ID),
  *   "updatedMemberProperties":(member property json),
  *   "updatedComponentProperties":(component property json)
  * }
  */ 
-let updatecomponent = {};
+let updateComponentProperties = {};
 
 //=====================================
 // Command Object
 //=====================================
 
-updatecomponent.createUndoCommand = function(workspaceManager,commandData) {
+updateComponentProperties.createUndoCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getModelManager();
     let model = modelManager.getModel();
     var member = model.lookupMemberById(commandData.memberId);
@@ -28,7 +28,7 @@ updatecomponent.createUndoCommand = function(workspaceManager,commandData) {
     var originalMemberProperties = {};
     if(member.constructor.generator.readProperties) member.constructor.generator.readProperties(member,originalMemberProperties);
     var originalComponentProperties = {};
-    if(component.readExtendedProperties) component.readExtendedProperties(originalComponentProperties);
+    if(component.writeExtendedProps) component.writeExtendedProps(originalComponentProperties);
     
     var undoMemberProperties;
     var undoComponentProperties;
@@ -48,7 +48,7 @@ updatecomponent.createUndoCommand = function(workspaceManager,commandData) {
     }
     
     var undoCommandJson = {};
-    undoCommandJson.type = updatecomponent.commandInfo.type;
+    undoCommandJson.type = updateComponentProperties.commandInfo.type;
     undoCommandJson.memberId = commandData.memberId;
     if(undoMemberProperties) undoCommandJson.updatedMemberProperties = undoMemberProperties;
     if(undoComponentProperties) undoCommandJson.updatedComponentProperties = undoComponentProperties;
@@ -59,7 +59,7 @@ updatecomponent.createUndoCommand = function(workspaceManager,commandData) {
 /** This method is used for updating property values from the property dialog. 
  * If there are additional property lines, in the generator, this method should
  * be extended to edit the values of those properties too. */
-updatecomponent.executeCommand = function(workspaceManager,commandData) {
+updateComponentProperties.executeCommand = function(workspaceManager,commandData) {
     
     let modelManager = workspaceManager.getMutableModelManager();
     //wait to get a mutable model instance only if we need it
@@ -87,12 +87,12 @@ updatecomponent.executeCommand = function(workspaceManager,commandData) {
     component.loadPropertyValues(commandData.updatedComponentProperties);
 }
 
-updatecomponent.commandInfo = {
-    "type": "updateComponent",
+updateComponentProperties.commandInfo = {
+    "type": "updateComponentProperties",
     "targetType": "component",
     "event": "updated"
 }
 
-CommandManager.registerCommand(updatecomponent);
+CommandManager.registerCommand(updateComponentProperties);
 
 

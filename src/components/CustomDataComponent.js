@@ -1,6 +1,4 @@
-import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This attempt has a single form edit page which returns an object. */
 // To add - I should make it so it does not call set data until after it is initialized. I will cache it rather 
@@ -53,16 +51,6 @@ export default class CustomDataComponent extends Component {
         }
     }
 
-    /** This method deseriliazes data for the custom resource component. This will
-     * work is no json is passed in. */
-    loadResourceFromJson(json) { 
-        if((json)&&(json.resource)) {  
-            for(let fieldName in json.resource) {
-                this.update(fieldName,json.resource[fieldName]);
-            }
-        }
-    }
-
     createResource() {
         var uiGeneratorBody = this.getField("uiCode");
         
@@ -111,7 +99,7 @@ export default class CustomDataComponent extends Component {
     doCodeFieldUpdate(app,fieldName,targetValue) { 
         var initialValue = this.getField(fieldName);
         var command = {};
-        command.type = customDataComponentUpdateData.commandInfo.type;
+        command.type = "updateComponentField";
         command.memberId = this.getMemberId();
         command.fieldName = fieldName;
         command.initialValue = initialValue;
@@ -121,54 +109,61 @@ export default class CustomDataComponent extends Component {
         return true; 
     }
 
-    update(fieldName,fieldValue) { 
+    //==============================
+    // serialization and properties
+    //==============================
 
+    writeExtendedData(json,modelManager) {
+        //store the resource info
+        // json.resource = {};
+        // json.resource["html"] = this.getField("html");
+        // json.resource["css"] = this.getField("css");
+        // json.resource["uiCode"] = this.getField("uiCode");
+
+        //new format
+        json.html = this.getField("html");
+        json.css = this.getField("css");
+        json.uiCode = this.getField("uiCode");
+    }
+
+    writeExtendedProps(json,modelManager) {
+        json.destroyOnInactive = this.getDestroyOnInactive();
+    }
+
+    loadExtendedData(json) {
+        ////////////////////////////////////////
+        //legacy format
+        if(json.resource) {
+            for(let fieldName in json.resource) {
+                this.update(fieldName,json.resource[fieldName]);
+            }
+        }
+        ///////////////////////////////////////
+
+        if(json.html != undefined) {
+            this.update("html",json.html)
+        }
+        if(json.css != undefined) {
+            this.update("css",json.css)
+        }
+        if(json.uiCode != undefined) {
+            this.update("uiCode",json.uiCode)
+        }
+    }
+
+    update(fieldName,fieldValue) { 
         let oldFieldValue = this.getField(fieldName);
         if(fieldValue != oldFieldValue) {
             this.setField(fieldName,fieldValue);
         }
     }
 
-    //==============================
-    // serialization
-    //==============================
-
-    readPropsFromJson(json) {
-        if(!json) return;
-        
-        //set destroy flag
+    loadExtendedProps(json) {
         if(json.destroyOnInactive !== undefined) {
-            var destroyOnInactive = json.destroyOnInactive;
-            this.setDestroyOnInactive(destroyOnInactive);
+            this.setDestroyOnInactive(json.destroyOnInactive);
         }
-        
-        //load the resource
-        this.loadResourceFromJson(json);
     }
 
-    /** This serializes the table component. */
-    writeToJson(json,modelManager) {
-        //store the resource info
-        json.resource = {};
-        json.resource["html"] = this.getField("html");
-        json.resource["css"] = this.getField("css");
-        json.resource["uiCode"] = this.getField("uiCode");
-        json.destroyOnInactive = this.getField("destroyOnInactive");
-    }
-
-    //======================================
-    // properties
-    //======================================
-
-    readExtendedProperties(values) {
-        values.destroyOnInactive = this.getDestroyOnInactive();
-    }
-
-
-
-    //======================================
-    // Static methods
-    //======================================
 
     static transferComponentProperties(inputValues,propertyJson) {
         if(inputValues.destroyOnInactive !== undefined) {
@@ -205,67 +200,13 @@ CustomDataComponent.DEFAULT_MEMBER_JSON = {
         }
     };
 
-
-
-//=====================================
-// Update Data Command
-//=====================================
-
-/*
- *
- * Command JSON format:
- * {
- *   "type":"customComponentUpdateCommand",
- *   "memberId":(main member ID),
- *   "fieldName": (the name of the field being updated),
- *   "initialValue":(original fields value)
- *   "targetValue": (desired fields value)
- * }
- */ 
-
-let customDataComponentUpdateData = {};
-
-customDataComponentUpdateData.createUndoCommand = function(workspaceManager,commandData) {
-    let undoCommandData = {};
-    undoCommandData.memberId = commandData.memberId;
-    undoCommandData.fieldName = commandData.fieldName;
-    undoCommandData.initialValue = commandData.targetValue;
-    undoCommandData.targetValue = commandData.initialValue;
-    return undoCommandData;
+CustomDataComponent.COMPONENT_PROPERTY_MAP = {
+    "destroyOnInactive": false
 }
-
-customDataComponentUpdateData.executeCommand = function(workspaceManager,commandData) {
-    let modelManager = workspaceManager.getMutableModelManager();
-    let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
-    let component = modelManager.getMutableComponentByComponentId(componentId);
-    var commandResult = {};
-    if(component) {
-        try {
-            component.update(commandData.fieldName,commandData.targetValue);
-
-            commandResult.cmdDone = true;
-            commandResult.target = component;
-            commandResult.eventAction = "updated";
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            let msg = error.message ? error.message : error;
-            commandResult.cmdDone = false;
-            commandResult.alertMsg = "Exception on custom component update: " + msg;
-        }
-    }
-    else {
-        commandResult.cmdDone = false;
-        commandResult.alertMsg = "Component not found: " + commandData.memberId;
-    }
-    
-    return commandResult;
+CustomDataComponent.COMPONENT_DATA_MAP = {
+    "html": "",
+    "css": "",
+    "uiCode": ""
 }
+//CustomDataComponent.MEMBER_PROPERTY_LIST
 
-customDataComponentUpdateData.commandInfo = {
-    "type": "customDataComponentUpdateCommand",
-    "targetType": "component",
-    "event": "updated"
-}
-
-CommandManager.registerCommand(customDataComponentUpdateData);

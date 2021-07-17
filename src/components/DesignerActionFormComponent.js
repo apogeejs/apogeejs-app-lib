@@ -1,6 +1,5 @@
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import FormInputBaseComponent from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
-import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This is a simple custom component example. */
 export default class DesignerActionFormComponent extends FormInputBaseComponent {
@@ -78,9 +77,27 @@ export default class DesignerActionFormComponent extends FormInputBaseComponent 
         return {onSubmitFunction, onCancelFunction, errorMessage};
     }
 
-    //=============================
-    // Action
-    //=============================
+    //==============================
+    // serialization and properties
+    //==============================
+
+    writeExtendedData(json,modelManager) {
+        json.onSubmitCode = this.getField("onSubmitCode");
+        json.onCancelCode = this.getField("onCancelCode");
+    }
+
+    writeExtendedProps(json,modelManager) {
+        json.allowInputExpressions = this.getAllowInputExpressions();
+    }
+
+    loadExtendedData(json) {
+        if(json.onSubmitCode) {
+            this.updateOnSubmitCode(json.onSubmitCode)
+        }
+        if(json.onCancelCode) {
+            this.updateOnCancelCode(json.onCancelCode)
+        }
+    }
 
     updateOnSubmitCode(saveCodeText) { 
         let oldSaveCodeText = this.getField("onSubmitCode");
@@ -96,35 +113,10 @@ export default class DesignerActionFormComponent extends FormInputBaseComponent 
         }
     }
 
-    //==============================
-    // serialization
-    //==============================
-
-    readPropsFromJson(json) {
-        if(!json) return;
-
-        if(json.onSubmitCode) {
-            this.updateOnSubmitCode(json.onSubmitCode)
-        }
-        if(json.onCancelCode) {
-            this.updateOnCancelCode(json.onCancelCode)
-        }
+    loadExtendedProps(json) {
         if(json.allowInputExpressions !== undefined) {
             this.setAllowInputExpressions(json.allowInputExpressions);
         }
-    }
-
-    /** This serializes the table component. */
-    writeToJson(json,modelManager) {
-        json.onSubmitCode = this.getField("onSubmitCode");
-        json.onCancelCode = this.getField("onCancelCode");
-        json.allowInputExpressions = this.getAllowInputExpressions();
-    }
-
-    /** This returns the current values for the member and component properties in the  
-     * proeprties dialog. */
-    readExtendedProperties(values) {
-        values.allowInputExpressions = this.getAllowInputExpressions();
     }
 
     /** This optional static function reads property input from the property 
@@ -151,77 +143,13 @@ defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 //here we define the component
 FormInputBaseComponent.initializeClass(DesignerActionFormComponent,"Action Form Cell","apogeeapp.DesignerActionFormCell",dataMemberTypeName);
 
-
-
-//=====================================
-// Update Data Command
-//=====================================
-
-/*
- *
- * Command JSON format:
- * {
- *   "type":"actionFormComponentUpdateCommand",
- *   "memberId":(main member ID),
- *   "field": (field to update "validator")
- *   "initialValue":(original fields value)
- *   "targetValue": (desired fields value)
- * }
- */ 
-let designerActionFormUpdateCommand = {};
-
-designerActionFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
-    let undoCommandData = {};
-    undoCommandData.type = designerActionFormUpdateCommand.commandInfo.type;
-    undoCommandData.memberId = commandData.memberId;
-    undoCommandData.field = commandData.field;
-    undoCommandData.initialValue = commandData.targetValue;
-    undoCommandData.targetValue = commandData.initialValue;
-    return undoCommandData;
+DesignerActionFormComponent.COMPONENT_PROPERTY_MAP = {
+    "allowInputExpressions": true
 }
-
-designerActionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
-    let modelManager = workspaceManager.getMutableModelManager();
-    let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
-    let component = modelManager.getMutableComponentByComponentId(componentId);
-    var commandResult = {};
-    if(component) {
-        try {
-            if(commandData.field == "onSubmit") {
-                component.updateOnSubmitCode(commandData.targetValue);
-            }
-            else if(commandData.field == "onCancel") {
-                component.updateOnCancelCode(commandData.targetValue);
-            }
-            else {
-                throw new Error("Internal error: unknown update field: " + commandData.field);
-            }
-
-            commandResult.cmdDone = true;
-            commandResult.target = component;
-            commandResult.eventAction = "updated";
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            let msg = error.message ? error.message : error;
-            commandResult.cmdDone = false;
-            commandResult.alertMsg = "Exception on custom component update: " + msg;
-        }
-    }
-    else {
-        commandResult.cmdDone = false;
-        commandResult.alertMsg = "Component not found: " + commandData.memberId;
-    }
-    
-    return commandResult;
+DesignerActionFormComponent.COMPONENT_DATA_MAP = {
+    "onSubmitCode": "",
+    "onCancelCode": ""
 }
+//DesignerActionFormComponent.MEMBER_PROPERTY_LIST
 
-designerActionFormUpdateCommand.commandInfo = {
-    "type": "designerActionFormUpdateCommand",
-    "targetType": "component",
-    "event": "updated"
-}
-
-
-CommandManager.registerCommand(designerActionFormUpdateCommand);
 

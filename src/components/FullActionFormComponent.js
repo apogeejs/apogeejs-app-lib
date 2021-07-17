@@ -1,5 +1,4 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 
 /** This is a custom resource component. 
@@ -48,36 +47,25 @@ export default class FullActionFormComponent extends Component {
         return {formLayoutFunction,errorMessage}
     }
 
+    //==============================
+    // serialization
+    //==============================
 
-    //=============================
-    // Action
-    //=============================
+    writeExtendedData(json,modelManager) {
+        json.layoutCode = this.getField("layoutCode");
+    }
+
+    loadExtendedData(json) {
+        if(json.layoutCode) { 
+            this.updateLayoutCode(json.layoutCode); 
+        }
+    }
 
     updateLayoutCode(layoutCodeText) { 
         let oldLayoutCodeText = this.getField("layoutCode");
         if(layoutCodeText != oldLayoutCodeText) {
             this.setField("layoutCode",layoutCodeText);
         }
-
-    }
-
-    //==============================
-    // serialization
-    //==============================
-
-    readPropsFromJson(json) {
-        if(!json) return;
-        
-        //load the resource
-        if(json.layoutCode) { 
-            this.updateLayoutCode(json.layoutCode); 
-        }
-    }
-
-    /** This serializes the table component. */
-    writeToJson(json,modelManager) {
-        //store the for code text
-        json.layoutCode = this.getField("layoutCode");
     }
 
 }
@@ -92,70 +80,11 @@ FullActionFormComponent.DEFAULT_MEMBER_JSON = {
     "type": "apogee.JsonMember"
 };
 
-//=====================================
-// Update Data Command
-//=====================================
-
-/*
- *
- * Command JSON format:
- * {
- *   "type":"actionFormComponentUpdateCommand",
- *   "memberId":(main member ID),
- *   "initialValue":(original fields value)
- *   "targetValue": (desired fields value)
- * }
- */ 
-let fullActionFormUpdateCommand = {};
-
-fullActionFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
-    let undoCommandData = {};
-    undoCommandData.type = fullActionFormUpdateCommand.commandInfo.type;
-    undoCommandData.memberId = commandData.memberId;
-    undoCommandData.initialValue = commandData.targetValue;
-    undoCommandData.targetValue = commandData.initialValue;
-    return undoCommandData;
+//FullActionFormComponent.COMPONENT_PROPERTY_MAP
+FullActionFormComponent.COMPONENT_DATA_MAP = {
+    "layoutCode": "return [];"
 }
-
-fullActionFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
-    let modelManager = workspaceManager.getMutableModelManager();
-    let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
-    let component = modelManager.getMutableComponentByComponentId(componentId);
-    var commandResult = {};
-    if(component) {
-        try {
-            component.updateLayoutCode(commandData.targetValue);
-
-            commandResult.cmdDone = true;
-            commandResult.target = component;
-            commandResult.eventAction = "updated";
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            let msg = error.message ? error.message : error;
-            commandResult.cmdDone = false;
-            commandResult.alertMsg = "Exception on custom component update: " + msg;
-        }
-    }
-    else {
-        commandResult.cmdDone = false;
-        commandResult.alertMsg = "Component not found: " + commandData.memberId;
-    }
-    
-    return commandResult;
-}
-
-fullActionFormUpdateCommand.commandInfo = {
-    "type": "fullActionFormUpdateCommand",
-    "targetType": "component",
-    "event": "updated"
-}
-
-CommandManager.registerCommand(fullActionFormUpdateCommand);
-
-
-
-
+//FullActionFormComponent.MEMBER_PROPERTY_LIST
 
 
 

@@ -1,5 +1,4 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This is a custom resource component. 
  * To implement it, the resource script must have the methods "run()" which will
@@ -73,9 +72,24 @@ export default class FullDataFormComponent extends Component {
         return { layoutFunction, validatorFunction, errorMessage};
     }
 
-    //=============================
-    // Action
-    //=============================
+    //==============================
+    // serialization
+    //==============================
+
+    writeExtendedData(json,modelManager) {
+        json.layoutCode = this.getField("layoutCode");
+        json.validatorCode = this.getField("validatorCode");
+    }
+
+    loadExtendedData(json) {
+        if(json.layoutCode) { 
+            this.updateLayoutCode(json.layoutCode); 
+        }
+
+        if(json.validatorCode) {
+            this.updateValidatorCode(json.validatorCode)
+        }
+    }
 
     updateLayoutCode(layoutCodeText) { 
         let oldLayoutCodeText = this.getField("layoutCode");
@@ -89,30 +103,6 @@ export default class FullDataFormComponent extends Component {
         if(validatorCodeText != oldValidatorCodeText) {
             this.setField("validatorCode",validatorCodeText);
         }
-    }
-
-    //==============================
-    // serialization
-    //==============================
-
-    readPropsFromJson(json) {
-        if(!json) return;
-        
-        //load the resource
-        if(json.layoutCode) { 
-            this.updateLayoutCode(json.layoutCode); 
-        }
-
-        if(json.validatorCode) {
-            this.updateValidatorCode(json.validatorCode)
-        }
-    }
-
-    /** This serializes the table component. */
-    writeToJson(json,modelManager) {
-        //store the for code text
-        json.layoutCode = this.getField("layoutCode");
-        json.validatorCode = this.getField("validatorCode");
     }
 
 }
@@ -144,80 +134,12 @@ FullDataFormComponent.DEFAULT_MEMBER_JSON = {
     }
 };
 
-//=====================================
-// Update Data Command
-//=====================================
-
-/*
- *
- * Command JSON format:
- * {
- *   "type":"actionFormComponentUpdateCommand",
- *   "memberId":(main member ID),
- *   "field": (field to update, "layout" or "validator")
- *   "initialValue":(original fields value)
- *   "targetValue": (desired fields value)
- * }
- */ 
-let fullDataFormUpdateCommand = {};
-
-fullDataFormUpdateCommand.createUndoCommand = function(workspaceManager,commandData) {
-    let undoCommandData = {};
-    undoCommandData.type = fullDataFormUpdateCommand.commandInfo.type;
-    undoCommandData.memberId = commandData.memberId;
-    undoCommandData.field = commandData.field;
-    undoCommandData.initialValue = commandData.targetValue;
-    undoCommandData.targetValue = commandData.initialValue;
-    return undoCommandData;
+//FullDataFormComponent.COMPONENT_PROPERTY_MAP
+FullDataFormComponent.COMPONENT_DATA_MAP = {
+    "layoutCode": "return [];",
+    "validatorCode": "return true;"
 }
-
-fullDataFormUpdateCommand.executeCommand = function(workspaceManager,commandData) {
-    let modelManager = workspaceManager.getMutableModelManager();
-    let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
-    let component = modelManager.getMutableComponentByComponentId(componentId);
-    var commandResult = {};
-    if(component) {
-        try {
-            if(commandData.field == "layout") {
-                component.updateLayoutCode(commandData.targetValue);
-            }
-            else if(commandData.field == "validator") {
-                component.updateValidatorCode(commandData.targetValue);
-            }
-            else {
-                throw new Error("Internal error: unknown update field: " + commandData.field);
-            }
-
-            commandResult.cmdDone = true;
-            commandResult.target = component;
-            commandResult.eventAction = "updated";
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            let msg = error.message ? error.message : error;
-            commandResult.cmdDone = false;
-            commandResult.alertMsg = "Exception on custom component update: " + msg;
-        }
-    }
-    else {
-        commandResult.cmdDone = false;
-        commandResult.alertMsg = "Component not found: " + commandData.memberId;
-    }
-    
-    return commandResult;
-}
-
-fullDataFormUpdateCommand.commandInfo = {
-    "type": "fullDataFormUpdateCommand",
-    "targetType": "component",
-    "event": "updated"
-}
-
-
-CommandManager.registerCommand(fullDataFormUpdateCommand);
-
-
-
+//FullDataFormComponent.MEMBER_PROPERTY_LIST
 
 
 
