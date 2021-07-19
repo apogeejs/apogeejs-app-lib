@@ -3,10 +3,17 @@ export {default as Apogee} from "/apogeejs-app-lib/src/Apogee.js";
 export {default as BaseFileAccess} from "/apogeejs-app-lib/src/BaseFileAccess.js";
 
 export {default as Component} from "/apogeejs-app-lib/src/component/Component.js";
-export {default as FormInputBaseComponent} from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
+
+export {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 
 export {default as componentInfo} from "/apogeejs-app-lib/src/componentConfig.js";
 
 //initialize the component and command and reference types.
 import "/apogeejs-app-lib/src/commandConfig.js";
 import "/apogeejs-app-lib/src/referenceConfig.js";
+
+//legacy exports ============================
+//these are deprecated interfaces. provided for back compatibility
+export {default as FormInputBaseComponent} from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
+//end legacy exports
+//============================================

@@ -3,11 +3,6 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 /** This component represents a json table object. */
 export default class ErrorComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        //extend edit component
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-    };
-
     //==============================
     // Protected and Private Instance Methods
     //==============================

@@ -4,24 +4,6 @@ import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js"
 /** This component represents a folderFunction, which is a function that is programmed using
  *apogee tables rather than writing code. */
 export default class FolderFunctionComponent extends ParentComponent {
-        
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        //extend parent component
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-        
-        //==============
-        //Fields
-        //==============
-        //Initailize these if this is a new instance
-        if(!instanceToCopy) {
-            //register this object as a parent container
-            var internalFolder = member.getInternalFolder(modelManager.getModel());
-            this.registerMember(modelManager,internalFolder,"member.body",false);
-
-            //initialize the schema
-            this.initializeSchema(modelManager);
-        }
-    }
 
     /** This overrides the get display method of componnet to return the function declaration. */
     getDisplayName(useFullPath,modelManagerForFullPathOnly) {
@@ -48,17 +30,8 @@ export default class FolderFunctionComponent extends ParentComponent {
         return this.getMember().areAnyFieldsUpdated(["name","argList","returnValue"]);
     }
 
-    //cludge================================================
-    //I need a real solution for this
-    //this is a temp solution to return the parent member for children added to this componnet
-    //it is used for now when we paste into the document to create a new component.
-    getParentFolderForChildren() {
-        //use the internal folder
-        return this.getField("member.body");
-    }
-    //=======================================================
 
-
+    /** We overide this method because of custom procesing in the arg list input */
     static transferMemberProperties(inputValues,propertyJson) {
         if(!propertyJson.updateData) propertyJson.updateData = {};
         if(inputValues.argListString !== undefined) {
@@ -68,22 +41,6 @@ export default class FolderFunctionComponent extends ParentComponent {
             propertyJson.updateData.returnValue = inputValues.returnValueString;
         }
     }
-
-    //if we want to allow importing a workspace as this object, we must add this method to the generator
-    static appendMemberChildren(optionsJson,childrenJson) {
-        var internalFolderJson = {};
-        internalFolderJson.name = optionsJson.name;
-        internalFolderJson.type = "apogee.Folder";
-        internalFolderJson.children = childrenJson;
-        
-        optionsJson = {};
-        optionsJson.children["body"] = internalFolderJson;
-    }
-
-    static appendMemberChildren(optionsJson,childrenJson) {
-        optionsJson.children = childrenJson;
-    }
-
 }
 
 //======================================
@@ -101,4 +58,8 @@ FolderFunctionComponent.DEFAULT_MEMBER_JSON = {
         }
     }
 };
+
+FolderFunctionComponent.MEMBER_PROPERTY_LIST = ["argList","returnValueString"];
+
+FolderFunctionComponent.contentFolderFieldName = "member.body";
 

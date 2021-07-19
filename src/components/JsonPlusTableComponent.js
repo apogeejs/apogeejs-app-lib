@@ -7,14 +7,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * editing the value. The value must be returned from the formula.
  * This implementation is also inefficient. It is not intended for large data objects.
  */
-export default class JsonPlusTableComponent extends Component {
-    
-        
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        //extend edit component
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-    };
-}
+export default class JsonPlusTableComponent extends Component {};
 
 //======================================
 // This is the component generator, to register the component

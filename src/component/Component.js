@@ -15,11 +15,31 @@ export default class Component extends FieldObject {
         //==============
         //Initailize these if this is a new instance
         if(!instanceToCopy) {
-            this.setField("memberFieldMap",{});
-
             modelManager.registerComponent(this);
 
-            this.registerMember(modelManager,member,"member",true);
+            //process the members associated with this component
+            let memberFieldMap = {};
+            let memberJson = this.constructor.DEFAULT_MEMBER_JSON;
+            let memberFieldName = "member";
+            let isRoot = true;
+            this.processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isRoot,memberFieldMap);
+            
+            this.setField("memberFieldMap",memberFieldMap);
+
+            //initialize fields in the extending class
+            if(this.constructor.COMPONENT_DATA_MAP) {
+                for(let fieldName in this.constructor.COMPONENT_DATA_MAP) {
+                    let newValue = this.constructor.COMPONENT_DATA_MAP[fieldName];
+                    this.setField(fieldName,newValue);
+                }
+            }
+            if(this.constructor.COMPONENT_PROPERTY_MAP) {
+                for(let fieldName in this.constructor.COMPONENT_PROPERTY_MAP) {
+                    let newValue = this.constructor.COMPONENT_PROPERTY_MAP[fieldName];
+                    this.setField(fieldName,newValue);
+                }
+            }
+
         }
 
         //==============
@@ -224,29 +244,6 @@ export default class Component extends FieldObject {
     // Protected Instance Methods
     //==============================
 
-    //This method should optionally be populated by an extending object.
-    //** This method reads any necessary component implementation-specific stored data
-    // * from the json. This should be used for stored data that is NOT updated when properties are updated. OPTIONAL */
-    //loadExtendedData(json);
-
-    //This method should optionally be populated by an extending object.
-    //** This method reads any necessary component implementation-specific properties data
-    // * from the json. This is also use when updating properties. OPTIONAL */
-    //loadExtendedProps(json);
-
-    //This method should optionally be populated by an extending object.
-    //** This method writes any necessary component implementation-specific data (excluding properties)
-    // * to the json. OPTIONAL */
-    //writeExtendedData(json,modelManager);
-
-    //This method should optionally be populated by an extending object.
-    //** This method writes component implementation-specific properties
-    // * to the json. OPTIONAL */
-    //writeExtendedProps(json,moduleManager);
-
-    //static transferMemberProperties(inputValues,propertyJson);
-    //static transferComponentProperties(inputValues,propertyJson);
-
     /** This method cleans up after a delete. Any extending object that has delete
      * actions should pass a callback function to the method "addClenaupAction" */
     onDelete() {
@@ -291,19 +288,128 @@ export default class Component extends FieldObject {
         return values;
     }
 
+    /** This function processes the members associated with this component, using the default json
+     * to look up the member instances. This includes registering the each member, saving the member in its
+     * associated field, and constructing the member field map.  */
+    processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isMainMember,memberFieldMap) {
 
-    /** This function should be used to register child members in the case of compound components. This
-     * will register the member with the modelManager and ensure update flags are properly handled. */
-    registerMember(modelManager,childMember,fieldName,isMainMember) {
-        this.setField(fieldName,childMember);
-        modelManager.registerMember(childMember.getId(),this,isMainMember);
+        //register the member with the model manager
+        modelManager.registerMember(member.getId(),this,isMainMember);
 
-        //update childFieldMap
-        let oldMemberFieldMap = this.getField("memberFieldMap");
-        let memberFieldMap = {};
-        Object.assign(memberFieldMap,oldMemberFieldMap);
-        memberFieldMap[childMember.getId()] = fieldName;
-        this.setField("memberFieldMap",memberFieldMap);
+        //add to the local member field map
+        memberFieldMap[member.getId()] = memberFieldName;
+
+        //save the member in its component field
+        this.setField(memberFieldName,member);
+        
+        //process the children of this member
+        if(memberJson.children) {
+            let model = modelManager.getModel();
+            for(let childName in memberJson.children) {
+                let childMember = member.lookupChild(model,childName);
+                let childMemberJson = memberJson.children[childName];
+                let childMemberFieldName = memberFieldName + "." + childName;
+                let childIsMainMember = false;
+                this.processMemberAndChildren(modelManager,childMember,childMemberJson,childMemberFieldName,childIsMainMember,memberFieldMap);
+            }
+        }
+    }
+
+    //==============================
+    // serialization and properties
+    //==============================
+
+    //This method should optionally be populated by an extending object.
+    //** This method reads any necessary component implementation-specific stored data
+    // * from the json. This should be used for stored data that is NOT updated when properties are updated. OPTIONAL */
+    //loadExtendedData(json);
+
+    //This method should optionally be populated by an extending object.
+    //** This method reads any necessary component implementation-specific properties data
+    // * from the json. This is also use when updating properties. OPTIONAL */
+    //loadExtendedProps(json);
+
+    //This method should optionally be populated by an extending object.
+    //** This method writes any necessary component implementation-specific data (excluding properties)
+    // * to the json. OPTIONAL */
+    //writeExtendedData(json,modelManager);
+
+    //This method should optionally be populated by an extending object.
+    //** This method writes component implementation-specific properties
+    // * to the json. OPTIONAL */
+    //writeExtendedProps(json,moduleManager);
+
+    //static transferMemberProperties(inputValues,propertyJson,componentClass);
+    //static transferComponentProperties(inputValues,propertyJson,componentClass);
+
+    writeExtendedData(json,modelManager) {
+        if(this.constructor.COMPONENT_DATA_MAP) {
+            for(let fieldName in this.constructor.COMPONENT_DATA_MAP) {
+                json[fieldName] = this.getField(fieldName);
+            }
+        }
+    }
+
+    loadExtendedData(json) {
+        if(this.constructor.COMPONENT_DATA_MAP) {
+            for(let fieldName in this.constructor.COMPONENT_DATA_MAP) {
+                let newValue = json[fieldName];
+                if(newValue != undefined) {
+                    let oldValue = this.getField(fieldName);
+                    if(newValue !== oldValue) {
+                        this.setField(fieldName,newValue);
+                    }
+                }
+            }
+        }
+    }
+
+    writeExtendedProps(json,modelManager) {
+        if(this.constructor.COMPONENT_PROPERTY_MAP) {
+            for(let propName in this.constructor.COMPONENT_PROPERTY_MAP) {
+                json[propName] = this.getField(propName);
+            }
+        }
+    }
+
+    loadExtendedProps(json) {
+        if(this.constructor.COMPONENT_PROPERTY_MAP) {
+            for(let propName in this.constructor.COMPONENT_PROPERTY_MAP) {
+                let newValue = json[propName];
+                if(newValue != undefined) {
+                    let oldValue = this.getField(propName);
+                    if(newValue !== oldValue) {
+                        this.setField(propName,newValue);
+                    }
+                }
+            }
+        }
+    }
+
+
+    /** This optional static function reads property input from the property 
+     * dialog and copies it into a member property json. It is not needed for
+     * this componnet. */
+    static transferMemberProperties(inputValues,propertyJson,classObject) {
+        if(classObject.MEMBER_PROPERTY_LIST) {
+            classObject.MEMBER_PROPERTY_LIST.forEach(propName => {
+                if(inputValues[propName] !== undefined) {
+                    propertyJson[propName] = inputValues[propName];
+                }
+            });
+        }
+    }
+
+    /** This optional static function reads property input from the property 
+     * dialog and copies it into a component property json. */
+    static transferComponentProperties(inputValues,propertyJson,classObject) {
+        if(classObject.COMPONENT_PROPERTY_MAP) {
+            for(let propName in classObject.COMPONENT_PROPERTY_MAP) {
+                if(inputValues[propName] !== undefined) {
+                    propertyJson[propName] = inputValues[propName];
+                }
+            }
+        }
     }
 
     //======================================
@@ -326,7 +432,7 @@ export default class Component extends FieldObject {
             
             //add the specific member properties for this component type
             if(componentClass.transferMemberProperties) {
-                componentClass.transferMemberProperties(optionalInputProperties,json);
+                componentClass.transferMemberProperties(optionalInputProperties,json,componentClass);
             }
         }
         
@@ -343,7 +449,7 @@ export default class Component extends FieldObject {
         
         //add in the input property Value
         if((optionalInputProperties)&&(componentClass.transferComponentProperties)) {
-            componentClass.transferComponentProperties(optionalInputProperties,newPropertyValues);
+            componentClass.transferComponentProperties(optionalInputProperties,newPropertyValues,componentClass);
         }
         
         return newPropertyValues;

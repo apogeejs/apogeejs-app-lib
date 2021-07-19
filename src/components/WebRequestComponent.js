@@ -1,16 +1,23 @@
+import Component from "/apogeejs-app-lib/src/component/Component.js";
+import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
-import FormInputBaseComponent from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
 
-/** This is a simple custom component example. */
-export default class WebRequestComponent extends FormInputBaseComponent {
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-    }
-}
+/** This is a web request component. */
+export default class WebRequestComponent extends Component {};
 
 const DATA_MEMBER_FUNCTION_BODY = `
 return WebRequestCell.formResultToRequest(formResult);
 `
+
+//this defines the hardcoded type we will use
+let dataMemberTypeName = "apogee.WebRequestMember";
+defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
+
+//here we configure the component
+WebRequestComponent.displayName = "Web Request Cell";
+WebRequestComponent.uniqueName = "apogeeapp.WebRequestCell";
+WebRequestComponent.DEFAULT_MEMBER_JSON = getFormComponentDefaultMemberJson(dataMemberTypeName);
+
 
 __globals__.WebRequestCell = {};
 WebRequestCell.formResultToRequest = function(formResult) {
@@ -58,9 +65,3 @@ WebRequestCell.formResultToRequest = function(formResult) {
     }
 }
 
-//this defines the hardcoded type we will use
-let dataMemberTypeName = "apogee.WebRequestMember";
-defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
-
-//here we define the component
-FormInputBaseComponent.initializeClass(WebRequestComponent,"Web Request Cell","apogeeapp.WebRequestCell",dataMemberTypeName);

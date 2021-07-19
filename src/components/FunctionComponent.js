@@ -4,11 +4,6 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 /** This component represents a table object. */
 export default class FunctionComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        //extend edit component
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-    };
-
     /** This overrides the get title method of member to return the function declaration. */
     getDisplayName(useFullPath,modelManagerForFullPathOnly) {
         var name = useFullPath ? this.getFullName(modelManagerForFullPathOnly) : this.getName();
@@ -27,7 +22,8 @@ export default class FunctionComponent extends Component {
         return this.getMember().areAnyFieldsUpdated(["name","argList"]);
     }
 
-    static transferMemberProperties(inputValues,propertyJson) {
+    /** We override this method because we do some custom processing of the fields from the input values. */
+    static transferMemberProperties(inputValues,propertyJson,classObject) {
         if(inputValues.argListString != undefined) { 
             if(!propertyJson.updateData) propertyJson.updateData = {};
             propertyJson.updateData.argList = apogeeutil.parseStringArray(inputValues.argListString);
@@ -49,5 +45,5 @@ FunctionComponent.DEFAULT_MEMBER_JSON = {
 
 //FunctionComponent.COMPONENT_PROPERTY_MAP
 //FunctionComponent.COMPONENT_DATA_MAP
-//FunctionComponent.MEMBER_PROPERTY_LIST - CUSTOM!!!
+FunctionComponent.MEMBER_PROPERTY_LIST = ["argList"];
 

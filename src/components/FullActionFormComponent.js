@@ -7,18 +7,6 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * confugred with initialization data from the model. */
 export default class FullActionFormComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-        
-        //==============
-        //Fields
-        //==============
-        //Initailize these if this is a new instance
-        if(!instanceToCopy) {
-            this.setField("layoutCode","return []");
-        }
-    };
-
     //==============================
     //Resource Accessors
     //==============================
@@ -45,27 +33,6 @@ export default class FullActionFormComponent extends Component {
         }
         
         return {formLayoutFunction,errorMessage}
-    }
-
-    //==============================
-    // serialization
-    //==============================
-
-    writeExtendedData(json,modelManager) {
-        json.layoutCode = this.getField("layoutCode");
-    }
-
-    loadExtendedData(json) {
-        if(json.layoutCode) { 
-            this.updateLayoutCode(json.layoutCode); 
-        }
-    }
-
-    updateLayoutCode(layoutCodeText) { 
-        let oldLayoutCodeText = this.getField("layoutCode");
-        if(layoutCodeText != oldLayoutCodeText) {
-            this.setField("layoutCode",layoutCodeText);
-        }
     }
 
 }

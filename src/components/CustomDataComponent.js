@@ -10,46 +10,9 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * confugred with initialization data from the model. */
 export default class CustomDataComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        //extend edit component
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-        
-        //this should be present in the json that builds the folder, but in case it isn't (for one, because of a previous mistake)
-        member.setChildrenWriteable(false);
-
-        let model = modelManager.getModel();
-        //==============
-        //Fields
-        //==============
-        //Initailize these if this is a new instance
-        if(!instanceToCopy) {
-            //internal tables
-            let dataMember = member.lookupChild(model,"data");
-            this.registerMember(modelManager,dataMember,"member.data",false);
-
-            let inputMember = member.lookupChild(model,"input");
-            this.registerMember(modelManager,inputMember,"member.input",false);
-
-            this.setField("destroyOnInactive",false); //default to keep alive
-            this.setField("html","");
-            this.setField("css","");
-            this.setField("uiCode","");
-        }
-    };
-
     //==============================
     //Resource Accessors
     //==============================
-
-    getDestroyOnInactive() {
-        return this.getField("destroyOnInactive");
-    }
-
-    setDestroyOnInactive(destroyOnInactive) {
-        if(destroyOnInactive != this.getField("destroyOnInactive")) {
-            this.setField("destroyOnInactive",destroyOnInactive);
-        }
-    }
 
     createResource() {
         var uiGeneratorBody = this.getField("uiCode");
@@ -91,83 +54,26 @@ export default class CustomDataComponent extends Component {
 
         return resource;
     }
-
-    //=============================
-    // Action
-    //=============================
-
-    doCodeFieldUpdate(app,fieldName,targetValue) { 
-        var initialValue = this.getField(fieldName);
-        var command = {};
-        command.type = "updateComponentField";
-        command.memberId = this.getMemberId();
-        command.fieldName = fieldName;
-        command.initialValue = initialValue;
-        command.targetValue = targetValue;
-
-        app.executeCommand(command);
-        return true; 
-    }
-
-    //==============================
-    // serialization and properties
-    //==============================
-
-    writeExtendedData(json,modelManager) {
-        //store the resource info
-        // json.resource = {};
-        // json.resource["html"] = this.getField("html");
-        // json.resource["css"] = this.getField("css");
-        // json.resource["uiCode"] = this.getField("uiCode");
-
-        //new format
-        json.html = this.getField("html");
-        json.css = this.getField("css");
-        json.uiCode = this.getField("uiCode");
-    }
-
-    writeExtendedProps(json,modelManager) {
-        json.destroyOnInactive = this.getDestroyOnInactive();
-    }
-
+  
+    /** We override this method to allow support for a elgacy serialized format,
+     * which was from before version 2.
+     */
     loadExtendedData(json) {
         ////////////////////////////////////////
-        //legacy format
+        //legacy format - json.resource.* for resource fields
+        //changed for version 2
+        //////////////////////////////////////////
         if(json.resource) {
             for(let fieldName in json.resource) {
-                this.update(fieldName,json.resource[fieldName]);
+                let oldFieldValue = this.getField(fieldName);
+                let newFieldValue = json.resource[fieldName];
+                if(newFieldValue != oldFieldValue) {
+                    this.setField(fieldName,newFieldValue);
+                }
             }
         }
-        ///////////////////////////////////////
-
-        if(json.html != undefined) {
-            this.update("html",json.html)
-        }
-        if(json.css != undefined) {
-            this.update("css",json.css)
-        }
-        if(json.uiCode != undefined) {
-            this.update("uiCode",json.uiCode)
-        }
-    }
-
-    update(fieldName,fieldValue) { 
-        let oldFieldValue = this.getField(fieldName);
-        if(fieldValue != oldFieldValue) {
-            this.setField(fieldName,fieldValue);
-        }
-    }
-
-    loadExtendedProps(json) {
-        if(json.destroyOnInactive !== undefined) {
-            this.setDestroyOnInactive(json.destroyOnInactive);
-        }
-    }
-
-
-    static transferComponentProperties(inputValues,propertyJson) {
-        if(inputValues.destroyOnInactive !== undefined) {
-            propertyJson.destroyOnInactive = inputValues.destroyOnInactive;
+        else {
+            super.loadExtendedData(json);
         }
     }
     

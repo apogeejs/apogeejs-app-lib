@@ -6,34 +6,9 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * confugred with initialization data from the model. */
 export default class CustomComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-        
-        //==============
-        //Fields
-        //==============
-        //Initailize these if this is a new instance
-        if(!instanceToCopy) {
-            this.setField("destroyOnInactive",false); //default to keep alive
-            this.setField("html","");
-            this.setField("css","");
-            this.setField("uiCode","");
-        }
-    };
-
     //==============================
     //Resource Accessors
     //==============================
-
-    getDestroyOnInactive() {
-        return this.getField("destroyOnInactive");
-    }
-
-    setDestroyOnInactive(destroyOnInactive) {
-        if(destroyOnInactive != this.destroyOnInactive) {
-            this.setField("destroyOnInactive",destroyOnInactive);
-        }
-    }
 
     /** This method creates the resource. */
     createResource() {
@@ -78,81 +53,25 @@ export default class CustomComponent extends Component {
     }
 
 
-    //=============================
-    // Action
-    //=============================
-
-    doCodeFieldUpdate(app,codeFieldName,targetValue) { 
-        let initialValue = this.getField(codeFieldName);
-
-        var command = {};
-        command.type = "updateComponentField";
-        command.memberId = this.getMemberId();
-        command.fieldName = codeFieldName;
-        command.initialValue = initialValue;
-        command.targetValue = targetValue;
-
-        app.executeCommand(command);
-        return true;  
-    }
-
-    //==============================
-    // serialization and properties
-    //==============================
-
-    writeExtendedData(json,modelManager) {
-        //legacy format
-        // json.resource = {};
-        // json.resource["html"] = this.getField("html");
-        // json.resource["css"] = this.getField("css");
-        // json.resource["uiCode"] = this.getField("uiCode");
-
-        json.html = this.getField("html");
-        json.css = this.getField("css");
-        json.uiCode = this.getField("uiCode");
-    }
-
-    writeExtendedProps(json,modelManager) {
-        json.destroyOnInactive = this.getDestroyOnInactive();
-    }
-
-    loadExtendedData(json) {
+    /** We override this method to allow support for a elgacy serialized format,
+     * which was from before version 2.
+     */
+     loadExtendedData(json) {
         ////////////////////////////////////////
-        //legacy format
+        //legacy format - json.resource.* for resource fields
+        //changed for version 2
+        //////////////////////////////////////////
         if(json.resource) {
             for(let fieldName in json.resource) {
-                this.update(fieldName,json.resource[fieldName]);
+                let oldFieldValue = this.getField(fieldName);
+                let newFieldValue = json.resource[fieldName];
+                if(newFieldValue != oldFieldValue) {
+                    this.setField(fieldName,newFieldValue);
+                }
             }
         }
-        ///////////////////////////////////////
-
-        if(json.html != undefined) {
-            this.update("html",json.html)
-        }
-        if(json.css != undefined) {
-            this.update("css",json.css)
-        }
-        if(json.uiCode != undefined) {
-            this.update("uiCode",json.uiCode)
-        }
-    }
-
-    update(fieldName,fieldValue) { 
-        let oldFieldValue = this.getField(fieldName);
-        if(fieldValue != oldFieldValue) {
-            this.setField(fieldName,fieldValue);
-        }
-    }
-
-    loadExtendedProps(json) {
-        if(json.destroyOnInactive !== undefined) {
-            this.setDestroyOnInactive(json.destroyOnInactive);
-        }
-    }
-
-    static transferComponentProperties(inputValues,propertyJson) {
-        if(inputValues.destroyOnInactive !== undefined) {
-            propertyJson.destroyOnInactive = inputValues.destroyOnInactive;
+        else {
+            super.loadExtendedData(json);
         }
     }
 }

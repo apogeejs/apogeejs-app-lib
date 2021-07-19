@@ -6,30 +6,6 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * confugred with initialization data from the model. */
 export default class FullDataFormComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-
-        //this should be present in the json that builds the folder, but in case it isn't (for one, because of a previous mistake)
-        member.setChildrenWriteable(false);
-        
-        let model = modelManager.getModel();
-        //==============
-        //Fields
-        //==============
-        //Initailize these if this is a new instance
-        if(!instanceToCopy) {
-            this.setField("layoutCode","return []");
-            this.setField("validatorCode","return true");
-
-            //internal tables
-            let valueMember = member.lookupChild(model,"value");
-            this.registerMember(modelManager,valueMember,"member.value",false);
-
-            let inputMember = member.lookupChild(model,"input");
-            this.registerMember(modelManager,inputMember,"member.input",false);
-        }
-    };
-
     //==============================
     //Resource Accessors
     //==============================
@@ -71,40 +47,6 @@ export default class FullDataFormComponent extends Component {
 
         return { layoutFunction, validatorFunction, errorMessage};
     }
-
-    //==============================
-    // serialization
-    //==============================
-
-    writeExtendedData(json,modelManager) {
-        json.layoutCode = this.getField("layoutCode");
-        json.validatorCode = this.getField("validatorCode");
-    }
-
-    loadExtendedData(json) {
-        if(json.layoutCode) { 
-            this.updateLayoutCode(json.layoutCode); 
-        }
-
-        if(json.validatorCode) {
-            this.updateValidatorCode(json.validatorCode)
-        }
-    }
-
-    updateLayoutCode(layoutCodeText) { 
-        let oldLayoutCodeText = this.getField("layoutCode");
-        if(layoutCodeText != oldLayoutCodeText) {
-            this.setField("layoutCode",layoutCodeText);
-        }
-    }
-
-    updateValidatorCode(validatorCodeText) { 
-        let oldValidatorCodeText = this.getField("validatorCode");
-        if(validatorCodeText != oldValidatorCodeText) {
-            this.setField("validatorCode",validatorCodeText);
-        }
-    }
-
 }
 
 //======================================

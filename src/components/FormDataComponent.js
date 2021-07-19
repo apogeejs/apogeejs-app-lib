@@ -7,34 +7,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * to validate form input.
  * If you want a form to take an action on submit rather than create and edit a 
  * data value, you can use the dynmaic form. */
-export default class FormDataComponent extends Component {
-
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
-        //extend edit component
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
-        
-        //this should be present in the json that builds the folder, but in case it isn't (for one, because of a previous mistake)
-        member.setChildrenWriteable(false);
-        
-        let model = modelManager.getModel();
-        //==============
-        //Fields
-        //==============
-        //Initailize these if this is a new instance
-        if(!instanceToCopy) {
-            //internal tables
-            let dataMember = member.lookupChild(model,"data");
-            this.registerMember(modelManager,dataMember,"member.data",false);
-
-            let layoutFunctionMember = member.lookupChild(model,"layout");
-            this.registerMember(modelManager,layoutFunctionMember,"member.layout",false);
-
-            let isInputValidFunctionMember = member.lookupChild(model,"isInputValid");
-            this.registerMember(modelManager,isInputValidFunctionMember,"member.isInputValid",false);
-        }
-    };
-
-}
+export default class FormDataComponent extends Component {}
 
 //======================================
 // This is the component generator, to register the component
