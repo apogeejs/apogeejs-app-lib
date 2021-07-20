@@ -64,16 +64,17 @@ else return [];
 const dataMemberTypeName = "apogee.DesignerActionFormMember";
 defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 
-DesignerActionFormComponent.displayName = "Action Form Cell";
-DesignerActionFormComponent.uniqueName = "apogeeapp.DesignerActionFormCell";
-DesignerActionFormComponent.DEFAULT_MEMBER_JSON = getFormComponentDefaultMemberJson(dataMemberTypeName);
-
-DesignerActionFormComponent.COMPONENT_PROPERTY_MAP = {
-    "allowInputExpressions": true
-}
-DesignerActionFormComponent.COMPONENT_DATA_MAP = {
-    "onSubmitCode": "",
-    "onCancelCode": ""
+DesignerActionFormComponent.CLASS_CONFIG = {
+    displayName: "Action Form Cell",
+    uniqueName: "apogeeapp.DesignerActionFormCell",
+    defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
+    componentPropertyMap: {
+        "allowInputExpressions": true
+    },
+    componentDataMap: {
+        "onSubmitCode": "",
+        "onCancelCode": ""
+    }
 }
 
 

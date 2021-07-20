@@ -41,17 +41,17 @@ export default class FullActionFormComponent extends Component {
 // This is the control generator, to register the control
 //======================================
 
-FullActionFormComponent.displayName = "Full Action Form Cell";
-FullActionFormComponent.uniqueName = "apogeeapp.FullActionFormCell";
-FullActionFormComponent.DEFAULT_MEMBER_JSON = {
-    "type": "apogee.JsonMember"
-};
-
-//FullActionFormComponent.COMPONENT_PROPERTY_MAP
-FullActionFormComponent.COMPONENT_DATA_MAP = {
-    "layoutCode": "return [];"
+FullActionFormComponent.CLASS_CONFIG = {
+	displayName: "Full Action Form Cell",
+	uniqueName: "apogeeapp.FullActionFormCell",
+	defaultMemberJson: {
+		"type": "apogee.JsonMember"
+	},
+	componentDataMap: {
+		"layoutCode": "return [];"
+	}
 }
-//FullActionFormComponent.MEMBER_PROPERTY_LIST
+
 
 
 

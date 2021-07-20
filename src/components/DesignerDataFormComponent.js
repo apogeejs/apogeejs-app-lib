@@ -55,17 +55,17 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
     }
 ];
 
-DesignerDataFormComponent.displayName = "Data Form Cell";
-DesignerDataFormComponent.uniqueName = "apogeeapp.DesignerDataFormCell";
-DesignerDataFormComponent.DEFAULT_MEMBER_JSON = getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY);
-
-DesignerDataFormComponent.COMPONENT_PROPERTY_MAP = {
-    "allowInputExpressions": true
+DesignerDataFormComponent.CLASS_CONFIG = {
+	displayName: "Data Form Cell",
+	uniqueName: "apogeeapp.DesignerDataFormCell",
+	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
+	componentPropertyMap: {
+		allowInputExpressions: true
+	},
+	componentDataMap: {
+		validatorCode: "return true;"
+	}
 }
-DesignerDataFormComponent.COMPONENT_DATA_MAP = {
-    "validatorCode": "return true;"
-}
-
 
 
 

@@ -49,39 +49,35 @@ export default class FullDataFormComponent extends Component {
     }
 }
 
-//======================================
-// This is the control generator, to register the control
-//======================================
-
-FullDataFormComponent.displayName = "Full Data Form Cell";
-FullDataFormComponent.uniqueName = "apogeeapp.FullDataFormCell";
-FullDataFormComponent.DEFAULT_MEMBER_JSON = {
-    "type": "apogee.Folder",
-    "childrenNotWriteable": true,
-    "children": {
-        "input": {
-            "name": "input",
-            "type": "apogee.JsonMember",
-            "updateData": {
-                "data": "",
-            }
-        },
-        "value": {
-            "name": "value",
-            "type": "apogee.JsonMember",
-            "updateData": {
-                "data": "",
-            }
-        }
-    }
-};
-
-//FullDataFormComponent.COMPONENT_PROPERTY_MAP
-FullDataFormComponent.COMPONENT_DATA_MAP = {
-    "layoutCode": "return [];",
-    "validatorCode": "return true;"
+FullDataFormComponent.CLASS_CONFIG = {
+	displayName: "Full Data Form Cell",
+	uniqueName: "apogeeapp.FullDataFormCell",
+	defaultMemberJson: {
+		"type": "apogee.Folder",
+		"childrenNotWriteable": true,
+		"children": {
+			"input": {
+				"name": "input",
+				"type": "apogee.JsonMember",
+				"updateData": {
+					"data": ""
+				}
+			},
+			"value": {
+				"name": "value",
+				"type": "apogee.JsonMember",
+				"updateData": {
+					"data": ""
+				}
+			}
+		}
+	},
+	componentDataMap: {
+		"layoutCode": "return [];",
+		"validatorCode": "return true;"
+	}
 }
-//FullDataFormComponent.MEMBER_PROPERTY_LIST
+
 
 
 

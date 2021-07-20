@@ -35,7 +35,7 @@ let pageComponents = [];
 /** This method registers a new component. It will be exposed when the user
  * requests to create a new component */
 componentInfo.registerComponent = function(componentClass) {
-    var name = componentClass.uniqueName;
+    var name = componentClass.getClassUniqueName();
 
     //we should maybe warn if another component bundle is being overwritten
     componentClasses[name] = componentClass;
@@ -46,7 +46,7 @@ componentInfo.registerComponent = function(componentClass) {
 
 /** This method registers a component. */
 componentInfo.registerStandardComponent = function(componentClass) {
-    var name = componentClass.uniqueName;
+    var name = componentClass.getClassUniqueName();
 
     //we should maybe warn if another component bundle is being overwritten 
     componentClasses[name] = componentClass;
@@ -58,7 +58,7 @@ componentInfo.registerStandardComponent = function(componentClass) {
 /** This method registers a new component. It will be exposed when the user
  * requests to create a new component */
 componentInfo.registerPageComponent = function(componentClass) {
-    var name = componentClass.uniqueName;
+    var name = componentClass.getClassUniqueName();
 
     //we should maybe warn if another component bundle is being overwritten
     componentClasses[name] = componentClass;
@@ -70,7 +70,7 @@ componentInfo.registerPageComponent = function(componentClass) {
 /** This method unregisters a component. Note this method does not fire
  * a event (for now at least) */
 componentInfo.unregisterComponent = function(componentClass) {
-    var name = componentClass.uniqueName;
+    var name = componentClass.getClassUniqueName();
  
     delete componentClasses[name];
     let stdIndex = standardComponents.indexOf(name);

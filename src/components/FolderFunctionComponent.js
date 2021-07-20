@@ -47,19 +47,21 @@ export default class FolderFunctionComponent extends ParentComponent {
 // This is the component generator, to register the component
 //======================================
 
-FolderFunctionComponent.displayName = "Multi-Cell Function";
-FolderFunctionComponent.uniqueName = "apogeeapp.PageFunctionComponent";
-FolderFunctionComponent.DEFAULT_MEMBER_JSON = {
-    "type": "apogee.FolderFunction",
-    "children": {
-        "body": {
-            "name": "body",
-            "type": "apogee.Folder",
-        }
-    }
-};
-
-FolderFunctionComponent.MEMBER_PROPERTY_LIST = ["argList","returnValueString"];
-
-FolderFunctionComponent.contentFolderFieldName = "member.body";
-
+FolderFunctionComponent.CLASS_CONFIG = {
+	displayName: "Multi-Cell Function",
+	uniqueName: "apogeeapp.PageFunctionComponent",
+	defaultMemberJson: {
+		"type": "apogee.FolderFunction",
+		"children": {
+			"body": {
+				"name": "body",
+				"type": "apogee.Folder"
+			}
+		}
+	},
+	memberPropertyList: [
+		"argList",
+		"returnValueString"
+	],
+	contentFolderFieldName: "member.body"
+}

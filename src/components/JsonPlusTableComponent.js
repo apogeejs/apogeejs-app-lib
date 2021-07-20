@@ -14,11 +14,10 @@ export default class JsonPlusTableComponent extends Component {};
 //======================================
 
 
-/** This is the display name for the type of component */
-JsonPlusTableComponent.displayName = "Extended Data Cell";
-/** This is the univeral uniaue name for the component, used to deserialize the component. */
-JsonPlusTableComponent.uniqueName = "apogeeapp.ExtendedJsonCell";
-
-JsonPlusTableComponent.DEFAULT_MEMBER_JSON = {
-    "type": "apogee.JsonMember"
-};
+JsonPlusTableComponent.CLASS_CONFIG = {
+	"displayName": "Extended Data Cell",
+	"uniqueName": "apogeeapp.ExtendedJsonCell",
+	"defaultMemberJson": {
+		"type": "apogee.JsonMember"
+	}
+}

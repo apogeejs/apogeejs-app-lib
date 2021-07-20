@@ -23,7 +23,7 @@ export default class FunctionComponent extends Component {
     }
 
     /** We override this method because we do some custom processing of the fields from the input values. */
-    static transferMemberProperties(inputValues,propertyJson,classObject) {
+    static transferMemberProperties(inputValues,propertyJson) {
         if(inputValues.argListString != undefined) { 
             if(!propertyJson.updateData) propertyJson.updateData = {};
             propertyJson.updateData.argList = apogeeutil.parseStringArray(inputValues.argListString);
@@ -36,14 +36,13 @@ export default class FunctionComponent extends Component {
 // This is the component generator, to register the component
 //======================================
 
-FunctionComponent.displayName = "Function Cell";
-FunctionComponent.uniqueName = "apogeeapp.FunctionCell";
-
-FunctionComponent.DEFAULT_MEMBER_JSON = {
-    "type": "apogee.FunctionMember"
-};
-
-//FunctionComponent.COMPONENT_PROPERTY_MAP
-//FunctionComponent.COMPONENT_DATA_MAP
-FunctionComponent.MEMBER_PROPERTY_LIST = ["argList"];
-
+FunctionComponent.CLASS_CONFIG = {
+	displayName: "Function Cell",
+	uniqueName: "apogeeapp.FunctionCell",
+	defaultMemberJson: {
+		"type": "apogee.FunctionMember"
+	},
+	memberPropertyList: [
+		"argList"
+	]
+}

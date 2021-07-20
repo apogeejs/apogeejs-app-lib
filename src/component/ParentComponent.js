@@ -26,7 +26,8 @@ export default class ParentComponent extends Component {
 
     /** This returns the folder member which holds the child content. */
     getParentFolderForChildren() {
-        return this.getField(this.constructor.contentFolderFieldName);
+        let contentFolderFieldName = this.constructor.getConfigField("contentFolderFieldName");
+        return this.getField(contentFolderFieldName);
     }
 
     getSchema() {
@@ -132,5 +133,5 @@ export default class ParentComponent extends Component {
 /** This is used to flag this as an edit component. */
 ParentComponent.isParentComponent = true;
 
-//The following static property should be added to indicate the field name for the folder member which holds the children.
-//ExtendingComponent.contentFolderFieldName
+//The following config property should be added to indicate the field name for the folder member which holds the children.
+//ExtendingComponent.CLASS_CONFIG.contentFolderFieldName

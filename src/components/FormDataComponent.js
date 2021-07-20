@@ -13,34 +13,37 @@ export default class FormDataComponent extends Component {}
 // This is the component generator, to register the component
 //======================================
 
-FormDataComponent.displayName = "Legacy Data Form Cell (deprecated)";
-FormDataComponent.uniqueName = "apogeeapp.DataFormCell";
-FormDataComponent.DEFAULT_MEMBER_JSON = {
-        "type": "apogee.Folder",
-        "childrenNotWriteable": true,
-        "children": {
-            "layout": {
-                "name": "layout",
-                "type": "apogee.FunctionMember",
-                "updateData": {
-                    "argList":[],
-                }
-            },
-            "data": {
-                "name": "data",
-                "type": "apogee.JsonMember",
-                "updateData": {
-                    "data": "",
-                }
-            },
-            "isInputValid": {
-                "name": "isInputValid",
-                "type": "apogee.FunctionMember",
-                "updateData": {
-                    "argList":["formValue"],
-                    "functionBody": "//If data valid, return true. If data is invalid, return an error message.\nreturn true;"
-                }
-            }
-        }
-    };
-
+FormDataComponent.CLASS_CONFIG = {
+	displayName: "Legacy Data Form Cell (deprecated)",
+	uniqueName: "apogeeapp.DataFormCell",
+	defaultMemberJson: {
+		"type": "apogee.Folder",
+		"childrenNotWriteable": true,
+		"children": {
+			"layout": {
+				"name": "layout",
+				"type": "apogee.FunctionMember",
+				"updateData": {
+					"argList": []
+				}
+			},
+			"data": {
+				"name": "data",
+				"type": "apogee.JsonMember",
+				"updateData": {
+					"data": ""
+				}
+			},
+			"isInputValid": {
+				"name": "isInputValid",
+				"type": "apogee.FunctionMember",
+				"updateData": {
+					"argList": [
+						"formValue"
+					],
+					"functionBody": "//If data valid, return true. If data is invalid, return an error message.\nreturn true;"
+				}
+			}
+		}
+	}
+}

@@ -21,7 +21,7 @@ export default class FormInputBaseComponent extends Component {
 
         //add the default json
         //there is an option to add additional children
-        classObject.DEFAULT_MEMBER_JSON = getFormComponentDefaultMemberJson(dataMemberTypeName);
+        classObject.defaultMemberJson = getFormComponentDefaultMemberJson(dataMemberTypeName);
     }
 }
 

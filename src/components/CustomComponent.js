@@ -76,25 +76,22 @@ export default class CustomComponent extends Component {
     }
 }
 
-//======================================
-// This is the control generator, to register the control
-//======================================
-
-CustomComponent.displayName = "Custom Cell";
-CustomComponent.uniqueName = "apogeeapp.CustomCell";
-CustomComponent.DEFAULT_MEMBER_JSON = {
-    "type": "apogee.JsonMember"
-};
-
-CustomComponent.COMPONENT_PROPERTY_MAP = {
-    "destroyOnInactive": false
+CustomComponent.CLASS_CONFIG = {
+    displayName: "Custom Cell",
+    uniqueName: "apogeeapp.CustomCell",
+    defaultMemberJson: {
+        "type": "apogee.JsonMember"
+    },
+    componentPropertyMap: {
+        "destroyOnInactive": false
+    },
+    componentDataMap: {
+        "html": "",
+        "css": "",
+        "uiCode": ""
+    }
 }
-CustomComponent.COMPONENT_DATA_MAP = {
-    "html": "",
-    "css": "",
-    "uiCode": ""
-}
-//CustomComponent.MEMBER_PROPERTY_LIST
+
 
 
 

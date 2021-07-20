@@ -14,9 +14,11 @@ let dataMemberTypeName = "apogee.WebRequestMember";
 defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 
 //here we configure the component
-WebRequestComponent.displayName = "Web Request Cell";
-WebRequestComponent.uniqueName = "apogeeapp.WebRequestCell";
-WebRequestComponent.DEFAULT_MEMBER_JSON = getFormComponentDefaultMemberJson(dataMemberTypeName);
+WebRequestComponent.CLASS_CONFIG = {
+    displayName: "Web Request Cell",
+    uniqueName: "apogeeapp.WebRequestCell",
+    defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName)
+}
 
 
 __globals__.WebRequestCell = {};

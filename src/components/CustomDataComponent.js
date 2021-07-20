@@ -83,9 +83,10 @@ export default class CustomDataComponent extends Component {
 // This is the control generator, to register the control
 //======================================
 
-CustomDataComponent.displayName = "Custom Data Cell";
-CustomDataComponent.uniqueName = "apogeeapp.CustomDataCell";
-CustomDataComponent.DEFAULT_MEMBER_JSON = {
+CustomDataComponent.CALSS_CONFIG = {
+    displayName: "Custom Data Cell",
+    uniqueName: "apogeeapp.CustomDataCell",
+    defaultMemberJson: {
         "type": "apogee.Folder",
         "childrenNotWriteable": true,
         "children": {
@@ -104,15 +105,15 @@ CustomDataComponent.DEFAULT_MEMBER_JSON = {
                 }
             }
         }
-    };
+    },
+    componentPropertyMap: {
+        "destroyOnInactive": false
+    },
+    componentDataMap: {
+        "html": "",
+        "css": "",
+        "uiCode": ""
+    }
+}
 
-CustomDataComponent.COMPONENT_PROPERTY_MAP = {
-    "destroyOnInactive": false
-}
-CustomDataComponent.COMPONENT_DATA_MAP = {
-    "html": "",
-    "css": "",
-    "uiCode": ""
-}
-//CustomDataComponent.MEMBER_PROPERTY_LIST
 
