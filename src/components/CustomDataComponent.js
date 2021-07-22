@@ -83,7 +83,7 @@ export default class CustomDataComponent extends Component {
 // This is the control generator, to register the control
 //======================================
 
-CustomDataComponent.CALSS_CONFIG = {
+CustomDataComponent.CLASS_CONFIG = {
     displayName: "Custom Data Cell",
     uniqueName: "apogeeapp.CustomDataCell",
     defaultMemberJson: {
