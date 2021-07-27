@@ -281,8 +281,8 @@ export default class Component extends FieldObject {
         values.name = member.getName();
         values.parentId = member.getParentId();
 
-        if(member.constructor.generator.readProperties) {
-            member.constructor.generator.readProperties(member,values);
+        if(member.constructor.generator.writeProperties) {
+            member.constructor.generator.writeProperties(member,values);
         }
         if(this.writeExtendedProps) {
             this.writeExtendedProps(values);
@@ -402,7 +402,8 @@ export default class Component extends FieldObject {
         if(memberPropertyList) {
             memberPropertyList.forEach(propName => {
                 if(inputValues[propName] !== undefined) {
-                    propertyJson[propName] = inputValues[propName];
+                    if(!propertyJson.updateData) propertyJson.updateData = {};
+                    propertyJson.updateData[propName] = inputValues[propName];
                 }
             });
         }
@@ -429,18 +430,12 @@ export default class Component extends FieldObject {
     /** This function creates a json to create the member for a new component instance. 
      * It uses default values and then overwrites in with optionalBaseValues (these are intended to be base values outside of user input values)
      * and then optionalOverrideValues (these are intended to be user input values) */
-    static createMemberJson(componentClass,optionalInputProperties,optionalBaseValues) {
+    static createMemberJson(componentClass,optionalInputProperties) {
         var json = apogeeutil.jsonCopy(componentClass.getDefaultMemberJson());
-        if(optionalBaseValues) {
-            for(var key in optionalBaseValues) {
-                json[key]= optionalBaseValues[key];
-            }
-        }
         if(optionalInputProperties) {
-            //add the base component values
             if(optionalInputProperties.name !== undefined) json.name = optionalInputProperties.name;
-            
-            //add the specific member properties for this component type
+        
+            //copy in the input property values
             if(componentClass.transferMemberProperties) {
                 componentClass.transferMemberProperties(optionalInputProperties,json);
             }
@@ -450,19 +445,16 @@ export default class Component extends FieldObject {
     }
 
     /** This function merges values from two objects containing component property values. */
-    static createComponentJson(componentClass,optionalInputProperties,optionalBaseValues) {
-        //copy the base properties
-        var newPropertyValues = optionalBaseValues ? apogeeutil.jsonCopy(optionalBaseValues) : {};
+    static createComponentJson(componentClass,optionalInputProperties) {
+        //get the initial json
+        var json = apogeeutil.jsonCopy(componentClass.getDefaultComponentJson());
         
-        //set the type
-        newPropertyValues.type = componentClass.getClassUniqueName();
-        
-        //add in the input property Value
+        //copy in the input property Value
         if((optionalInputProperties)&&(componentClass.transferComponentProperties)) {
-            componentClass.transferComponentProperties(optionalInputProperties,newPropertyValues);
+            componentClass.transferComponentProperties(optionalInputProperties,json);
         }
         
-        return newPropertyValues;
+        return json;
     }
 
     //=======================
@@ -488,6 +480,18 @@ export default class Component extends FieldObject {
         //////////////////////////////////////
 
         return this.getConfigField("defaultMemberJson");
+    }
+
+    static getDefaultComponentJson() {
+        //"this" refers to the class object in a static
+        //default component json is optional. If not included, use a generated version 
+        let json = this.getConfigField("defaultComponentJson");
+        if(!json) {
+            json = {
+                type: this.getClassUniqueName()
+            }
+        }
+        return json;
     }
 
     static getComponentPropertyDefs() {

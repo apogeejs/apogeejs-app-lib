@@ -1,4 +1,3 @@
-import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This component represents a table object. */
@@ -20,14 +19,6 @@ export default class FunctionComponent extends Component {
      * if the full name was updated. */
     isDisplayNameUpdated() {
         return this.getMember().areAnyFieldsUpdated(["name","argList"]);
-    }
-
-    /** We override this method because we do some custom processing of the fields from the input values. */
-    static transferMemberProperties(inputValues,propertyJson) {
-        if(inputValues.argListString != undefined) { 
-            if(!propertyJson.updateData) propertyJson.updateData = {};
-            propertyJson.updateData.argList = apogeeutil.parseStringArray(inputValues.argListString);
-        }
     }
    
 }

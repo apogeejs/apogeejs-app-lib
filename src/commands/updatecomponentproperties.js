@@ -26,7 +26,7 @@ updateComponentProperties.createUndoCommand = function(workspaceManager,commandD
     var component = modelManager.getComponentByComponentId(componentId);
 
     var originalMemberProperties = {};
-    if(member.constructor.generator.readProperties) member.constructor.generator.readProperties(member,originalMemberProperties);
+    if(member.constructor.generator.writeProperties) member.constructor.generator.writeProperties(member,originalMemberProperties);
     var originalComponentProperties = {};
     if(component.writeExtendedProps) component.writeExtendedProps(originalComponentProperties);
     

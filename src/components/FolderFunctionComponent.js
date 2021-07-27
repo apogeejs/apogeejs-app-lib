@@ -1,4 +1,3 @@
-import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js";
 
 /** This component represents a folderFunction, which is a function that is programmed using
@@ -29,18 +28,6 @@ export default class FolderFunctionComponent extends ParentComponent {
     isDisplayNameUpdated() {
         return this.getMember().areAnyFieldsUpdated(["name","argList","returnValue"]);
     }
-
-
-    /** We overide this method because of custom procesing in the arg list input */
-    static transferMemberProperties(inputValues,propertyJson) {
-        if(!propertyJson.updateData) propertyJson.updateData = {};
-        if(inputValues.argListString !== undefined) {
-            propertyJson.updateData.argList = apogeeutil.parseStringArray(inputValues.argListString);
-        }
-        if(inputValues.returnValueString !== undefined) {
-            propertyJson.updateData.returnValue = inputValues.returnValueString;
-        }
-    }
 }
 
 //======================================
@@ -61,7 +48,7 @@ FolderFunctionComponent.CLASS_CONFIG = {
 	},
 	memberPropertyList: [
 		"argList",
-		"returnValueString"
+		"returnValue"
 	],
 	contentFolderFieldName: "member.body"
 }
