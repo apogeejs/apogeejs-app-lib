@@ -230,7 +230,7 @@ export default class Component extends FieldObject {
     }
 
     /** This is used to update properties, such as from the set properties form. */
-    loadPropertyValues(json) {
+    loadPropertyValues(modelManager,json) {
         if(this.loadExtendedProps) {
             this.loadExtendedProps(json);
         }  
@@ -274,15 +274,14 @@ export default class Component extends FieldObject {
      * If there are additional property lines, in the generator, this method should
      * be extended to give the values of those properties too. */
     getPropertyValues() {
-        
         var member = this.getField("member");
         
         var values = {};
         values.name = member.getName();
         values.parentId = member.getParentId();
 
-        if(member.constructor.generator.writeProperties) {
-            member.constructor.generator.writeProperties(member,values);
+        if(member.writeProperties) {
+            member.writeProperties(values);
         }
         if(this.writeExtendedProps) {
             this.writeExtendedProps(values);

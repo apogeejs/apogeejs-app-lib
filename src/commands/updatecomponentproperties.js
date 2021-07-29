@@ -26,7 +26,7 @@ updateComponentProperties.createUndoCommand = function(workspaceManager,commandD
     var component = modelManager.getComponentByComponentId(componentId);
 
     var originalMemberProperties = {};
-    if(member.constructor.generator.writeProperties) member.constructor.generator.writeProperties(member,originalMemberProperties);
+    if(member.writeProperties) member.writeProperties(originalMemberProperties);
     var originalComponentProperties = {};
     if(component.writeExtendedProps) component.writeExtendedProps(originalComponentProperties);
     
@@ -69,10 +69,9 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
     var component = modelManager.getMutableComponentByComponentId(componentId);
     
     //create an action to update an member additional properties
-    var memberGenerator = member.constructor.generator;
     let actionResult;
-    if(memberGenerator.getPropertyUpdateAction) {
-        var actionData = memberGenerator.getPropertyUpdateAction(member,commandData.updatedMemberProperties);  
+    if(member.getPropertyUpdateAction) {
+        var actionData = member.getPropertyUpdateAction(model,commandData.updatedMemberProperties);  
         if(actionData) {
             //get a new, mutable model instance here
             model = modelManager.getMutableModel();
@@ -84,7 +83,7 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
     }
  
     //update an component additional properties
-    component.loadPropertyValues(commandData.updatedComponentProperties);
+    component.loadPropertyValues(modelManager,commandData.updatedComponentProperties);
 }
 
 updateComponentProperties.commandInfo = {
