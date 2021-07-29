@@ -431,7 +431,7 @@ export default class Component extends FieldObject {
      * It uses default values and then overwrites in with optionalBaseValues (these are intended to be base values outside of user input values)
      * and then optionalOverrideValues (these are intended to be user input values) */
     static createMemberJson(componentClass,optionalInputProperties) {
-        var json = apogeeutil.jsonCopy(componentClass.getDefaultMemberJson());
+        var json = apogeeutil.jsonCopy(componentClass.getTotalMemberJson());
         if(optionalInputProperties) {
             if(optionalInputProperties.name !== undefined) json.name = optionalInputProperties.name;
         
@@ -480,6 +480,12 @@ export default class Component extends FieldObject {
         //////////////////////////////////////
 
         return this.getConfigField("defaultMemberJson");
+    }
+
+    static getTotalMemberJson() {
+        let totalMemberJson = this.getConfigField("totalMemberJson");
+        if(!totalMemberJson) return this.getDefaultMemberJson();
+        else return totalMemberJson;
     }
 
     static getDefaultComponentJson() {
