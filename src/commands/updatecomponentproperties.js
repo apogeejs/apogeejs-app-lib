@@ -70,7 +70,7 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
     
     //create an action to update an member additional properties
     let actionResult;
-    if(member.getPropertyUpdateAction) {
+    if((member.getPropertyUpdateAction)&&(commandData.updatedMemberProperties)) {
         var actionData = member.getPropertyUpdateAction(model,commandData.updatedMemberProperties);  
         if(actionData) {
             //get a new, mutable model instance here
@@ -83,7 +83,9 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
     }
  
     //update an component additional properties
-    component.loadPropertyValues(modelManager,commandData.updatedComponentProperties);
+    if(commandData.updatedComponentProperties) {
+        component.loadPropertyValues(modelManager,commandData.updatedComponentProperties);
+    }
 }
 
 updateComponentProperties.commandInfo = {

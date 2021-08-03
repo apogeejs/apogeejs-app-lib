@@ -129,20 +129,19 @@ export default class ParentComponent extends Component {
     }
 
     /** This is used to update properties, such as from the set properties form. */
-    loadPropertyValues(modelManager,json) {
-        super.loadPropertyValues(modelManager,json);
+    loadPropertyValues(modelManager,propertyJson) {
+        super.loadPropertyValues(modelManager,propertyJson);
 
         //load properties in child components if needed
-        if(json.children) {
-            let model = modelManager.getModel();
+        if(propertyJson.children) {
             let parentMember = this.getParentFolderForChildren();
-            for(let childName in json.children) {
-                let childMember = parentMember.lookupChild(model,childName);
-                if(childMember) {
-                    let childJson = componentJson.children[childName];
-                    let childComponentId = modelManager.getComponentIdByMemberId(memberId);
-                    let childComponent = modelManager.getComponentByComponentId(childComponentId);
-                    childComponent.loadPropertyValues(modelManager,childJson);
+            for(let childName in propertyJson.children) {
+                let childMemberId = parentMember.lookupChildId(childName);
+                if(childMemberId) {
+                    let childPropertyJson = propertyJson.children[childName];
+                    let childComponentId = modelManager.getComponentIdByMemberId(childMemberId);
+                    let childComponent = modelManager.getMutableComponentByComponentId(childComponentId);
+                    childComponent.loadPropertyValues(modelManager,childPropertyJson);
                 }
             }
         }
