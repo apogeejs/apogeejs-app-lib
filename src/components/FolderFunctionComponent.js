@@ -50,5 +50,5 @@ FolderFunctionComponent.CLASS_CONFIG = {
 		"argList",
 		"returnValue"
 	],
-	contentFolderFieldName: "member.body"
+	contentFolderFieldPath: "body"
 }

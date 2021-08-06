@@ -528,6 +528,24 @@ export default class Component extends FieldObject {
         
         return this.CLASS_CONFIG[fieldName];
     }
+
+    //////////////////////////////////////////////////////////////////
+    // NEW CHILD METHODS
+    ////////////////////////////////////////////////////
+
+
+    getDirectChildMember(childPath) {
+        return this.getField(this.memberPathToMemberField(childPath));
+    }
+
+    memberPathToMemberField(childPath) {
+        if(childPath == ".") {
+            return "member";
+        }
+        else {
+            return "member." + childPath;
+        }
+    }
 }
 
 //======================================

@@ -26,8 +26,8 @@ export default class ParentComponent extends Component {
 
     /** This returns the folder member which holds the child content. */
     getParentFolderForChildren() {
-        let contentFolderFieldName = this.constructor.getConfigField("contentFolderFieldName");
-        return this.getField(contentFolderFieldName);
+        let contentFolderFieldPath = this.constructor.getConfigField("contentFolderFieldPath");
+        return this.getDirectChildMember(contentFolderFieldPath);
     }
 
     getSchema() {

@@ -14,7 +14,7 @@ FolderComponent.CLASS_CONFIG = {
 	defaultMemberJson: {
 		"type": "apogee.Folder"
 	},
-	contentFolderFieldName: "member"
+	contentFolderFieldPath: "."
 }
 
 
