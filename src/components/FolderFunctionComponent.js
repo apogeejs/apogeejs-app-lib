@@ -1,8 +1,8 @@
-import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js";
+import DocumentParentComponent from "/apogeejs-app-lib/src/component/DocumentParentComponent.js";
 
 /** This component represents a folderFunction, which is a function that is programmed using
  *apogee tables rather than writing code. */
-export default class FolderFunctionComponent extends ParentComponent {
+export default class FolderFunctionComponent extends DocumentParentComponent {
 
     /** This overrides the get display method of componnet to return the function declaration. */
     getDisplayName(useFullPath,modelManagerForFullPathOnly) {

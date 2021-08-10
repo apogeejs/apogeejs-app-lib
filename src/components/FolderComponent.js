@@ -1,8 +1,8 @@
 
-import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js";
+import DocumentParentComponent from "/apogeejs-app-lib/src/component/DocumentParentComponent.js";
 
 /** This component represents a table object. */
-export default class FolderComponent extends ParentComponent {}
+export default class FolderComponent extends DocumentParentComponent {}
 
 //======================================
 // This is the component generator, to register the component
