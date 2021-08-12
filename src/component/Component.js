@@ -1,4 +1,3 @@
-import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 
 /** This is the base functionality for a component. */
@@ -27,21 +26,13 @@ export default class Component extends FieldObject {
             this.setField("memberFieldMap",memberFieldMap);
 
             //initialize fields in the extending class
-            let componentDataMap = this.constructor.getComponentDataDefs();
-            if(componentDataMap) {
-                for(let fieldName in componentDataMap) {
-                    let newValue = componentDataMap[fieldName];
+            let componentFieldMap = this.constructor.getComponentFieldDefs();
+            if(componentFieldMap) {
+                for(let fieldName in componentFieldMap) {
+                    let newValue = componentFieldMap[fieldName];
                     this.setField(fieldName,newValue);
                 }
             }
-            let componentPropertyMap = this.constructor.getComponentPropertyDefs();
-            if(componentPropertyMap) {
-                for(let fieldName in componentPropertyMap) {
-                    let newValue = componentPropertyMap[fieldName];
-                    this.setField(fieldName,newValue);
-                }
-            }
-
         }
 
         //==============
@@ -183,9 +174,6 @@ export default class Component extends FieldObject {
         if(this.writeExtendedData) {
             this.writeExtendedData(json,modelManager);
         }
-        if(this.writeExtendedProps) {
-            this.writeExtendedProps(json,modelManager);
-        }
 
         /////////////////////////////////////////////////////////////////////////
         //legacy name - kept for legacy support
@@ -211,15 +199,11 @@ export default class Component extends FieldObject {
             this.cachedViewState = json.viewState;
         }
         
-        //allow the component implemnetation to read data (non-props) from the json
+        //allow the component implemnetation to read data from the json
         if(this.loadExtendedData) {
             this.loadExtendedData(json);
         }
 
-        //allow the component implemnetation to read properties from the json
-        if(this.loadExtendedProps) {
-            this.loadExtendedProps(json);
-        }
 
         //////////////////////////////////////////////////////////////////
         //legacy name kept for legacy support
@@ -231,8 +215,8 @@ export default class Component extends FieldObject {
 
     /** This is used to update properties, such as from the set properties form. */
     loadPropertyValues(modelManager,json) {
-        if(this.loadExtendedProps) {
-            this.loadExtendedProps(json);
+        if(this.loadExtendedData) {
+            this.loadExtendedData(json);
         }  
 
         //////////////////////////////////////////////////////////////////
@@ -283,8 +267,8 @@ export default class Component extends FieldObject {
         if(member.writeProperties) {
             member.writeProperties(values);
         }
-        if(this.writeExtendedProps) {
-            this.writeExtendedProps(values);
+        if(this.writeExtendedData) {
+            this.writeExtendedData(values);
         }
         return values;
     }
@@ -320,42 +304,21 @@ export default class Component extends FieldObject {
     // serialization and properties
     //==============================
 
-    //This method should optionally be populated by an extending object.
-    //** This method reads any necessary component implementation-specific stored data
-    // * from the json. This should be used for stored data that is NOT updated when properties are updated. OPTIONAL */
-    //loadExtendedData(json);
-
-    //This method should optionally be populated by an extending object.
-    //** This method reads any necessary component implementation-specific properties data
-    // * from the json. This is also use when updating properties. OPTIONAL */
-    //loadExtendedProps(json);
-
-    //This method should optionally be populated by an extending object.
-    //** This method writes any necessary component implementation-specific data (excluding properties)
-    // * to the json. OPTIONAL */
-    //writeExtendedData(json,modelManager);
-
-    //This method should optionally be populated by an extending object.
-    //** This method writes component implementation-specific properties
-    // * to the json. OPTIONAL */
-    //writeExtendedProps(json,moduleManager);
-
-    //static transferMemberProperties(inputValues,propertyJson);
-    //static transferComponentProperties(inputValues,propertyJson);
-
+    /** This method writes any data fields associated with the component. */
     writeExtendedData(json,modelManager) {
-        let componentDataMap = this.constructor.getComponentDataDefs();
-        if(componentDataMap) {
-            for(let fieldName in componentDataMap) {
+        let componentFieldMap = this.constructor.getComponentFieldDefs();
+        if(componentFieldMap) {
+            for(let fieldName in componentFieldMap) {
                 json[fieldName] = this.getField(fieldName);
             }
         }
     }
 
+    /** This method reads any data fields associated with the component. */
     loadExtendedData(json) {
-        let componentDataMap = this.constructor.getComponentDataDefs();
-        if(componentDataMap) {
-            for(let fieldName in componentDataMap) {
+        let componentFieldMap = this.constructor.getComponentFieldDefs();
+        if(componentFieldMap) {
+            for(let fieldName in componentFieldMap) {
                 let newValue = json[fieldName];
                 if(newValue != undefined) {
                     let oldValue = this.getField(fieldName);
@@ -367,94 +330,10 @@ export default class Component extends FieldObject {
         }
     }
 
-    writeExtendedProps(json,modelManager) {
-        let componentPropertyMap = this.constructor.getComponentPropertyDefs();
-        if(componentPropertyMap) {
-            for(let propName in componentPropertyMap) {
-                json[propName] = this.getField(propName);
-            }
-        }
-    }
-
-    loadExtendedProps(json) {
-        let componentPropertyMap = this.constructor.getComponentPropertyDefs();
-        if(componentPropertyMap) {
-            for(let propName in componentPropertyMap) {
-                let newValue = json[propName];
-                if(newValue != undefined) {
-                    let oldValue = this.getField(propName);
-                    if(newValue !== oldValue) {
-                        this.setField(propName,newValue);
-                    }
-                }
-            }
-        }
-    }
-
-
-    /** This optional static function reads property input from the property 
-     * dialog and copies it into a member property json. It is not needed for
-     * this componnet. */
-    static transferMemberProperties(inputValues,propertyJson) {
-        //this is class object in a static method
-        let memberPropertyList = this.getMemberPropertyList();
-        if(memberPropertyList) {
-            memberPropertyList.forEach(propName => {
-                if(inputValues[propName] !== undefined) {
-                    if(!propertyJson.updateData) propertyJson.updateData = {};
-                    propertyJson.updateData[propName] = inputValues[propName];
-                }
-            });
-        }
-    }
-
-    /** This optional static function reads property input from the property 
-     * dialog and copies it into a component property json. */
-    static transferComponentProperties(inputValues,propertyJson) {
-        //this is class object in a static method
-        let componentPropertyMap = this.getComponentPropertyDefs();
-        if(componentPropertyMap) {
-            for(let propName in componentPropertyMap) {
-                if(inputValues[propName] !== undefined) {
-                    propertyJson[propName] = inputValues[propName];
-                }
-            }
-        }
-    }
-
     //======================================
     // Static methods
     //======================================
 
-    /** This function creates a json to create the member for a new component instance. 
-     * It uses default values and then overwrites in with optionalBaseValues (these are intended to be base values outside of user input values)
-     * and then optionalOverrideValues (these are intended to be user input values) */
-    static createMemberJson(componentClass,optionalInputProperties) {
-        var json = apogeeutil.jsonCopy(componentClass.getTotalMemberJson());
-        if(optionalInputProperties) {
-            if(optionalInputProperties.name !== undefined) json.name = optionalInputProperties.name;
-        
-            //copy in the input property values
-            if(componentClass.transferMemberProperties) {
-                componentClass.transferMemberProperties(optionalInputProperties,json);
-            }
-        }
-        
-        return json;
-    }
-
-    /** This function merges values from two objects containing component property values. */
-    static createComponentJson(componentClass,optionalInputProperties) {
-        //get the initial json
-        var json = apogeeutil.jsonCopy(componentClass.getDefaultComponentJson());
-        
-        //copy in the input property Value
-        if((optionalInputProperties)&&(componentClass.transferComponentProperties)) {
-            componentClass.transferComponentProperties(optionalInputProperties,json);
-        }
-        
-        return json;
-    }
 
     //=======================
     // Configuation Property Accessors
@@ -499,21 +378,10 @@ export default class Component extends FieldObject {
         return json;
     }
 
-    static getComponentPropertyDefs() {
+    static getComponentFieldDefs() {
         //"this" refers to the class object in a static
-        return this.getConfigField("componentPropertyMap");
+        return this.getConfigField("componentFieldMap");
     }
-
-    static getComponentDataDefs() {
-        //"this" refers to the class object in a static
-        return this.getConfigField("componentDataMap");
-    }
-
-    static getMemberPropertyList() {
-        //"this" refers to the class object in a static
-        return this.getConfigField("memberPropertyList");
-    }
-
 
     static getConfigField(fieldName) {
         //"this" refers to the class object in a static
@@ -555,8 +423,7 @@ export default class Component extends FieldObject {
 // ExtendingComponent.CLASS_CONFIG = {
 //     displayName: The display name for this compononent - REQUIRED
 //     uniqueName: The globally unique identifer for this component 
-//     defaultMemberJson: The JSON taht creates the default members for this component
-//     componentPropertyMap: A map of property names to default values
-//     componentDataMap: A map of data field names to default values
-//     memberPropertyList: A list of property transferred to a member
+//     defaultMemberJson: The JSON that creates the default members for this component
+//     componentFieldMap: A map of data field names to default values. All fields included in this map will
+//                        automatically be initialized and serialized and property updates for them will be supported.
 // }

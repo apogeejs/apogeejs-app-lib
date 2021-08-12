@@ -32,8 +32,10 @@ FunctionComponent.CLASS_CONFIG = {
 	uniqueName: "apogeeapp.FunctionCell",
 	defaultMemberJson: {
 		"type": "apogee.FunctionMember"
-	},
-	memberPropertyList: [
-		"argList"
-	]
+	}
 }
+
+
+// memberPropertyList: [
+//     "argList"
+// ]

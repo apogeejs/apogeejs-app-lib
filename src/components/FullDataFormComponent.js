@@ -72,7 +72,7 @@ FullDataFormComponent.CLASS_CONFIG = {
 			}
 		}
 	},
-	componentDataMap: {
+	componentFieldMap: {
 		"layoutCode": "return [];",
 		"validatorCode": "return true;"
 	}

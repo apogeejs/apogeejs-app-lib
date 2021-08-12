@@ -82,10 +82,8 @@ CustomComponent.CLASS_CONFIG = {
     defaultMemberJson: {
         "type": "apogee.JsonMember"
     },
-    componentPropertyMap: {
-        "destroyOnInactive": false
-    },
-    componentDataMap: {
+    componentFieldMap: {
+        "destroyOnInactive": false,
         "html": "",
         "css": "",
         "uiCode": ""

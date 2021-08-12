@@ -106,10 +106,8 @@ CustomDataComponent.CLASS_CONFIG = {
             }
         }
     },
-    componentPropertyMap: {
-        "destroyOnInactive": false
-    },
-    componentDataMap: {
+    componentFieldMap: {
+        "destroyOnInactive": false,
         "html": "",
         "css": "",
         "uiCode": ""

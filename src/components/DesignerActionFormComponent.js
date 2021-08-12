@@ -68,10 +68,8 @@ DesignerActionFormComponent.CLASS_CONFIG = {
     displayName: "Action Form Cell",
     uniqueName: "apogeeapp.DesignerActionFormCell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
-    componentPropertyMap: {
-        "allowInputExpressions": true
-    },
-    componentDataMap: {
+    componentFieldMap: {
+        "allowInputExpressions": true,
         "onSubmitCode": "",
         "onCancelCode": ""
     }

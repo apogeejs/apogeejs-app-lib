@@ -59,10 +59,8 @@ DesignerDataFormComponent.CLASS_CONFIG = {
 	displayName: "Data Form Cell",
 	uniqueName: "apogeeapp.DesignerDataFormCell",
 	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
-	componentPropertyMap: {
-		allowInputExpressions: true
-	},
-	componentDataMap: {
+	componentFieldMap: {
+		allowInputExpressions: true,
 		validatorCode: "return true;"
 	}
 }

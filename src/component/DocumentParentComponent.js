@@ -24,12 +24,6 @@ export default class DocumentParentComponent extends ParentComponent {
         }
     }
 
-    /** This returns the folder member which holds the child content. */
-    getParentFolderForChildren() {
-        let contentFolderFieldPath = this.constructor.getConfigField("contentFolderFieldPath");
-        return this.getDirectChildMember(contentFolderFieldPath);
-    }
-
     getSchema() {
         return this.getField("schema");
     }
@@ -62,7 +56,7 @@ export default class DocumentParentComponent extends ParentComponent {
 
     /** This serializes the table component. */
     writeExtendedData(json,modelManager) {
-        json = super.writeExtendedData(json,modelManager);
+        super.writeExtendedData(json,modelManager);
 
         //save the editor state
         let editorState = this.getField("editorState");
@@ -82,18 +76,15 @@ export default class DocumentParentComponent extends ParentComponent {
         if((json.data)&&(json.data.doc)) {
             //parse the saved document
             docJson = json.data.doc;
+            editorState = createEditorState(this.getSchema(),docJson);
+            this.setField("editorState",editorState);
         }
-        else {
-            //no document stored - create an empty document
-            docJson = EMPTY_DOC_JSON;
-        }
-        editorState = createEditorState(this.getSchema(),docJson);
-        this.setField("editorState",editorState);
+        // else {
+        //     //no document stored - create an empty document
+        //     docJson = EMPTY_DOC_JSON;
+        // }
     }
 }
-
-/** This is used to flag this as an edit component. */
-ParentComponent.isParentComponent = true;
 
 //The following config property should be added to indicate the field name for the folder member which holds the children.
 //ExtendingComponent.CLASS_CONFIG.contentFolderFieldName

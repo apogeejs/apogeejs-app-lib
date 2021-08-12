@@ -24,27 +24,15 @@ updateComponentProperties.createUndoCommand = function(workspaceManager,commandD
     var member = model.lookupMemberById(commandData.memberId);
     var componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     var component = modelManager.getComponentByComponentId(componentId);
-
-    var originalMemberProperties = {};
-    if(member.writeProperties) member.writeProperties(originalMemberProperties);
-    var originalComponentProperties = {};
-    if(component.writeExtendedProps) component.writeExtendedProps(originalComponentProperties);
-    
-    var undoMemberProperties;
-    var undoComponentProperties;
-    
+  
+    let undoMemberProperties
     if(commandData.updatedMemberProperties) {
-        undoMemberProperties = {};
-        for(var propKey in commandData.updatedMemberProperties) {
-            undoMemberProperties = originalMemberProperties[propKey];
-        }
+        undoMemberProperties = _getMemberUndoJson(model,member,commandData.updatedMemberProperties);
     }
     
+    let undoComponentProperties
     if(commandData.updatedComponentProperties) {
-        undoComponentProperties = {};
-        for(var propKey in commandData.updatedComponentProperties) {
-            undoComponentProperties = originalComponentProperties[propKey];
-        }
+        undoComponentProperties = _getComponentUndoJson(modelManager,component,commandData.updatedComponentProperties);
     }
     
     var undoCommandJson = {};
@@ -86,6 +74,45 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
     if(commandData.updatedComponentProperties) {
         component.loadPropertyValues(modelManager,commandData.updatedComponentProperties);
     }
+}
+
+function _getComponentUndoJson(modelManager,component,doJson) {
+    let undoJson = {};
+    for(let fieldName in doJson) {
+        if(fieldName != "children") {
+            undoJson[fieldName] = component.getField(fieldName);
+        }
+        else {
+            if(component.isParentComponent) {
+                undoJson.children = {};
+                for(let childName in doJson.children) {
+                    let childDoJson = doJson.children[childName];
+                    let childComponent = component.getChildComponent(modelManager,childName);
+                    undoJson.children[childName] = _getComponentUndoJson(modelManager,childComponent,childDoJson);
+                }
+            }
+        }
+    }
+    return undoJson;
+}
+
+function _getMemberUndoJson(model,member,doJson) {
+    let undoJson = {};
+    if(doJson.updateData) {
+        undoJson.updateData = {};
+        for(let fieldName in doJson.updateData) {
+            undoJson.updateData[fieldName] = member.getField(fieldName);
+        }
+    }
+    if((member.isParent)&&(doJson.children)) {
+        undoJson.children = {};
+        for(let childName in doJson.children) {    
+            let childDoJson = doJson.children[childName];
+            let childMember = member.lookupChild(model,childName);
+            undoJson.children[childName] = _getMemberUndoJson(model,childMember,childDoJson);
+        }
+    }
+    return undoJson;
 }
 
 updateComponentProperties.commandInfo = {

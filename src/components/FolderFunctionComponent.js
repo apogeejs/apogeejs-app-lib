@@ -46,9 +46,10 @@ FolderFunctionComponent.CLASS_CONFIG = {
 			}
 		}
 	},
-	memberPropertyList: [
-		"argList",
-		"returnValue"
-	],
 	contentFolderFieldPath: "body"
 }
+
+// memberPropertyList: [
+//     "argList",
+//     "returnValue"
+// ]

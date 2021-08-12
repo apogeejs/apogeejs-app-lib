@@ -47,7 +47,7 @@ FullActionFormComponent.CLASS_CONFIG = {
 	defaultMemberJson: {
 		"type": "apogee.JsonMember"
 	},
-	componentDataMap: {
+	componentFieldMap: {
 		"layoutCode": "return [];"
 	}
 }
