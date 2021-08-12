@@ -254,25 +254,6 @@ export default class Component extends FieldObject {
         this.setField(fieldName,updatedMember);
     }
 
-    /** This method is used for setting initial values in the property dialog. 
-     * If there are additional property lines, in the generator, this method should
-     * be extended to give the values of those properties too. */
-    getPropertyValues() {
-        var member = this.getField("member");
-        
-        var values = {};
-        values.name = member.getName();
-        values.parentId = member.getParentId();
-
-        if(member.writeProperties) {
-            member.writeProperties(values);
-        }
-        if(this.writeExtendedData) {
-            this.writeExtendedData(values);
-        }
-        return values;
-    }
-
     /** This function processes the members associated with this component, using the default json
      * to look up the member instances. This includes registering the each member, saving the member in its
      * associated field, and constructing the member field map.  */
