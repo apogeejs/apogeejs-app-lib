@@ -36,7 +36,6 @@ export default class FolderFunctionComponent extends DocumentParentComponent {
 
 FolderFunctionComponent.CLASS_CONFIG = {
 	displayName: "Multi-Cell Function",
-	uniqueName: "apogeeapp.PageFunctionComponent",
 	defaultMemberJson: {
 		"type": "apogee.FolderFunction",
 		"children": {
@@ -46,7 +45,10 @@ FolderFunctionComponent.CLASS_CONFIG = {
 			}
 		}
 	},
-	contentFolderFieldPath: "body"
+	defaultComponentJson: {
+		type: "apogeeapp.PageFunctionComponent"
+	},
+	childParentFolderPath: "body"
 }
 
 // memberPropertyList: [

@@ -66,12 +66,12 @@ defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 
 DesignerActionFormComponent.CLASS_CONFIG = {
     displayName: "Action Form Cell",
-    uniqueName: "apogeeapp.DesignerActionFormCell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
-    componentFieldMap: {
-        "allowInputExpressions": true,
-        "onSubmitCode": "",
-        "onCancelCode": ""
+    defaultComponentJson: {
+        type: "apogeeapp.DesignerActionFormCell",
+        allowInputExpressions: true,
+        onSubmitCode: "",
+        onCancelCode: ""
     }
 }
 

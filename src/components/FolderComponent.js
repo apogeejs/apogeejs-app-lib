@@ -10,11 +10,13 @@ export default class FolderComponent extends DocumentParentComponent {}
 
 FolderComponent.CLASS_CONFIG = {
 	displayName: "Page",
-	uniqueName: "apogeeapp.PageComponent",
 	defaultMemberJson: {
 		"type": "apogee.Folder"
 	},
-	contentFolderFieldPath: "."
+	defaultComponentJson: {
+		type: "apogeeapp.PageComponent"
+	},
+	childParentFolderPath: "."
 }
 
 

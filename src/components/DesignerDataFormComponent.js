@@ -57,12 +57,12 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
 
 DesignerDataFormComponent.CLASS_CONFIG = {
 	displayName: "Data Form Cell",
-	uniqueName: "apogeeapp.DesignerDataFormCell",
 	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
-	componentFieldMap: {
-		allowInputExpressions: true,
+    defaultComponentJson: {
+        type: "apogeeapp.DesignerDataFormCell",
+        allowInputExpressions: true,
 		validatorCode: "return true;"
-	}
+    }
 }
 
 

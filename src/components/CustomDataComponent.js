@@ -85,7 +85,6 @@ export default class CustomDataComponent extends Component {
 
 CustomDataComponent.CLASS_CONFIG = {
     displayName: "Custom Data Cell",
-    uniqueName: "apogeeapp.CustomDataCell",
     defaultMemberJson: {
         "type": "apogee.Folder",
         "childrenNotWriteable": true,
@@ -106,11 +105,12 @@ CustomDataComponent.CLASS_CONFIG = {
             }
         }
     },
-    componentFieldMap: {
-        "destroyOnInactive": false,
-        "html": "",
-        "css": "",
-        "uiCode": ""
+    defaultComponentJson: {
+        type: "apogeeapp.CustomDataCell",
+        destroyOnInactive: false,
+        html: "",
+        css: "",
+        uiCode: ""
     }
 }
 

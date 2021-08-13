@@ -6,9 +6,18 @@ export default class Component extends FieldObject {
     constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
         super("component",instanceToCopy,keepUpdatedFixed);
 
+        //=============
+        // component type specific variables
+        //=============
+
         //inheriting objects can pass functions here to be called on cleanup, save, etc
         this.cleanupActions = [];
         
+        //parent logic
+        let childParentFolderPath = this.constructor.getConfigField("childParentFolderPath");
+        this.childParentFolderFieldName = this.memberPathToMemberField(childParentFolderPath);
+        this.isParent = (childParentFolderPath !== undefined);
+
         //==============
         //Fields
         //==============
@@ -21,18 +30,9 @@ export default class Component extends FieldObject {
             let memberJson = this.constructor.getDefaultMemberJson();
             let memberFieldName = "member";
             let isRoot = true;
-            this.processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isRoot,memberFieldMap);
+            this._processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isRoot,memberFieldMap);
             
             this.setField("memberFieldMap",memberFieldMap);
-
-            //initialize fields in the extending class
-            let componentFieldMap = this.constructor.getComponentFieldDefs();
-            if(componentFieldMap) {
-                for(let fieldName in componentFieldMap) {
-                    let newValue = componentFieldMap[fieldName];
-                    this.setField(fieldName,newValue);
-                }
-            }
         }
 
         //==============
@@ -51,6 +51,10 @@ export default class Component extends FieldObject {
     //==============================
     // Public Instance Methods
     //==============================
+
+    //--------------------------
+    // Accessors and convencience functions
+    //--------------------------
 
     /** This method returns the base member for this component. To see if this
      * field has been updated, check the "member" field of the component.  
@@ -136,6 +140,37 @@ export default class Component extends FieldObject {
         return this.getField("memberFieldMap");
     }
 
+    setViewStateCallback(viewStateCallback) {
+        this.viewStateCallback = viewStateCallback;
+    }
+
+    getCachedViewState() {
+        return this.cachedViewState;
+    }
+
+    //--------------------------
+    // Event handlers
+    //--------------------------
+
+    /** This method extends the member udpated function from the base.
+     * @protected */    
+    memberUpdated(updatedMember) {
+        let memberFieldMap = this.getField("memberFieldMap");
+        let fieldName = memberFieldMap[updatedMember.getId()];
+
+        //legacy case of old member registartion
+        if(!fieldName) {
+            fieldName = "member." + updatedMember.getName();
+        }
+
+        this.setField(fieldName,updatedMember);
+    }
+
+    //------------------
+    // parent child methods
+    //------------------
+
+    /** This returns the parent component for this component. */
     getParentComponent(modelManager) {
         let model = modelManager.getModel();
         let parent = this.getField("member").getParentMember(model);
@@ -148,13 +183,89 @@ export default class Component extends FieldObject {
         }
     }
 
-    setViewStateCallback(viewStateCallback) {
-        this.viewStateCallback = viewStateCallback;
+    /** This returns the component at the specified component path. If the component is not
+     * found, null is returned. */
+	getChildComponent(modelManager,componentPath) {
+		if((!componentPath)||(componentPath == ".")) {
+			return this;
+		}
+		else if(this.isParent) {
+			let componentPathArray = Component.getPathArrayFromPath(componentPath);
+			return Component._getChildComponentImpl(modelManager,this,componentPathArray);
+		}
+        else {
+            return null;
+        }
+	}
+
+    /** This returns true if the component is a parent component. */
+    getIsParent() {
+        return this.isParent;
     }
 
-    getCachedViewState() {
-        return this.cachedViewState;
+    /** This returns the folder member which holds the child content. */
+    getParentFolderForChildren() {
+        if(this.isParent) {
+            return this.getField(this.childParentFolderFieldName);
+        }
+        else {
+            return null;
+        }
     }
+
+    getChildMemberFromPath(childPath) {
+        return this.getField(this.memberPathToMemberField(childPath));
+    }
+
+    memberPathToMemberField(childPath) {
+        if(childPath == ".") {
+            return "member";
+        }
+        else {
+            return "member." + childPath;
+        }
+    }
+
+	/** This converts a component or member path to a path array. */
+	static getPathArrayFromPath(path) {
+		if((!path)||(path == ".")) {
+			return [];
+		}
+		else {
+			return path.split(",").map(entry => entry.trim());
+		}
+	}
+
+	static _getChildComponentImpl(modelManager,parentComponent,componentPathArray,startIndex) {
+		if(componentPathArray.length == 0) return parentComponent;
+		if(startIndex === undefined) startIndex = 0;
+	
+		let folderMember = parentComponent.getParentFolderForChildren();
+		let childMemberId = folderMember.lookupChildId(componentPathArray[startIndex]);
+		let childComponentId = modelManager.getComponentIdByMemberId(childMemberId);
+		let childComponent = modelManager.getComponentByComponentId(childComponentId);
+		if(startIndex >= componentPathArray.length-1) {
+			return childComponent;
+		}
+		else {
+			return this._getChildComponentImpl(modelManager,childComponent,componentPathArray,startIndex+1);
+		}
+	}
+
+	//BELOW ONLY APPLIES IF THE PARENT IS A FOLDER (FIX FOR FUNCTION FOLDER!!!)
+	//I think we need to look up the type for the component children. We might need to add model manager.
+	static getFullMemberPath(componentPath,memberPath) {
+		if((!componentPath)||(componentPath == ".")) {
+			return memberPath;
+		}
+		else if((!memberPath)||(memberPath == ".")) {
+			return componentPath;
+		}
+		else {
+			return componentPath + "." + memberPath;
+		}
+	}
+
 
     //------------------
     // serialization
@@ -165,14 +276,31 @@ export default class Component extends FieldObject {
         var json = {};
         json.type = this.constructor.getClassUniqueName();
 
-        //TO DO 
-
         if(this.displayState) {
             json.displayState = this.displayState;
         }
 
         if(this.writeExtendedData) {
             this.writeExtendedData(json,modelManager);
+        }
+
+        //write the child jsons, if applicable
+        if(this.isParent) {
+            var folder = this.getParentFolderForChildren();
+            var childrenPresent = false;
+            var children = {};
+            var childIdMap = folder.getChildIdMap();
+            for(var key in childIdMap) {
+                var childId = childIdMap[key];
+                var childComponentId = modelManager.getComponentIdByMemberId(childId);
+                var childComponent = modelManager.getComponentByComponentId(childComponentId);
+                var name = childComponent.getName();
+                children[name] = childComponent.toJson(modelManager);
+                childrenPresent = true;
+            }
+            if(childrenPresent) {
+                json.children = children;
+            }
         }
 
         /////////////////////////////////////////////////////////////////////////
@@ -204,7 +332,6 @@ export default class Component extends FieldObject {
             this.loadExtendedData(json);
         }
 
-
         //////////////////////////////////////////////////////////////////
         //legacy name kept for legacy support
         if(this.readPropsFromJson) {
@@ -213,11 +340,39 @@ export default class Component extends FieldObject {
         //////////////////////////////////////////////////////////////////
     }
 
+    /** This method loads the children for this component */
+    loadChildrenFromJson(modelManager,componentJson) {
+        if((this.isParent)&&(componentJson.children)) {
+            let parentMember = this.getParentFolderForChildren();
+            for(let childName in componentJson.children) {
+                let childMember = parentMember.lookupChild(modelManager.getModel(),childName);
+                if(childMember) {
+                    let childComponentJson = componentJson.children[childName];
+                    modelManager.createComponentFromMember(childMember,childComponentJson);
+                }
+            };
+        }
+    }
+
     /** This is used to update properties, such as from the set properties form. */
-    loadPropertyValues(modelManager,json) {
+    loadPropertyValues(modelManager,propertyJson) {
         if(this.loadExtendedData) {
-            this.loadExtendedData(json);
+            this.loadExtendedData(propertyJson);
         }  
+
+        //load properties in child components if applicable
+        if((this.isParent)&&(propertyJson.children)) {
+            let parentMember = this.getParentFolderForChildren();
+            for(let childName in propertyJson.children) {
+                let childMemberId = parentMember.lookupChildId(childName);
+                if(childMemberId) {
+                    let childPropertyJson = propertyJson.children[childName];
+                    let childComponentId = modelManager.getComponentIdByMemberId(childMemberId);
+                    let childComponent = modelManager.getMutableComponentByComponentId(childComponentId);
+                    childComponent.loadPropertyValues(modelManager,childPropertyJson);
+                }
+            }
+        }
 
         //////////////////////////////////////////////////////////////////
         //legacy name - kept for legacy support   
@@ -226,12 +381,14 @@ export default class Component extends FieldObject {
         }
         //////////////////////////////////////////////////////////////////
     }
+
     //==============================
     // Protected Instance Methods
     //==============================
 
     /** This method cleans up after a delete. Any extending object that has delete
-     * actions should pass a callback function to the method "addClenaupAction" */
+     * actions should pass a callback function to the method "addClenaupAction" 
+     * @protected */
     onDelete() {
         
         //execute cleanup actions
@@ -240,24 +397,61 @@ export default class Component extends FieldObject {
         }
     }
 
-    /** This method extends the member udpated function from the base.
-     * @protected */    
-    memberUpdated(updatedMember) {
-        let memberFieldMap = this.getField("memberFieldMap");
-        let fieldName = memberFieldMap[updatedMember.getId()];
+    /** This method writes any data fields associated with the component. */
+    writeExtendedData(json,modelManager) {
+        let componentFieldMap = this.constructor.getComponentFieldDefs();
+        let customConverters = this.constructor.getCustomConverters();
+        if(componentFieldMap) {
+            for(let fieldName in componentFieldMap) {
+                let fieldValue = this.getField(fieldName);
+                let jsonValue;
+                //check if we need to convert the field value into the json value
+                if((fieldValue !== undefined)&&(customConverters)&&(customConverters[fieldName])) {
+                    jsonValue = customConverters[fieldName].fieldToJson(this,fieldValue);
+                }
+                else {
+                    jsonValue = fieldValue;
+                }
 
-        //legacy case of old member registartion
-        if(!fieldName) {
-            fieldName = "member." + updatedMember.getName();
+                json[fieldName] = this.getField(jsonValue);
+            }
         }
-
-        this.setField(fieldName,updatedMember);
     }
+
+    /** This method reads any data fields associated with the component. */
+    loadExtendedData(json) {
+        let componentFieldMap = this.constructor.getComponentFieldDefs();
+        let customConverters = this.constructor.getCustomConverters();
+        if(componentFieldMap) {
+            for(let fieldName in componentFieldMap) {
+                let newJsonValue = json[fieldName];
+                let newFieldValue;
+                //check if we need to convert the json value into the field value
+                if((newJsonValue !== undefined)&&(customConverters)&&(customConverters[fieldName])) {
+                    newFieldValue = customConverters[fieldName].jsonToField(this,newJsonValue);
+                }
+                else {
+                    newFieldValue = newJsonValue;
+                }
+
+                if(newFieldValue != undefined) {
+                    let oldFieldValue = this.getField(fieldName);
+                    if(!_.isEqual(newFieldValue,oldFieldValue)) {
+                        this.setField(fieldName,newFieldValue);
+                    }
+                }
+            }
+        }
+    }
+
+    //==============================
+    // Private Methods
+    //==============================
 
     /** This function processes the members associated with this component, using the default json
      * to look up the member instances. This includes registering the each member, saving the member in its
      * associated field, and constructing the member field map.  */
-    processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isMainMember,memberFieldMap) {
+    _processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isMainMember,memberFieldMap) {
 
         //register the member with the model manager
         modelManager.registerMember(member.getId(),this,isMainMember);
@@ -268,45 +462,15 @@ export default class Component extends FieldObject {
         //save the member in its component field
         this.setField(memberFieldName,member);
         
-        //process the children of this member
-        if(memberJson.children) {
+        //process the children of this member if they are a part of this component
+        if((memberJson.children)&&(memberFieldName != this.childParentFolderFieldName)) {
             let model = modelManager.getModel();
             for(let childName in memberJson.children) {
                 let childMember = member.lookupChild(model,childName);
                 let childMemberJson = memberJson.children[childName];
                 let childMemberFieldName = memberFieldName + "." + childName;
                 let childIsMainMember = false;
-                this.processMemberAndChildren(modelManager,childMember,childMemberJson,childMemberFieldName,childIsMainMember,memberFieldMap);
-            }
-        }
-    }
-
-    //==============================
-    // serialization and properties
-    //==============================
-
-    /** This method writes any data fields associated with the component. */
-    writeExtendedData(json,modelManager) {
-        let componentFieldMap = this.constructor.getComponentFieldDefs();
-        if(componentFieldMap) {
-            for(let fieldName in componentFieldMap) {
-                json[fieldName] = this.getField(fieldName);
-            }
-        }
-    }
-
-    /** This method reads any data fields associated with the component. */
-    loadExtendedData(json) {
-        let componentFieldMap = this.constructor.getComponentFieldDefs();
-        if(componentFieldMap) {
-            for(let fieldName in componentFieldMap) {
-                let newValue = json[fieldName];
-                if(newValue != undefined) {
-                    let oldValue = this.getField(fieldName);
-                    if(newValue !== oldValue) {
-                        this.setField(fieldName,newValue);
-                    }
-                }
+                this._processMemberAndChildren(modelManager,childMember,childMemberJson,childMemberFieldName,childIsMainMember,memberFieldMap);
             }
         }
     }
@@ -315,10 +479,9 @@ export default class Component extends FieldObject {
     // Static methods
     //======================================
 
-
-    //=======================
+    //-----------------------
     // Configuation Property Accessors
-    //=======================
+    //-----------------------
 
     static getClassDisplayName() {
         //"this" refers to the class object in a static
@@ -327,7 +490,16 @@ export default class Component extends FieldObject {
 
     static getClassUniqueName() {
         //"this" refers to the class object in a static
-        return this.getConfigField("uniqueName");
+        let defaultComponentJson = this.getConfigField("defaultComponentJson");
+        if(defaultComponentJson) {
+            return defaultComponentJson.type;
+        }
+        else {
+            /////////////////////////////////////////
+            //legacy 
+            return this.getConfigField("uniqueName");
+            /////////////////////////////////////////
+        }
     }
 
     static getDefaultMemberJson() {
@@ -339,12 +511,6 @@ export default class Component extends FieldObject {
         //////////////////////////////////////
 
         return this.getConfigField("defaultMemberJson");
-    }
-
-    static getTotalMemberJson() {
-        let totalMemberJson = this.getConfigField("totalMemberJson");
-        if(!totalMemberJson) return this.getDefaultMemberJson();
-        else return totalMemberJson;
     }
 
     static getDefaultComponentJson() {
@@ -361,7 +527,22 @@ export default class Component extends FieldObject {
 
     static getComponentFieldDefs() {
         //"this" refers to the class object in a static
-        return this.getConfigField("componentFieldMap");
+        /////////////////////////////////////////
+        //change this!??, with a changed json format?
+        //////////////////////////////////////////
+        let componentJson = this.getDefaultComponentJson();
+        let componentFieldMap = {};
+        for(let fieldName in componentJson) {
+            if((fieldName != "type")&&(fieldName != "children")) {
+                componentFieldMap[fieldName] = componentJson[fieldName];
+            }
+        }
+        return componentFieldMap
+    }
+
+    static getCustomConverters() {
+        //"this" refers to the class object in a static
+        return this.getConfigField("customConverters");
     }
 
     static getConfigField(fieldName) {
@@ -378,23 +559,6 @@ export default class Component extends FieldObject {
         return this.CLASS_CONFIG[fieldName];
     }
 
-    //////////////////////////////////////////////////////////////////
-    // NEW CHILD METHODS
-    ////////////////////////////////////////////////////
-
-
-    getDirectChildMember(childPath) {
-        return this.getField(this.memberPathToMemberField(childPath));
-    }
-
-    memberPathToMemberField(childPath) {
-        if(childPath == ".") {
-            return "member";
-        }
-        else {
-            return "member." + childPath;
-        }
-    }
 }
 
 //======================================
@@ -403,8 +567,6 @@ export default class Component extends FieldObject {
 
 // ExtendingComponent.CLASS_CONFIG = {
 //     displayName: The display name for this compononent - REQUIRED
-//     uniqueName: The globally unique identifer for this component 
 //     defaultMemberJson: The JSON that creates the default members for this component
-//     componentFieldMap: A map of data field names to default values. All fields included in this map will
-//                        automatically be initialized and serialized and property updates for them will be supported.
+//     defaultComponentJson: The JSOn that creates the default component.
 // }

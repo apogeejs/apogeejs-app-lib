@@ -15,9 +15,11 @@ export default class JsonPlusTableComponent extends Component {};
 
 
 JsonPlusTableComponent.CLASS_CONFIG = {
-	"displayName": "Extended Data Cell",
-	"uniqueName": "apogeeapp.ExtendedJsonCell",
-	"defaultMemberJson": {
-		"type": "apogee.JsonMember"
+	displayName: "Extended Data Cell",
+	defaultMemberJson: {
+		type: "apogee.JsonMember"
+	},
+	defaultComponentJson: {
+		type: "apogeeapp.ExtendedJsonCell"
 	}
 }

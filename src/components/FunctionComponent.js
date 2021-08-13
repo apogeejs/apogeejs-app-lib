@@ -29,9 +29,11 @@ export default class FunctionComponent extends Component {
 
 FunctionComponent.CLASS_CONFIG = {
 	displayName: "Function Cell",
-	uniqueName: "apogeeapp.FunctionCell",
 	defaultMemberJson: {
 		"type": "apogee.FunctionMember"
+	},
+	defaultComponentJson: {
+		type: "apogeeapp.FunctionCell"
 	}
 }
 

@@ -88,7 +88,7 @@ export default class ModelManager extends FieldObject {
         //get folder compontents
         for(var key in componentMap) {
             var component = componentMap[key];
-            if(component.getParentFolderForChildren) {
+            if(component.getIsParent()) {
                 let folderMember = component.getParentFolderForChildren();
                 if(folderMember.getChildrenWriteable()) { 
                     let folderEntry = [];

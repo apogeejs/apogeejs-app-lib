@@ -9,7 +9,6 @@ export default class DynamicForm extends Component {}
 
 DynamicForm.CLASS_CONFIG = {
 	displayName: "Legacy Action Form Cell (deprecated)",
-	uniqueName: "apogeeapp.ActionFormCell",
 	defaultMemberJson: {
 		"type": "apogee.FunctionMember",
 		"updateData": {
@@ -17,5 +16,8 @@ DynamicForm.CLASS_CONFIG = {
 				"admin"
 			]
 		}
+	},
+	defaultComponentJson: {
+		type: "apogeeapp.ActionFormCell"
 	}
 }

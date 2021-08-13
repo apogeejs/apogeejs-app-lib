@@ -29,9 +29,11 @@ export default class ErrorComponent extends Component {
 
 ErrorComponent.CLASS_CONFIG = {
 	displayName: "Error Cell",
-	uniqueName: "apogeeapp.ErrorCell",
 	defaultMemberJson: {
-		"type": "apogee.ErrorMember"
+		type: "apogee.ErrorMember"
+	},
+	defaultComponentJson: {
+		type: "apogeeapp.ErrorCell"
 	}
 }
 

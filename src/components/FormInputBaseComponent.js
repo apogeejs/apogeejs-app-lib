@@ -15,13 +15,11 @@ export default class FormInputBaseComponent extends Component {
         dataMemberTypeName = cellUniqueName + "-data";
         defineHardcodedJsonTable(dataMemberTypeName,memberFunctionBody);
 
-        //here we initialize some constants on the class
-        classObject.displayName = cellDisplayName;
-        classObject.uniqueName = cellUniqueName;
-
-        //add the default json
-        //there is an option to add additional children
-        classObject.defaultMemberJson = getFormComponentDefaultMemberJson(dataMemberTypeName);
+        let classConfig = {};
+        classConfig.displayName = cellDisplayName;
+        classConfig.defaultMemberJson = getFormComponentDefaultMemberJson(dataMemberTypeName);
+        classConfig.defaultComponentJson = {type: cellUniqueName};
+        classObject.CLASS_CONFIG = classConfig;
     }
 }
 

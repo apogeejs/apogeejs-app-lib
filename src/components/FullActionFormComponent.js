@@ -43,13 +43,13 @@ export default class FullActionFormComponent extends Component {
 
 FullActionFormComponent.CLASS_CONFIG = {
 	displayName: "Full Action Form Cell",
-	uniqueName: "apogeeapp.FullActionFormCell",
 	defaultMemberJson: {
 		"type": "apogee.JsonMember"
 	},
-	componentFieldMap: {
-		"layoutCode": "return [];"
-	}
+    defaultComponentJson: {
+        type: "apogeeapp.FullActionFormCell",
+        "layoutCode": "return [];"
+    }
 }
 
 

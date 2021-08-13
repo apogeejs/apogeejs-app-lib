@@ -15,7 +15,6 @@ export default class FormDataComponent extends Component {}
 
 FormDataComponent.CLASS_CONFIG = {
 	displayName: "Legacy Data Form Cell (deprecated)",
-	uniqueName: "apogeeapp.DataFormCell",
 	defaultMemberJson: {
 		"type": "apogee.Folder",
 		"childrenNotWriteable": true,
@@ -45,5 +44,8 @@ FormDataComponent.CLASS_CONFIG = {
 				}
 			}
 		}
+	},
+	defaultComponentJson: {
+		type: "apogeeapp.DataFormCell"
 	}
 }

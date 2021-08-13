@@ -51,7 +51,6 @@ export default class FullDataFormComponent extends Component {
 
 FullDataFormComponent.CLASS_CONFIG = {
 	displayName: "Full Data Form Cell",
-	uniqueName: "apogeeapp.FullDataFormCell",
 	defaultMemberJson: {
 		"type": "apogee.Folder",
 		"childrenNotWriteable": true,
@@ -72,10 +71,11 @@ FullDataFormComponent.CLASS_CONFIG = {
 			}
 		}
 	},
-	componentFieldMap: {
-		"layoutCode": "return [];",
-		"validatorCode": "return true;"
-	}
+    defaultComponentJson: {
+        type: "apogeeapp.FullDataFormCell",
+        layoutCode: "return [];",
+		validatorCode: "return true;"
+    }
 }
 
 

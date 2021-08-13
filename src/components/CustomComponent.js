@@ -78,15 +78,15 @@ export default class CustomComponent extends Component {
 
 CustomComponent.CLASS_CONFIG = {
     displayName: "Custom Cell",
-    uniqueName: "apogeeapp.CustomCell",
     defaultMemberJson: {
         "type": "apogee.JsonMember"
     },
-    componentFieldMap: {
-        "destroyOnInactive": false,
-        "html": "",
-        "css": "",
-        "uiCode": ""
+    defaultComponentJson: {
+        type: "apogeeapp.CustomCell",
+        destroyOnInactive: false,
+        html: "",
+        css: "",
+        uiCode: ""
     }
 }
 

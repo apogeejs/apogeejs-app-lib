@@ -5,12 +5,12 @@ export default class JsonTableComponent extends Component {};
 
 JsonTableComponent.CLASS_CONFIG = {
     displayName: "Data Cell",
-    uniqueName: "apogeeapp.JsonCell",
-    componentFieldMap: {
-        "dataView": "Colorized"
-    },
     defaultMemberJson: {
         "type": "apogee.JsonMember"
+    },
+    defaultComponentJson: {
+        type: "apogeeapp.JsonCell",
+        dataView: "Colorized"
     }
 }
 

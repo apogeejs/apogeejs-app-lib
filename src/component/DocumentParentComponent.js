@@ -1,11 +1,11 @@
-import ParentComponent from "/apogeejs-app-lib/src/component/ParentComponent.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 import "/apogeejs-app-lib/src/commands/literatepagetransaction.js";
 import { createFolderSchema, createEditorState, EMPTY_DOC_JSON } from "/apogeejs-app-lib/src/document/apogeeSchema.js";
 
 /** This is the base class for a parent component (an object that has children),
  * It extends the component class. */
-export default class DocumentParentComponent extends ParentComponent {
+export default class DocumentParentComponent extends Component {
 
     constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
         //base constructor
@@ -83,6 +83,27 @@ export default class DocumentParentComponent extends ParentComponent {
         //     //no document stored - create an empty document
         //     docJson = EMPTY_DOC_JSON;
         // }
+    }
+
+    //PROBLEM FIELD NAMING!!! Here we need it to be editorState!!!
+
+    convertEditorStateToJson(fieldValue) {
+        let document = fieldValue.doc;
+        let jsonValue = {};
+        jsonValue.doc = document.toJSON();
+        return jsonValue;
+    }
+
+    convertJsonToEditorState(jsonValue) {
+        if(jsonValue.doc) {
+            let docJson = jsonValue.doc;
+            let fieldValue = createEditorState(this.getSchema(),docJson);
+            return fieldValue;
+        }
+        else {
+            //we shuldn't get here. The function should not be called if doc data missing
+            return null;
+        }
     }
 }
 
