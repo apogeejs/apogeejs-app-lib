@@ -21,7 +21,13 @@ FolderComponent.CLASS_CONFIG = {
 			}
 		}
 	},
-	childParentFolderPath: "."
+	childParentFolderPath: ".",
+	customConverters: {
+		editorState: {
+			fieldToJson: (component,fieldValue) => component.convertEditorStateToJson(fieldValue),
+			jsonToField: (component,jsonValue) => component.convertJsonToEditorState(jsonValue),
+		}
+	}
 }
 
 

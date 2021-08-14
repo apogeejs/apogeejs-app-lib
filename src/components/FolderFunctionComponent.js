@@ -53,7 +53,13 @@ FolderFunctionComponent.CLASS_CONFIG = {
 			}
 		}
 	},
-	childParentFolderPath: "body"
+	childParentFolderPath: "body",
+    customConverters: {
+		editorState: {
+			fieldToJson: (component,fieldValue) => component.convertEditorStateToJson(fieldValue),
+			jsonToField: (component,jsonValue) => component.convertJsonToEditorState(jsonValue),
+		}
+	}
 }
 
 // memberPropertyList: [

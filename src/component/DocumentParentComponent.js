@@ -45,42 +45,7 @@ export default class DocumentParentComponent extends Component {
         let pageFolderMember = this.getParentFolderForChildren();
         let schema = createFolderSchema(modelManager.getApp(),pageFolderMember.getId());
         this.setField("schema",schema);
-        // //initialize with an empty document
-        // let editorState = createEditorState(schema,EMPTY_DOC_JSON);
-        // this.setField("editorState",editorState);
     }
-
-    //==============================
-    // serialization
-    //==============================
-
-    /** This serializes the table component. */
-    writeExtendedData(json,modelManager) {
-        super.writeExtendedData(json,modelManager);
-
-        //save the editor state
-        let editorState = this.getField("editorState");
-        if(editorState) {
-            let document = editorState.doc;
-            if(!json.fields) json.fields = {};
-            json.fields.editorState = {
-                doc: document.toJSON()
-            }
-        }
-    }
-
-    loadExtendedData(json) {
-        //read the editor state
-        if((json.fields)&&(json.fields.editorState)) {
-            //parse the saved document
-            let docJson = json.fields.editorState.doc;
-            if(!docJson) docJson = EMPTY_DOC_JSON; //shouldn't happen if editorState is defined
-            let editorState = createEditorState(this.getSchema(),docJson);
-            this.setField("editorState",editorState);
-        }
-    }
-
-    //PROBLEM FIELD NAMING!!! Here we need it to be editorState!!!
 
     convertEditorStateToJson(fieldValue) {
         let document = fieldValue.doc;
