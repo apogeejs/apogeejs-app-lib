@@ -51,29 +51,6 @@ export default class CustomComponent extends Component {
 
         return resource;
     }
-
-
-    /** We override this method to allow support for a elgacy serialized format,
-     * which was from before version 2.
-     */
-     loadExtendedData(json) {
-        ////////////////////////////////////////
-        //legacy format - json.resource.* for resource fields
-        //changed for version 2
-        //////////////////////////////////////////
-        if(json.resource) {
-            for(let fieldName in json.resource) {
-                let oldFieldValue = this.getField(fieldName);
-                let newFieldValue = json.resource[fieldName];
-                if(newFieldValue != oldFieldValue) {
-                    this.setField(fieldName,newFieldValue);
-                }
-            }
-        }
-        else {
-            super.loadExtendedData(json);
-        }
-    }
 }
 
 CustomComponent.CLASS_CONFIG = {
