@@ -563,6 +563,11 @@ export default class ModelManager extends FieldObject {
 ModelManager.EMPTY_MODEL_COMPONENT_JSON = {
     "main": {
         "type":"apogeeapp.PageComponent",
+        "fields": {
+            "editorState": {
+				"doc": {"type":"doc","content":[{"type":"paragraph"}]}
+			}
+        },
         "viewState": {
             "tabOpened": true,
             "tabShowing": true

@@ -11,7 +11,7 @@ DynamicForm.CLASS_CONFIG = {
 	displayName: "Legacy Action Form Cell (deprecated)",
 	defaultMemberJson: {
 		"type": "apogee.FunctionMember",
-		"updateData": {
+		"fields": {
 			"argList": [
 				"admin"
 			]

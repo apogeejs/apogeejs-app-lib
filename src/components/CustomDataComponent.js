@@ -92,14 +92,14 @@ CustomDataComponent.CLASS_CONFIG = {
             "input": {
                 "name": "input",
                 "type": "apogee.JsonMember",
-                "updateData": {
+                "fields": {
                     "data":"",
                 }
             },
             "data": {
                 "name": "data",
                 "type": "apogee.JsonMember",
-                "updateData": {
+                "fields": {
                     "data": "",
                 }
             }
@@ -107,10 +107,12 @@ CustomDataComponent.CLASS_CONFIG = {
     },
     defaultComponentJson: {
         type: "apogeeapp.CustomDataCell",
-        destroyOnInactive: false,
-        html: "",
-        css: "",
-        uiCode: ""
+        fields: {
+            destroyOnInactive: false,
+            html: "",
+            css: "",
+            uiCode: ""
+        }
     }
 }
 

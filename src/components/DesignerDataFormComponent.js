@@ -49,7 +49,7 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
     {
         "name": "value",
         "type": "apogee.JsonMember",
-        "updateData": {
+        "fields": {
             "data": ""
         }
     }
@@ -60,8 +60,10 @@ DesignerDataFormComponent.CLASS_CONFIG = {
 	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
     defaultComponentJson: {
         type: "apogeeapp.DesignerDataFormCell",
-        allowInputExpressions: true,
-		validatorCode: "return true;"
+        fields: {
+            allowInputExpressions: true,
+            validatorCode: "return true;"
+        }
     }
 }
 

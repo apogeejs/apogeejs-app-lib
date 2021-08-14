@@ -45,9 +45,9 @@ export default class DocumentParentComponent extends Component {
         let pageFolderMember = this.getParentFolderForChildren();
         let schema = createFolderSchema(modelManager.getApp(),pageFolderMember.getId());
         this.setField("schema",schema);
-        //initialize with an empty document
-        let editorState = createEditorState(schema,EMPTY_DOC_JSON);
-        this.setField("editorState",editorState);
+        // //initialize with an empty document
+        // let editorState = createEditorState(schema,EMPTY_DOC_JSON);
+        // this.setField("editorState",editorState);
     }
 
     //==============================
@@ -62,27 +62,22 @@ export default class DocumentParentComponent extends Component {
         let editorState = this.getField("editorState");
         if(editorState) {
             let document = editorState.doc;
-            json.data = {};
-            json.data.doc = document.toJSON();
+            if(!json.fields) json.fields = {};
+            json.fields.editorState = {
+                doc: document.toJSON()
+            }
         }
-
-        return json;
     }
 
     loadExtendedData(json) {
-        let editorState;
-        let docJson;
         //read the editor state
-        if((json.data)&&(json.data.doc)) {
+        if((json.fields)&&(json.fields.editorState)) {
             //parse the saved document
-            docJson = json.data.doc;
-            editorState = createEditorState(this.getSchema(),docJson);
+            let docJson = json.fields.editorState.doc;
+            if(!docJson) docJson = EMPTY_DOC_JSON; //shouldn't happen if editorState is defined
+            let editorState = createEditorState(this.getSchema(),docJson);
             this.setField("editorState",editorState);
         }
-        // else {
-        //     //no document stored - create an empty document
-        //     docJson = EMPTY_DOC_JSON;
-        // }
     }
 
     //PROBLEM FIELD NAMING!!! Here we need it to be editorState!!!

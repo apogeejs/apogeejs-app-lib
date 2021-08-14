@@ -58,14 +58,14 @@ FullDataFormComponent.CLASS_CONFIG = {
 			"input": {
 				"name": "input",
 				"type": "apogee.JsonMember",
-				"updateData": {
+				"fields": {
 					"data": ""
 				}
 			},
 			"value": {
 				"name": "value",
 				"type": "apogee.JsonMember",
-				"updateData": {
+				"fields": {
 					"data": ""
 				}
 			}
@@ -73,8 +73,10 @@ FullDataFormComponent.CLASS_CONFIG = {
 	},
     defaultComponentJson: {
         type: "apogeeapp.FullDataFormCell",
-        layoutCode: "return [];",
-		validatorCode: "return true;"
+        fields: {
+            layoutCode: "return [];",
+            validatorCode: "return true;"
+        }
     }
 }
 

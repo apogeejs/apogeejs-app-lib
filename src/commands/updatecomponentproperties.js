@@ -98,10 +98,10 @@ function _getComponentUndoJson(modelManager,component,doJson) {
 
 function _getMemberUndoJson(model,member,doJson) {
     let undoJson = {};
-    if(doJson.updateData) {
-        undoJson.updateData = {};
-        for(let fieldName in doJson.updateData) {
-            undoJson.updateData[fieldName] = member.getField(fieldName);
+    if(doJson.fields) {
+        undoJson.fields = {};
+        for(let fieldName in doJson.fields) {
+            undoJson.fields[fieldName] = member.getField(fieldName);
         }
     }
     if((member.isParent)&&(doJson.children)) {

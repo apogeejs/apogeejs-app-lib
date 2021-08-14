@@ -402,29 +402,39 @@ export default class Component extends FieldObject {
         let componentFieldMap = this.constructor.getComponentFieldDefs();
         let customConverters = this.constructor.getCustomConverters();
         if(componentFieldMap) {
+            let fieldsJson = {};
+            let hasFields = false;
             for(let fieldName in componentFieldMap) {
                 let fieldValue = this.getField(fieldName);
                 let jsonValue;
-                //check if we need to convert the field value into the json value
-                if((fieldValue !== undefined)&&(customConverters)&&(customConverters[fieldName])) {
-                    jsonValue = customConverters[fieldName].fieldToJson(this,fieldValue);
-                }
-                else {
-                    jsonValue = fieldValue;
-                }
+                if(fieldValue !== undefined) {
+                    //check if we need to convert the field value into the json value
+                    if((customConverters)&&(customConverters[fieldName])) {
+                        jsonValue = customConverters[fieldName].fieldToJson(this,fieldValue);
+                    }
+                    else {
+                        jsonValue = fieldValue;
+                    }
 
-                json[fieldName] = this.getField(jsonValue);
+                    fieldsJson[fieldName] = jsonValue;
+                    hasFields = true;
+                }
+            }
+            if(hasFields) {
+                json.fields = fieldsJson;
             }
         }
     }
 
     /** This method reads any data fields associated with the component. */
     loadExtendedData(json) {
+        if(!json.fields) return;
+
         let componentFieldMap = this.constructor.getComponentFieldDefs();
         let customConverters = this.constructor.getCustomConverters();
         if(componentFieldMap) {
             for(let fieldName in componentFieldMap) {
-                let newJsonValue = json[fieldName];
+                let newJsonValue = json.fields[fieldName];
                 let newFieldValue;
                 //check if we need to convert the json value into the field value
                 if((newJsonValue !== undefined)&&(customConverters)&&(customConverters[fieldName])) {
@@ -531,13 +541,7 @@ export default class Component extends FieldObject {
         //change this!??, with a changed json format?
         //////////////////////////////////////////
         let componentJson = this.getDefaultComponentJson();
-        let componentFieldMap = {};
-        for(let fieldName in componentJson) {
-            if((fieldName != "type")&&(fieldName != "children")) {
-                componentFieldMap[fieldName] = componentJson[fieldName];
-            }
-        }
-        return componentFieldMap
+        return componentJson.fields ? componentJson.fields : {};
     }
 
     static getCustomConverters() {
@@ -568,5 +572,5 @@ export default class Component extends FieldObject {
 // ExtendingComponent.CLASS_CONFIG = {
 //     displayName: The display name for this compononent - REQUIRED
 //     defaultMemberJson: The JSON that creates the default members for this component
-//     defaultComponentJson: The JSOn that creates the default component.
+//     defaultComponentJson: The JSON that creates the default component.
 // }

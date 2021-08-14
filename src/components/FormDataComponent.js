@@ -22,21 +22,21 @@ FormDataComponent.CLASS_CONFIG = {
 			"layout": {
 				"name": "layout",
 				"type": "apogee.FunctionMember",
-				"updateData": {
+				"fields": {
 					"argList": []
 				}
 			},
 			"data": {
 				"name": "data",
 				"type": "apogee.JsonMember",
-				"updateData": {
+				"fields": {
 					"data": ""
 				}
 			},
 			"isInputValid": {
 				"name": "isInputValid",
 				"type": "apogee.FunctionMember",
-				"updateData": {
+				"fields": {
 					"argList": [
 						"formValue"
 					],

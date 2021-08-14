@@ -10,7 +10,9 @@ JsonTableComponent.CLASS_CONFIG = {
     },
     defaultComponentJson: {
         type: "apogeeapp.JsonCell",
-        dataView: "Colorized"
+        fields: {
+            dataView: "Colorized"
+        }
     }
 }
 

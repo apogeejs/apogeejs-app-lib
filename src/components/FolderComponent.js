@@ -14,7 +14,12 @@ FolderComponent.CLASS_CONFIG = {
 		"type": "apogee.Folder"
 	},
 	defaultComponentJson: {
-		type: "apogeeapp.PageComponent"
+		type: "apogeeapp.PageComponent",
+		fields: {
+			editorState: {
+				doc: {"type":"doc","content":[{"type":"paragraph"}]}
+			}
+		}
 	},
 	childParentFolderPath: "."
 }

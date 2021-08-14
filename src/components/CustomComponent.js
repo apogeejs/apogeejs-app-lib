@@ -83,10 +83,12 @@ CustomComponent.CLASS_CONFIG = {
     },
     defaultComponentJson: {
         type: "apogeeapp.CustomCell",
-        destroyOnInactive: false,
-        html: "",
-        css: "",
-        uiCode: ""
+        fields: {
+            destroyOnInactive: false,
+            html: "",
+            css: "",
+            uiCode: ""
+        }
     }
 }
 

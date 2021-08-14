@@ -48,7 +48,9 @@ FullActionFormComponent.CLASS_CONFIG = {
 	},
     defaultComponentJson: {
         type: "apogeeapp.FullActionFormCell",
-        "layoutCode": "return [];"
+        fields: {
+            "layoutCode": "return [];"
+        }
     }
 }
 

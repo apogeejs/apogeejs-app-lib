@@ -314,7 +314,7 @@ export default class WorkspaceManager extends FieldObject {
 
 }
 
-WorkspaceManager.FILE_VERSION = "0.60";
+WorkspaceManager.FILE_VERSION = "1.0";
 
 
 //=====================================
