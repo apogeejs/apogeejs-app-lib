@@ -1,9 +1,7 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-/** This component represents a json table object. */
-export default class JsonTableComponent extends Component {};
-
-JsonTableComponent.CLASS_CONFIG = {
+const JsonTableComponentConfig = {
+    componentClass: Component,
     displayName: "Data Cell",
     defaultMemberJson: {
         "type": "apogee.JsonMember"
@@ -15,6 +13,7 @@ JsonTableComponent.CLASS_CONFIG = {
         }
     }
 }
+export default JsonTableComponentConfig;
 
 
 

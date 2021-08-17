@@ -3,7 +3,7 @@ import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/component
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 /** This is a simple custom component example. */
-export default class DesignerActionFormComponent extends Component {
+class DesignerActionFormComponent extends Component {
 
     //==============================
     //Resource Accessors
@@ -63,8 +63,8 @@ else return [];
 //this defines the hardcoded type we will use
 const dataMemberTypeName = "apogee.DesignerActionFormMember";
 defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
-
-DesignerActionFormComponent.CLASS_CONFIG = {
+const DesignerActionFormComponentConfig = {
+    componentClass: DesignerActionFormComponent,
     displayName: "Action Form Cell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
     defaultComponentJson: {
@@ -76,5 +76,6 @@ DesignerActionFormComponent.CLASS_CONFIG = {
         }
     }
 }
+export default DesignerActionFormComponentConfig;
 
 

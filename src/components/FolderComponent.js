@@ -1,14 +1,8 @@
 
 import DocumentParentComponent from "/apogeejs-app-lib/src/component/DocumentParentComponent.js";
 
-/** This component represents a table object. */
-export default class FolderComponent extends DocumentParentComponent {}
-
-//======================================
-// This is the component generator, to register the component
-//======================================
-
-FolderComponent.CLASS_CONFIG = {
+const FolderComponentConfig = {
+	componentClass: DocumentParentComponent,
 	displayName: "Page",
 	defaultMemberJson: {
 		"type": "apogee.Folder"
@@ -29,5 +23,6 @@ FolderComponent.CLASS_CONFIG = {
 		}
 	}
 }
+export default FolderComponentConfig;
 
 

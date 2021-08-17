@@ -5,7 +5,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * To implement it, the resource script must have the methods "run()" which will
  * be called when the component is updated. It also must have any methods that are
  * confugred with initialization data from the model. */
-export default class FullActionFormComponent extends Component {
+class FullActionFormComponent extends Component {
 
     //==============================
     //Resource Accessors
@@ -41,7 +41,8 @@ export default class FullActionFormComponent extends Component {
 // This is the control generator, to register the control
 //======================================
 
-FullActionFormComponent.CLASS_CONFIG = {
+const FullActionFormComponentConfig = {
+    componentClass: FullActionFormComponent,
 	displayName: "Full Action Form Cell",
 	defaultMemberJson: {
 		"type": "apogee.JsonMember"
@@ -53,6 +54,7 @@ FullActionFormComponent.CLASS_CONFIG = {
         }
     }
 }
+export default FullActionFormComponentConfig;
 
 
 

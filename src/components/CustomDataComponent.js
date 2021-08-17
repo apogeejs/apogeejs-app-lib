@@ -8,7 +8,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * To implement it, the resource script must have the methods "run()" which will
  * be called when the component is updated. It also must have any methods that are
  * confugred with initialization data from the model. */
-export default class CustomDataComponent extends Component {
+class CustomDataComponent extends Component {
 
     //==============================
     //Resource Accessors
@@ -60,7 +60,8 @@ export default class CustomDataComponent extends Component {
 // This is the control generator, to register the control
 //======================================
 
-CustomDataComponent.CLASS_CONFIG = {
+const CustomDataComponentConfig = {
+    componentClass: CustomDataComponent,
     displayName: "Custom Data Cell",
     defaultMemberJson: {
         "type": "apogee.Folder",
@@ -92,5 +93,6 @@ CustomDataComponent.CLASS_CONFIG = {
         }
     }
 }
+export default CustomDataComponentConfig;
 
 

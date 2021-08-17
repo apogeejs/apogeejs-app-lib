@@ -2,8 +2,6 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
-/** This is a web request component. */
-export default class WebRequestComponent extends Component {};
 
 const DATA_MEMBER_FUNCTION_BODY = `
 return WebRequestCell.formResultToRequest(formResult);
@@ -14,13 +12,15 @@ let dataMemberTypeName = "apogee.WebRequestMember";
 defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 
 //here we configure the component
-WebRequestComponent.CLASS_CONFIG = {
+const WebRequestComponentConfig = {
+    componentClass: Component,
     displayName: "Web Request Cell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
     defaultComponentJson: {
         type: "apogeeapp.WebRequestCell"
     }
 }
+export default WebRequestComponentConfig;
 
 
 __globals__.WebRequestCell = {};

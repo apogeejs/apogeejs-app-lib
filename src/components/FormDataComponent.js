@@ -7,13 +7,9 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * to validate form input.
  * If you want a form to take an action on submit rather than create and edit a 
  * data value, you can use the dynmaic form. */
-export default class FormDataComponent extends Component {}
 
-//======================================
-// This is the component generator, to register the component
-//======================================
-
-FormDataComponent.CLASS_CONFIG = {
+const FormDataComponentConfig = {
+	componentClass: Component,
 	displayName: "Legacy Data Form Cell (deprecated)",
 	defaultMemberJson: {
 		"type": "apogee.Folder",
@@ -49,3 +45,4 @@ FormDataComponent.CLASS_CONFIG = {
 		type: "apogeeapp.DataFormCell"
 	}
 }
+export default FormDataComponentConfig;

@@ -1,11 +1,7 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This component represents a json table object. */
-export default class ErrorComponent extends Component {
-
-    //==============================
-    // Protected and Private Instance Methods
-    //==============================
+class ErrorComponent extends Component {
 
     /** This overrides the save method to return the original input. */
     toJson(modelManager) {
@@ -16,18 +12,11 @@ export default class ErrorComponent extends Component {
     loadFromJson(json) {
         this.setField("completeJson",json);
     }
-
-    //======================================
-    // Static methods
-    //======================================
-
 }
 
-//======================================
-// This is the component generator, to register the component
-//======================================
 
-ErrorComponent.CLASS_CONFIG = {
+const ErrorComponentConfig = {
+    componentClass: ErrorComponent,
 	displayName: "Error Cell",
 	defaultMemberJson: {
 		type: "apogee.ErrorMember"
@@ -36,4 +25,5 @@ ErrorComponent.CLASS_CONFIG = {
 		type: "apogeeapp.ErrorCell"
 	}
 }
+export default ErrorComponentConfig;
 

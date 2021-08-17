@@ -3,8 +3,10 @@ import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 /** This is the base functionality for a component. */
 export default class Component extends FieldObject {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
+    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig) {
         super("component",instanceToCopy,keepUpdatedFixed);
+
+        this.componentConfig = componentConfig;
 
         //=============
         // component type specific variables
@@ -14,9 +16,13 @@ export default class Component extends FieldObject {
         this.cleanupActions = [];
         
         //parent logic
-        let childParentFolderPath = this.constructor.getConfigField("childParentFolderPath");
-        this.childParentFolderFieldName = this.memberPathToMemberField(childParentFolderPath);
-        this.isParent = (childParentFolderPath !== undefined);
+        if(this.componentConfig.childParentFolderPath) {
+            this.childParentFolderFieldName = this.memberPathToMemberField(this.componentConfig.childParentFolderPath);
+            this.isParent = true;
+        }
+        else {
+            this.isParent = false;
+        }
 
         //==============
         //Fields
@@ -27,7 +33,7 @@ export default class Component extends FieldObject {
 
             //process the members associated with this component
             let memberFieldMap = {};
-            let memberJson = this.constructor.getDefaultMemberJson();
+            let memberJson = this._getDefaultMemberJson();
             let memberFieldName = "member";
             let isRoot = true;
             this._processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isRoot,memberFieldMap);
@@ -146,6 +152,18 @@ export default class Component extends FieldObject {
 
     getCachedViewState() {
         return this.cachedViewState;
+    }
+
+    getComponentConfig() {
+        return this.componentConfig;
+    }
+
+    getComponentType() {
+        return this.componentConfig.defaultComponentJson.type;
+    }
+
+    getComponentTypeDisplayName() {
+        return this.componentConfig.isDisplayNameUpdated;
     }
 
     //--------------------------
@@ -274,7 +292,7 @@ export default class Component extends FieldObject {
     /** This serializes the component. */
     toJson(modelManager) {
         var json = {};
-        json.type = this.constructor.getClassUniqueName();
+        json.type = this.getComponentType();
 
         if(this.displayState) {
             json.displayState = this.displayState;
@@ -399,8 +417,8 @@ export default class Component extends FieldObject {
 
     /** This method writes any data fields associated with the component. */
     writeExtendedData(json,modelManager) {
-        let componentFieldMap = this.constructor.getComponentFieldDefs();
-        let customConverters = this.constructor.getCustomConverters();
+        let componentFieldMap = this._getComponentFieldDefs();
+        let customConverters = this._getCustomConverters();
         if(componentFieldMap) {
             let fieldsJson = {};
             let hasFields = false;
@@ -430,8 +448,8 @@ export default class Component extends FieldObject {
     loadExtendedData(json) {
         if(!json.fields) return;
 
-        let componentFieldMap = this.constructor.getComponentFieldDefs();
-        let customConverters = this.constructor.getCustomConverters();
+        let componentFieldMap = this._getComponentFieldDefs();
+        let customConverters = this._getCustomConverters();
         if(componentFieldMap) {
             for(let fieldName in componentFieldMap) {
                 let newJsonValue = json.fields[fieldName];
@@ -458,6 +476,25 @@ export default class Component extends FieldObject {
     // Private Methods
     //==============================
 
+    //-----------------------
+    // Configuation Property Accessors
+    //-----------------------
+
+
+    _getDefaultMemberJson() {
+        return this.componentConfig.defaultMemberJson;
+    }
+
+    _getComponentFieldDefs() {
+        let componentJson = this.componentConfig.defaultComponentJson;
+        return componentJson.fields ? componentJson.fields : {};
+    }
+
+    _getCustomConverters() {
+        //"this" refers to the class object in a static
+        return this.componentConfig.customConverters;
+    }
+
     /** This function processes the members associated with this component, using the default json
      * to look up the member instances. This includes registering the each member, saving the member in its
      * associated field, and constructing the member field map.  */
@@ -483,84 +520,6 @@ export default class Component extends FieldObject {
                 this._processMemberAndChildren(modelManager,childMember,childMemberJson,childMemberFieldName,childIsMainMember,memberFieldMap);
             }
         }
-    }
-
-    //======================================
-    // Static methods
-    //======================================
-
-    //-----------------------
-    // Configuation Property Accessors
-    //-----------------------
-
-    static getClassDisplayName() {
-        //"this" refers to the class object in a static
-        return this.getConfigField("displayName");
-    }
-
-    static getClassUniqueName() {
-        //"this" refers to the class object in a static
-        let defaultComponentJson = this.getConfigField("defaultComponentJson");
-        if(defaultComponentJson) {
-            return defaultComponentJson.type;
-        }
-        else {
-            /////////////////////////////////////////
-            //legacy 
-            return this.getConfigField("uniqueName");
-            /////////////////////////////////////////
-        }
-    }
-
-    static getDefaultMemberJson() {
-        //"this" refers to the class object in a static
-
-        //////////////////////////////////////
-        //legacy - this data used to be saved on this static field
-        if(this.DEFAULT_MEMBER_JSON) return this.DEFAULT_MEMBER_JSON;
-        //////////////////////////////////////
-
-        return this.getConfigField("defaultMemberJson");
-    }
-
-    static getDefaultComponentJson() {
-        //"this" refers to the class object in a static
-        //default component json is optional. If not included, use a generated version 
-        let json = this.getConfigField("defaultComponentJson");
-        if(!json) {
-            json = {
-                type: this.getClassUniqueName()
-            }
-        }
-        return json;
-    }
-
-    static getComponentFieldDefs() {
-        //"this" refers to the class object in a static
-        /////////////////////////////////////////
-        //change this!??, with a changed json format?
-        //////////////////////////////////////////
-        let componentJson = this.getDefaultComponentJson();
-        return componentJson.fields ? componentJson.fields : {};
-    }
-
-    static getCustomConverters() {
-        //"this" refers to the class object in a static
-        return this.getConfigField("customConverters");
-    }
-
-    static getConfigField(fieldName) {
-        //"this" refers to the class object in a static
-
-        //////////////////////////////////////
-        //legacy - before we used the CLASS_CONFIG field
-        if(!this.CLASS_CONFIG) {
-            
-            return this[fieldName]
-        }
-        ////////////////////////////////////////
-        
-        return this.CLASS_CONFIG[fieldName];
     }
 
 }

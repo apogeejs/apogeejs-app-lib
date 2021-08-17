@@ -7,9 +7,9 @@ import { createFolderSchema, createEditorState, EMPTY_DOC_JSON } from "/apogeejs
  * It extends the component class. */
 export default class DocumentParentComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed) {
+    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig) {
         //base constructor
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed);
+        super(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig);
 
         //==============
         //Fields
@@ -66,6 +66,3 @@ export default class DocumentParentComponent extends Component {
         }
     }
 }
-
-//The following config property should be added to indicate the field name for the folder member which holds the children.
-//ExtendingComponent.CLASS_CONFIG.contentFolderFieldName

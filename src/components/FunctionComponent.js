@@ -1,7 +1,7 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This component represents a table object. */
-export default class FunctionComponent extends Component {
+class FunctionComponent extends Component {
 
     /** This overrides the get title method of member to return the function declaration. */
     getDisplayName(useFullPath,modelManagerForFullPathOnly) {
@@ -20,14 +20,10 @@ export default class FunctionComponent extends Component {
     isDisplayNameUpdated() {
         return this.getMember().areAnyFieldsUpdated(["name","argList"]);
     }
-   
 }
 
-//======================================
-// This is the component generator, to register the component
-//======================================
-
-FunctionComponent.CLASS_CONFIG = {
+const FunctionComponentConfig = {
+    componentClass: FunctionComponent,
 	displayName: "Function Cell",
 	defaultMemberJson: {
 		"type": "apogee.FunctionMember"
@@ -36,7 +32,7 @@ FunctionComponent.CLASS_CONFIG = {
 		type: "apogeeapp.FunctionCell"
 	}
 }
-
+export default FunctionComponentConfig;
 
 // memberPropertyList: [
 //     "argList"

@@ -108,35 +108,15 @@ export default class ModelManager extends FieldObject {
         }
         
         //response - get new member
-        var component;
-        var componentClass = componentInfo.getComponentClass(componentJson.type);
-        if((componentClass)&&(member.constructor.generator.type != "apogee.ErrorMember")) {
+        let component = componentInfo.getComponentInstance(componentJson.type,member,this);
 
-            //create empty component
-            component = new componentClass(member,this);
-
-            //apply any serialized values
-            if(componentJson) {
-                component.loadFromJson(componentJson);
-            }
+        //apply any serialized values
+        if(componentJson) {
+            component.loadFromJson(componentJson);
         }
-
-        //if we failed to create the component, or if we failed to make the member properly (and we used the error member)
-        if(!component) {
-            //table not found - create an empty error table
-            componentClass = componentInfo.ERROR_COMPONENT_CLASS;
-            component = new componentClass(member,this);
-            if(componentJson) {
-                component.loadFromJson(componentJson);
-            }
-        }
-
-        if(!component) {
-            throw new Error("Unknown error creating componet: " + member.getName());
-        }
-
+        
         //load the children, after the component load is completed
-        if(component.loadChildrenFromJson) {
+        if(component.getIsParent()) {
             component.loadChildrenFromJson(this,componentJson);
         }
 
@@ -222,7 +202,7 @@ export default class ModelManager extends FieldObject {
         if(oldComponent) {
             if(oldComponent.getIsLocked()) {
                 //create an unlocked instance of the component
-                let newComponent = new oldComponent.constructor(oldComponent.getMember(),this,oldComponent);
+                let newComponent = new oldComponent.constructor(oldComponent.getMember(),this,oldComponent,false,oldComponent.getComponentConfig());
 
                 //register this instance
                 this.registerComponent(newComponent);

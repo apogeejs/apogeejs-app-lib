@@ -2,7 +2,7 @@ import DocumentParentComponent from "/apogeejs-app-lib/src/component/DocumentPar
 
 /** This component represents a folderFunction, which is a function that is programmed using
  *apogee tables rather than writing code. */
-export default class FolderFunctionComponent extends DocumentParentComponent {
+class FolderFunctionComponent extends DocumentParentComponent {
 
     /** This overrides the get display method of componnet to return the function declaration. */
     getDisplayName(useFullPath,modelManagerForFullPathOnly) {
@@ -30,11 +30,8 @@ export default class FolderFunctionComponent extends DocumentParentComponent {
     }
 }
 
-//======================================
-// This is the component generator, to register the component
-//======================================
-
-FolderFunctionComponent.CLASS_CONFIG = {
+const FolderFunctionComponentConfig = {
+    componentClass: FolderFunctionComponent,
 	displayName: "Multi-Cell Function",
 	defaultMemberJson: {
 		"type": "apogee.FolderFunction",
@@ -61,6 +58,7 @@ FolderFunctionComponent.CLASS_CONFIG = {
 		}
 	}
 }
+export default FolderFunctionComponentConfig;
 
 // memberPropertyList: [
 //     "argList",

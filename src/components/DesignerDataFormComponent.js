@@ -3,7 +3,7 @@ import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/component
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 /** This is a simple custom component example. */
-export default class DesignerDataFormComponent extends Component {
+class DesignerDataFormComponent extends Component {
 
     //==============================
     //Resource Accessors
@@ -54,8 +54,8 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
         }
     }
 ];
-
-DesignerDataFormComponent.CLASS_CONFIG = {
+const DesignerDataFormComponentConfig = {
+    componentClass: DesignerDataFormComponent,
 	displayName: "Data Form Cell",
 	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
     defaultComponentJson: {
@@ -66,6 +66,7 @@ DesignerDataFormComponent.CLASS_CONFIG = {
         }
     }
 }
+export default DesignerDataFormComponentConfig;
 
 
 

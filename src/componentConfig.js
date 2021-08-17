@@ -1,32 +1,36 @@
-import JsonTableComponent from "/apogeejs-app-lib/src/components/JsonTableComponent.js";
-import FunctionComponent from "/apogeejs-app-lib/src/components/FunctionComponent.js";
-import FolderComponent from "/apogeejs-app-lib/src/components/FolderComponent.js";
-import FolderFunctionComponent from "/apogeejs-app-lib/src/components/FolderFunctionComponent.js";
-import DynamicForm from "/apogeejs-app-lib/src/components/DynamicForm.js";
-import FormDataComponent from "/apogeejs-app-lib/src/components/FormDataComponent.js";
-import CustomComponent from "/apogeejs-app-lib/src/components/CustomComponent.js";
-import CustomDataComponent from "/apogeejs-app-lib/src/components/CustomDataComponent.js";
-import WebRequestComponent from "/apogeejs-app-lib/src/components/WebRequestComponent.js";
-import ErrorComponent from "/apogeejs-app-lib/src/components/ErrorComponent.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import FullActionFormComponent from "/apogeejs-app-lib/src/components/FullActionFormComponent.js";
-import FullDataFormComponent from "/apogeejs-app-lib/src/components/FullDataFormComponent.js";
+import JsonTableComponentConfig from "/apogeejs-app-lib/src/components/JsonTableComponent.js";
+import FunctionComponentConfig from "/apogeejs-app-lib/src/components/FunctionComponent.js";
+import FolderComponentConfig from "/apogeejs-app-lib/src/components/FolderComponent.js";
+import FolderFunctionComponentConfig from "/apogeejs-app-lib/src/components/FolderFunctionComponent.js";
+import DynamicFormConfig from "/apogeejs-app-lib/src/components/DynamicForm.js";
+import FormDataComponentConfig from "/apogeejs-app-lib/src/components/FormDataComponent.js";
+import CustomComponentConfig from "/apogeejs-app-lib/src/components/CustomComponent.js";
+import CustomDataComponentConfig from "/apogeejs-app-lib/src/components/CustomDataComponent.js";
+import WebRequestComponentConfig from "/apogeejs-app-lib/src/components/WebRequestComponent.js";
+import ErrorComponentConfig from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 
-import DesignerDataFormComponent from "/apogeejs-app-lib/src/components/DesignerDataFormComponent.js";
-import DesignerActionFormComponent from "/apogeejs-app-lib/src/components/DesignerActionFormComponent.js";
+import FullActionFormComponentConfig from "/apogeejs-app-lib/src/components/FullActionFormComponent.js";
+import FullDataFormComponentConfig from "/apogeejs-app-lib/src/components/FullDataFormComponent.js";
+
+import DesignerDataFormComponentConfig from "/apogeejs-app-lib/src/components/DesignerDataFormComponent.js";
+import DesignerActionFormComponentConfig from "/apogeejs-app-lib/src/components/DesignerActionFormComponent.js";
 
 //JSON PLUS COMPONENT
-import JsonPlusTableComponent from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
+import JsonPlusTableComponentConfig from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
 
 /** This module initializes the default component classes. */
 
 let componentInfo = {};
 export {componentInfo as default};
 
-let componentClasses = {};
+let componentConfigMap = {};
 let standardComponents = [];
 let additionalComponents = [];
 let pageComponents = [];
+
+let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
 
 //==========================
 // Functions
@@ -34,72 +38,139 @@ let pageComponents = [];
 
 /** This method registers a new component. It will be exposed when the user
  * requests to create a new component */
-componentInfo.registerComponent = function(componentClass) {
-    var name = componentClass.getClassUniqueName();
-
+ componentInfo.registerComponent = function(componentConfig) {
+    ///////////////////////////////////////////////
+    //Legacy registration
+    //Construct the update component config from the old class object
+    if(componentConfig instanceof Component) {
+        componentConfig = createComponentConfigFromLegacyComponentClass(componentConfig);
+    }
+    ///////////////////////////////////////////////////
+    
     //we should maybe warn if another component bundle is being overwritten
-    componentClasses[name] = componentClass;
-    if(additionalComponents.indexOf(name) < 0) {
-        additionalComponents.push(name);
+    let componentType = componentConfig.defaultComponentJson.type;
+    componentConfigMap[componentType] = componentConfig;
+    if(additionalComponents.indexOf(componentType) < 0) {
+        additionalComponents.push(componentType);
     }
 }
 
 /** This method registers a component. */
-componentInfo.registerStandardComponent = function(componentClass) {
-    var name = componentClass.getClassUniqueName();
+componentInfo.registerStandardComponent = function(componentConfig) {
+    ///////////////////////////////////////////////
+    //Legacy registration
+    //Construct the update component config from the old class object
+    if(componentConfig instanceof Component) {
+        componentConfig = createComponentConfigFromLegacyComponentClass(componentConfig);
+    }
+    ///////////////////////////////////////////////////
 
     //we should maybe warn if another component bundle is being overwritten 
-    componentClasses[name] = componentClass;
-    if(standardComponents.indexOf(name) < 0) {
-        standardComponents.push(name);
+    let componentType = componentConfig.defaultComponentJson.type;
+    componentConfigMap[componentType] = componentConfig;
+    if(standardComponents.indexOf(componentType) < 0) {
+        standardComponents.push(componentType);
     }
 }
 
 /** This method registers a new component. It will be exposed when the user
  * requests to create a new component */
-componentInfo.registerPageComponent = function(componentClass) {
-    var name = componentClass.getClassUniqueName();
+componentInfo.registerPageComponent = function(componentConfig) {
+    ///////////////////////////////////////////////
+    //Legacy registration
+    //Construct the update component config from the old class object
+    if(componentConfig instanceof Component) {
+        componentConfig = createComponentConfigFromLegacyComponentClass(componentConfig);
+    }
+    ///////////////////////////////////////////////////
 
     //we should maybe warn if another component bundle is being overwritten
-    componentClasses[name] = componentClass;
-    if(pageComponents.indexOf(name) < 0) {
-        pageComponents.push(name);
+    let componentType = componentConfig.defaultComponentJson.type;
+    componentConfigMap[componentType] = componentConfig;
+    if(pageComponents.indexOf(componentType) < 0) {
+        pageComponents.push(componentType);
     }
 }
 
 /** This method unregisters a component. Note this method does not fire
  * a event (for now at least) */
-componentInfo.unregisterComponent = function(componentClass) {
-    var name = componentClass.getClassUniqueName();
- 
-    delete componentClasses[name];
-    let stdIndex = standardComponents.indexOf(name);
+componentInfo.unregisterComponent = function(componentConfig) {
+    let componentType;
+    if(componentConfig instanceof Component) {
+        ///////////////////////////////////////////////
+        //Legacy registration
+        //component class passed in, not component config
+        ///////////////////////////////////////////////////
+        componentType = componentConfig.uniqueName
+    }
+    else {
+        componentType = componentConfig.defaultComponentJson.type;
+    }
+    
+    delete componentConfigMap[componentType];
+    let stdIndex = standardComponents.indexOf(componentType);
     if(stdIndex >= 0) {
         standardComponents.splice(stdIndex,1);
     }
     else {
-        let pageIndex = pageComponents.indexOf(name);
+        let pageIndex = pageComponents.indexOf(componentType);
         if(pageIndex >= 0) {
-            standardComponents.splice(pageIndex,1);
+            pageComponents.splice(pageIndex,1);
         }
     }
 }
 
-/** This method returns a component generator of a given name. */
-componentInfo.getComponentClass = function(name) {
-    return componentClasses[name];
+/** This method returns the component config for the component of a given type. */
+componentInfo.getComponentConfig = function(componentType) {
+    return componentConfigMap[componentType];
 }
 
-componentInfo.getStandardComponentNames = function() {
+/** This method returns the component config for the component of a given type. */
+componentInfo.getComponentDisplayName = function(componentType) {
+    let componentConfig = componentInfo.getComponentConfig(componentType);
+    if(componentConfig) return componentConfig.displayName;
+    else throw new Error("Component config not found: " + componentType);
+}
+
+/** This method returns a component instance of the given component type. */
+componentInfo.getComponentInstance = function(componentType,member,modelManager) {
+    let componentConfig = componentInfo.getComponentConfig(componentType);
+    if(!componentConfig) {
+        if(!ERROR_COMPONENT_CONFIG) {
+            throw new Error("Application error: error component config not found!");
+        }
+        componentConfig = ERROR_COMPONENT_CONFIG;
+    }
+
+    if(!componentConfig.componentClass) {
+        throw new Error("Application error: component class not included in component config!");
+    }
+    
+    return new componentConfig.componentClass(member,modelManager,null,false,componentConfig);
+}
+
+componentInfo.getStandardComponentTypes = function() {
     return standardComponents;
 }
 
-componentInfo.getAdditionalComponentNames = function() {
+componentInfo.getAdditionalComponentTypes = function() {
     return additionalComponents;
 }
 
-componentInfo.getPageComponentNames = function() {
+componentInfo.getPageComponentTypes = function() {
     return pageComponents;
+}
+
+/** This function creates the current componentConfig from the legacy component class. */
+function createComponentConfigFromLegacyComponentClass(legacyComponentClass) {
+    return {
+        displayName: legacyComponentClass.displayName,
+        defaultMemberjson: legacyComponentClass.DEFAULT_MEMBER_JSON,
+        deefaultComponentJson: {
+            type: legacyComponentClass.uniqueName
+        },
+        legacyComponentClass: componentClass
+    }
 }
 
 //===============================
@@ -107,33 +178,29 @@ componentInfo.getPageComponentNames = function() {
 //===============================
 
 //register standard child components
-componentInfo.registerStandardComponent(JsonTableComponent);
-componentInfo.registerStandardComponent(FunctionComponent);
-componentInfo.registerStandardComponent(FolderFunctionComponent);
-componentInfo.registerStandardComponent(WebRequestComponent);
+componentInfo.registerStandardComponent(JsonTableComponentConfig);
+componentInfo.registerStandardComponent(FunctionComponentConfig);
+componentInfo.registerStandardComponent(FolderFunctionComponentConfig);
+componentInfo.registerStandardComponent(WebRequestComponentConfig);
 
-componentInfo.registerStandardComponent(DesignerDataFormComponent);
-componentInfo.registerStandardComponent(DesignerActionFormComponent);
+componentInfo.registerStandardComponent(DesignerDataFormComponentConfig);
+componentInfo.registerStandardComponent(DesignerActionFormComponentConfig);
 
 //additional child components
-componentInfo.registerComponent(CustomComponent);
-componentInfo.registerComponent(CustomDataComponent);
-componentInfo.registerComponent(FullActionFormComponent);
-componentInfo.registerComponent(FullDataFormComponent);
+componentInfo.registerComponent(CustomComponentConfig);
+componentInfo.registerComponent(CustomDataComponentConfig);
+componentInfo.registerComponent(FullActionFormComponentConfig);
+componentInfo.registerComponent(FullDataFormComponentConfig);
 
-componentInfo.registerPageComponent(FolderComponent);
-componentInfo.registerPageComponent(FolderFunctionComponent);
-
-//other components
-componentInfo.FOLDER_COMPONENT_CLASS = FolderComponent;
-componentInfo.ERROR_COMPONENT_CLASS = ErrorComponent;
+componentInfo.registerPageComponent(FolderComponentConfig);
+componentInfo.registerPageComponent(FolderFunctionComponentConfig);
 
 //legacy forms
-componentInfo.registerComponent(DynamicForm);
-componentInfo.registerComponent(FormDataComponent);
+componentInfo.registerComponent(DynamicFormConfig);
+componentInfo.registerComponent(FormDataComponentConfig);
 
 //JSON PLUS COMPONENT
-componentInfo.registerComponent(JsonPlusTableComponent);
+componentInfo.registerComponent(JsonPlusTableComponentConfig);
 
 
 

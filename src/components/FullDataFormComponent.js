@@ -4,7 +4,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * To implement it, the resource script must have the methods "run()" which will
  * be called when the component is updated. It also must have any methods that are
  * confugred with initialization data from the model. */
-export default class FullDataFormComponent extends Component {
+class FullDataFormComponent extends Component {
 
     //==============================
     //Resource Accessors
@@ -49,7 +49,8 @@ export default class FullDataFormComponent extends Component {
     }
 }
 
-FullDataFormComponent.CLASS_CONFIG = {
+const FullDataFormComponentConfig = {
+    componentClass: FullDataFormComponent,
 	displayName: "Full Data Form Cell",
 	defaultMemberJson: {
 		"type": "apogee.Folder",
@@ -79,6 +80,7 @@ FullDataFormComponent.CLASS_CONFIG = {
         }
     }
 }
+export default FullDataFormComponentConfig;
 
 
 
