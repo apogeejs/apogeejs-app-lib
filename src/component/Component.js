@@ -163,7 +163,7 @@ export default class Component extends FieldObject {
     }
 
     getComponentTypeDisplayName() {
-        return this.componentConfig.isDisplayNameUpdated;
+        return this.componentConfig.displayName;
     }
 
     //--------------------------
