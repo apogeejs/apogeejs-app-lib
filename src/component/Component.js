@@ -337,7 +337,7 @@ export default class Component extends FieldObject {
     }
 
     /** This is used to deserialize the component. */
-    loadFromJson(json) {
+    loadFromJson(json,modelManager) {
         if(!json) json = {};
         
         //set the tree state
@@ -347,7 +347,7 @@ export default class Component extends FieldObject {
         
         //allow the component implemnetation to read data from the json
         if(this.loadExtendedData) {
-            this.loadExtendedData(json);
+            this.loadExtendedData(json,modelManager);
         }
 
         //////////////////////////////////////////////////////////////////
@@ -373,9 +373,9 @@ export default class Component extends FieldObject {
     }
 
     /** This is used to update properties, such as from the set properties form. */
-    loadPropertyValues(modelManager,propertyJson) {
+    loadPropertyValues(propertyJson,modelManager) {
         if(this.loadExtendedData) {
-            this.loadExtendedData(propertyJson);
+            this.loadExtendedData(propertyJson,modelManager);
         }  
 
         //load properties in child components if applicable
@@ -418,23 +418,19 @@ export default class Component extends FieldObject {
     /** This method writes any data fields associated with the component. */
     writeExtendedData(json,modelManager) {
         let componentFieldMap = this._getComponentFieldDefs();
-        let customConverters = this._getCustomConverters();
         if(componentFieldMap) {
             let fieldsJson = {};
             let hasFields = false;
             for(let fieldName in componentFieldMap) {
                 let fieldValue = this.getField(fieldName);
-                let jsonValue;
                 if(fieldValue !== undefined) {
-                    //check if we need to convert the field value into the json value
-                    if((customConverters)&&(customConverters[fieldName])) {
-                        jsonValue = customConverters[fieldName].fieldToJson(this,fieldValue);
+                    let customSerializer = this._getCustomSerializer(fieldName);
+                    if(customSerializer) {
+                        customSerializer.writeToJson(this,fieldValue,fieldsJson,modelManager);
                     }
                     else {
-                        jsonValue = fieldValue;
+                        fieldsJson[fieldName] = fieldValue;
                     }
-
-                    fieldsJson[fieldName] = jsonValue;
                     hasFields = true;
                 }
             }
@@ -445,27 +441,24 @@ export default class Component extends FieldObject {
     }
 
     /** This method reads any data fields associated with the component. */
-    loadExtendedData(json) {
+    loadExtendedData(json,modelManager) {
         if(!json.fields) return;
 
         let componentFieldMap = this._getComponentFieldDefs();
-        let customConverters = this._getCustomConverters();
         if(componentFieldMap) {
             for(let fieldName in componentFieldMap) {
                 let newJsonValue = json.fields[fieldName];
-                let newFieldValue;
-                //check if we need to convert the json value into the field value
-                if((newJsonValue !== undefined)&&(customConverters)&&(customConverters[fieldName])) {
-                    newFieldValue = customConverters[fieldName].jsonToField(this,newJsonValue);
-                }
-                else {
-                    newFieldValue = newJsonValue;
-                }
-
-                if(newFieldValue != undefined) {
-                    let oldFieldValue = this.getField(fieldName);
-                    if(!_.isEqual(newFieldValue,oldFieldValue)) {
-                        this.setField(fieldName,newFieldValue);
+                if(newJsonValue !== undefined) {
+                    let newFieldValue;
+                    let customSerializer = this._getCustomSerializer(fieldName);
+                    if(customSerializer) {
+                        customSerializer.loadFromJson(this,newJsonValue,modelManager);
+                    }
+                    else {
+                        let oldFieldValue = this.getField(fieldName);
+                        if(!_.isEqual(newFieldValue,oldFieldValue)) {
+                            this.setField(fieldName,newFieldValue);
+                        }
                     }
                 }
             }
@@ -490,9 +483,13 @@ export default class Component extends FieldObject {
         return componentJson.fields ? componentJson.fields : {};
     }
 
-    _getCustomConverters() {
-        //"this" refers to the class object in a static
-        return this.componentConfig.customConverters;
+    _getCustomSerializer(fieldName) {
+        if((this.componentConfig.customSerializers)&&(this.componentConfig.customSerializers[fieldName])) {
+            return this.componentConfig.customSerializers[fieldName];
+        }
+        else {
+            return null;
+        }
     }
 
     /** This function processes the members associated with this component, using the default json

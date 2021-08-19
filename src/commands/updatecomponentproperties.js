@@ -72,7 +72,7 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
  
     //update an component additional properties
     if(commandData.updatedComponentProperties) {
-        component.loadPropertyValues(modelManager,commandData.updatedComponentProperties);
+        component.loadPropertyValues(commandData.updatedComponentProperties,modelManager);
     }
 }
 

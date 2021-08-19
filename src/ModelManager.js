@@ -112,7 +112,7 @@ export default class ModelManager extends FieldObject {
 
         //apply any serialized values
         if(componentJson) {
-            component.loadFromJson(componentJson);
+            component.loadFromJson(componentJson,this);
         }
         
         //load the children, after the component load is completed

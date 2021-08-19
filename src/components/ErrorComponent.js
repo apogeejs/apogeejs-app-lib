@@ -9,7 +9,7 @@ class ErrorComponent extends Component {
     }
 
     /** This overrides the open deserialize method to save the entire json. */
-    loadFromJson(json) {
+    loadFromJson(json,modelManager) {
         this.setField("completeJson",json);
     }
 }
