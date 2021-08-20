@@ -51,16 +51,10 @@ const FolderFunctionComponentConfig = {
 		}
 	},
 	childParentFolderPath: "body",
-    customSerializers: {
-        editorState: {
-			writeToJson: (component,fieldValue,fieldsJson,modelManager) => {
-				let jsonValue = component.convertEditorStateToJson(fieldValue);
-				fieldsJson["editorState"] = jsonValue;
-			},
-			loadFromJson: (component,jsonValue,modelManager) => {
-				let fieldValue = component.convertJsonToEditorState(jsonValue);
-				component.setField("editorState",fieldValue);
-			}
+    fieldTranslators: {
+		editorState: {
+			fieldToJson: (component,fieldValue,modelManager) => component.convertEditorStateToJson(fieldValue),
+			jsonToField: (component,jsonValue,modelManager) => component.convertJsonToEditorState(jsonValue)
 		}
 	}
 }

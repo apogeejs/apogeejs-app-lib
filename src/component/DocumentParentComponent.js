@@ -14,10 +14,7 @@ export default class DocumentParentComponent extends Component {
         //==============
         //Fields
         //==============
-        //The following fields are added by the parent component. In order to add these, the method
-        //"initializeSchema" must be called. See the notes on that method.
-        //"schema"
-        //"editorState"
+        //We must do a one time initialization of the prose mirror schema 
         if(!instanceToCopy) {
             //initialize the schema
             this.initializeSchema(modelManager);

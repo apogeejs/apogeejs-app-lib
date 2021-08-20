@@ -6,47 +6,62 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * confugred with initialization data from the model. */
 class FullDataFormComponent extends Component {
 
-    //==============================
-    //Resource Accessors
-    //==============================
+    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig) {
+        super(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig);
 
-    /** This method compiles the layout function entered by the user. It returns
-     * the fields  {formLayoutFunction,validatorFunction,errorMessage}. */
-    createFormFunctions() {
-        var layoutCodeText = this.getField("layoutCode");
-        var validatorCodeText = this.getField("validatorCode");
-        var layoutFunction, validatorFunction, errorMessage;
+        //Here we link function updates to when the code field is updated 
+        this.addComponentFieldChangeHandler("layoutCode",layoutCode => this._onLayoutCodeUpdate(layoutCode))
+        this.addComponentFieldChangeHandler("validatorCode",validatorCode => this._onValidatorCodeUpdate(validatorCode))
+    }
 
-        if((layoutCodeText !== undefined)&&(layoutCodeText !== null)) {
-            try {
-                //create the layout function
-                layoutFunction = new Function("commandMessenger","inputData",layoutCodeText);
-            }
-            catch(error) {
-                errorMessage = "Error parsing layout function code: " + error.toString()
-                if(error.stack) console.error(error.stack);
-            }
-        }
-        else {
-            layoutFunction = () => [];
-        }
+    //-----------------------
+    // Handlers for field changes, to update linked fields
+    //-----------------------
 
-        if((validatorCodeText !== undefined)&&(validatorCodeText !== null))  {
+    /** This updates the layout function when the layout code is updated. */
+    _onLayoutCodeUpdate(layoutCode) {
+        let layoutFunctionFieldValue;
+        if((layoutCode !== undefined)&&(layoutCode !== null))  {
             try {
                 //create the validator function
-                validatorFunction = new Function("formValue","inputData",validatorCodeText);
+                layoutFunctionFieldValue = new Function("commandMessenger","inputData",layoutCode);
             }
             catch(error) {
-                errorMessage = "Error parsing validator function code: " + error.toString()
+                apogeeUserAlert("Error compiling layout function: " + error.toString());
                 if(error.stack) console.error(error.stack);
+                layoutFunctionFieldValue = error;
             }
         }
         else {
-            validatorFunction = () => true;
+            layoutFunctionFieldValue = () => [];
         }
 
-        return { layoutFunction, validatorFunction, errorMessage};
+        this.setField("layoutFunction",layoutFunctionFieldValue);
     }
+
+    /** This updates the validator function when the validator code is updated. */
+    _onValidatorCodeUpdate(validatorCode) {
+        let validatorFunctionFieldValue;
+        if((validatorCode !== undefined)&&(validatorCode !== null))  {
+            try {
+                //create the validator function
+                validatorFunctionFieldValue = new Function("formValue","inputData",validatorCode);
+            }
+            catch(error) {
+                
+                apogeeUserAlert("Error compiling validator function: " + error.toString());
+                if(error.stack) console.error(error.stack);
+                validatorFunctionFieldValue = error;
+            }
+        }
+        else {
+            validatorFunctionFieldValue = () => true;
+        }
+
+        this.setField("validatorFunction",validatorFunctionFieldValue);
+    }
+
+
 }
 
 const FullDataFormComponentConfig = {

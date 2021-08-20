@@ -24,6 +24,9 @@ export default class Component extends FieldObject {
             this.isParent = false;
         }
 
+        //this is used to allow reacting to loca field changes, such as when swe want to store a field linked to another field (like code and its function)
+        this.componentFieldChangeHandlers = {};
+
         //==============
         //Fields
         //==============
@@ -46,12 +49,6 @@ export default class Component extends FieldObject {
         //==============
         this.viewStateCallback = null;
         this.cachedViewState = null;
-    }
-
-    /** If an extending object has any cleanup actions, a callback should be passed here.
-     * The callback will be executed in the context of the current object. */
-    addCleanupAction(cleanupFunction) {
-        this.cleanupActions.push(cleanupFunction);
     }
 
     //==============================
@@ -164,6 +161,27 @@ export default class Component extends FieldObject {
 
     getComponentTypeDisplayName() {
         return this.componentConfig.displayName;
+    }
+
+    /** Here setField is overridden to allow local handlers for when a field changes. */
+    setField(fieldName,fieldValue) {
+        super.setField(fieldName,fieldValue);
+        this._onComponentFieldChange(fieldName,fieldValue);
+    }
+
+    /** This method adds a handler for when a local field changes */
+    addComponentFieldChangeHandler(fieldName,handler) {
+        let handlerList = this.componentFieldChangeHandlers[fieldName];
+        if(!handlerList) {
+            handlerList = [];
+            this.componentFieldChangeHandlers[fieldName] = handlerList;
+        }
+        handlerList.push(handler); 
+    }
+
+    /** This method removes a handler for when a local field changes */
+    removeComponentFieldChangeHandler(fieldName,handler) {
+        throw new Error("NOT IMPLEMENTED!");
     }
 
     //--------------------------
@@ -404,6 +422,12 @@ export default class Component extends FieldObject {
     // Protected Instance Methods
     //==============================
 
+    /** If an extending object has any cleanup actions, a callback should be passed here.
+     * The callback will be executed in the context of the current object. */
+     addCleanupAction(cleanupFunction) {
+        this.cleanupActions.push(cleanupFunction);
+    }
+
     /** This method cleans up after a delete. Any extending object that has delete
      * actions should pass a callback function to the method "addClenaupAction" 
      * @protected */
@@ -423,14 +447,16 @@ export default class Component extends FieldObject {
             let hasFields = false;
             for(let fieldName in componentFieldMap) {
                 let fieldValue = this.getField(fieldName);
+                let jsonValue;
                 if(fieldValue !== undefined) {
-                    let customSerializer = this._getCustomSerializer(fieldName);
-                    if(customSerializer) {
-                        customSerializer.writeToJson(this,fieldValue,fieldsJson,modelManager);
+                    let fieldTranslators = this._getFieldTranslators(fieldName);
+                    if(fieldTranslators) {
+                        jsonValue = fieldTranslators.fieldToJson(this,fieldValue,modelManager);
                     }
                     else {
-                        fieldsJson[fieldName] = fieldValue;
+                        jsonValue = fieldValue;
                     }
+                    fieldsJson[fieldName] = jsonValue;
                     hasFields = true;
                 }
             }
@@ -448,17 +474,19 @@ export default class Component extends FieldObject {
         if(componentFieldMap) {
             for(let fieldName in componentFieldMap) {
                 let newJsonValue = json.fields[fieldName];
+                let newFieldValue;
                 if(newJsonValue !== undefined) {
-                    let newFieldValue;
-                    let customSerializer = this._getCustomSerializer(fieldName);
-                    if(customSerializer) {
-                        customSerializer.loadFromJson(this,newJsonValue,modelManager);
+                    let fieldTranslators = this._getFieldTranslators(fieldName);
+                    if(fieldTranslators) {
+                        newFieldValue = fieldTranslators.jsonToField(this,newJsonValue,modelManager);
                     }
                     else {
-                        let oldFieldValue = this.getField(fieldName);
-                        if(!_.isEqual(newFieldValue,oldFieldValue)) {
-                            this.setField(fieldName,newFieldValue);
-                        }
+                        newFieldValue = newJsonValue;
+                    }
+
+                    let oldFieldValue = this.getField(fieldName);
+                    if(!_.isEqual(newFieldValue,oldFieldValue)) {
+                        this.setField(fieldName,newFieldValue);
                     }
                 }
             }
@@ -468,6 +496,17 @@ export default class Component extends FieldObject {
     //==============================
     // Private Methods
     //==============================
+
+    //------------------------
+    // Field Change Handlers - This allows actions when a local field changes
+    //------------------------
+
+    _onComponentFieldChange(fieldName,fieldValue) {
+        let handlerList = this.componentFieldChangeHandlers[fieldName];
+        if(handlerList) {
+            handlerList.forEach(handler => handler(fieldValue))
+        }
+    }
 
     //-----------------------
     // Configuation Property Accessors
@@ -483,9 +522,9 @@ export default class Component extends FieldObject {
         return componentJson.fields ? componentJson.fields : {};
     }
 
-    _getCustomSerializer(fieldName) {
-        if((this.componentConfig.customSerializers)&&(this.componentConfig.customSerializers[fieldName])) {
-            return this.componentConfig.customSerializers[fieldName];
+    _getFieldTranslators(fieldName) {
+        if((this.componentConfig.fieldTranslators)&&(this.componentConfig.fieldTranslators[fieldName])) {
+            return this.componentConfig.fieldTranslators[fieldName];
         }
         else {
             return null;
@@ -526,7 +565,10 @@ export default class Component extends FieldObject {
 //======================================
 
 // ExtendingComponent.CLASS_CONFIG = {
+//     componentClass: The class which should be instantiated to make this component.
 //     displayName: The display name for this compononent - REQUIRED
 //     defaultMemberJson: The JSON that creates the default members for this component
 //     defaultComponentJson: The JSON that creates the default component.
+//     fieldTranslators: functions to convert between field values and the json value during save and load. This can be 
+//         omitted if the field value and the json value are the same. It is used if the json in converted on load or save. OPTIONAL
 // }
