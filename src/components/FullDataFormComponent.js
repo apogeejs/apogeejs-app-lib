@@ -21,19 +21,15 @@ class FullDataFormComponent extends Component {
     /** This updates the layout function when the layout code is updated. */
     _onLayoutCodeUpdate(layoutCode) {
         let layoutFunctionFieldValue;
-        if((layoutCode !== undefined)&&(layoutCode !== null))  {
-            try {
-                //create the validator function
-                layoutFunctionFieldValue = new Function("commandMessenger","inputData",layoutCode);
-            }
-            catch(error) {
-                apogeeUserAlert("Error compiling layout function: " + error.toString());
-                if(error.stack) console.error(error.stack);
-                layoutFunctionFieldValue = error;
-            }
+        if((layoutCode === undefined)&&(layoutCode === null)) layoutCode = "";
+
+        try {
+            //create the validator function
+            layoutFunctionFieldValue = new Function("commandMessenger","inputData",layoutCode);
         }
-        else {
-            layoutFunctionFieldValue = () => [];
+        catch(error) {
+            if(error.stack) console.error(error.stack);
+            layoutFunctionFieldValue = error;
         }
 
         this.setField("layoutFunction",layoutFunctionFieldValue);
@@ -42,20 +38,15 @@ class FullDataFormComponent extends Component {
     /** This updates the validator function when the validator code is updated. */
     _onValidatorCodeUpdate(validatorCode) {
         let validatorFunctionFieldValue;
-        if((validatorCode !== undefined)&&(validatorCode !== null))  {
-            try {
-                //create the validator function
-                validatorFunctionFieldValue = new Function("formValue","inputData",validatorCode);
-            }
-            catch(error) {
-                
-                apogeeUserAlert("Error compiling validator function: " + error.toString());
-                if(error.stack) console.error(error.stack);
-                validatorFunctionFieldValue = error;
-            }
+        if((validatorCode === undefined)&&(validatorCode === null)) validatorCode = "";
+        
+        try {
+            //create the validator function
+            validatorFunctionFieldValue = new Function("formValue","inputData",validatorCode);
         }
-        else {
-            validatorFunctionFieldValue = () => true;
+        catch(error) {
+            if(error.stack) console.error(error.stack);
+            validatorFunctionFieldValue = error;
         }
 
         this.setField("validatorFunction",validatorFunctionFieldValue);
