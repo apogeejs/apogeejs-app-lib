@@ -133,7 +133,7 @@ componentInfo.getComponentDisplayName = function(componentType) {
 }
 
 /** This method returns a component instance of the given component type. */
-componentInfo.getComponentInstance = function(componentType,member,modelManager) {
+componentInfo.createComponentInstance = function(componentType,member,modelManager,specialCaseIdValue) {
     let componentConfig = componentInfo.getComponentConfig(componentType);
     if(!componentConfig) {
         if(!ERROR_COMPONENT_CONFIG) {
@@ -146,7 +146,7 @@ componentInfo.getComponentInstance = function(componentType,member,modelManager)
         throw new Error("Application error: component class not included in component config!");
     }
     
-    return new componentConfig.componentClass(member,modelManager,null,false,componentConfig);
+    return new componentConfig.componentClass(member,modelManager,null,componentConfig,specialCaseIdValue);
 }
 
 componentInfo.getStandardComponentTypes = function() {

@@ -6,8 +6,8 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * confugred with initialization data from the model. */
 class FullDataFormComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig) {
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig);
+    constructor(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue) {
+        super(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue);
 
         //Here we link function updates to when the code field is updated 
         this.addComponentFieldChangeHandler("layoutCode",layoutCode => this._onLayoutCodeUpdate(layoutCode))

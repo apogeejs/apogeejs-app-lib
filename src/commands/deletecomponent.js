@@ -46,9 +46,10 @@ deletecomponent.createUndoCommand = function(workspaceManager,commandData) {
     commandUndoJson.type = "addComponent";
     commandUndoJson.parentId = parent.getId();
     commandUndoJson.memberJson = member.toJson(model);
-    //this must be added so when we create the member, it matches our "delete" redo command
-    commandUndoJson.memberJson.specialIdValue = member.getId();
+    //this must be added so when we create the member, it matches our "delete" redo command. We do that for component too.
+    commandUndoJson.memberJson.specialCaseIdValue = member.getId();
     commandUndoJson.componentJson = component.toJson(modelManager);
+    commandUndoJson.componentJson.specialCaseIdValue = componentId;
     
     return commandUndoJson;
 }

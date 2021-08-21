@@ -8,8 +8,8 @@ import ModelManager from "/apogeejs-app-lib/src/ModelManager.js";
 /** This class manages the workspace. */
 export default class WorkspaceManager extends FieldObject {
 
-    constructor(app,instanceToCopy,keepUpdatedFixed) {
-        super("workspaceManager",instanceToCopy,keepUpdatedFixed);
+    constructor(app,instanceToCopy) {
+        super("workspaceManager",instanceToCopy);
 
         this.app = app;
         

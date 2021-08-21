@@ -9,8 +9,8 @@ import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
  */
 export default class ReferenceManager extends FieldObject {
 
-    constructor(app,instanceToCopy,keepUpdatedFixed) {
-        super("referenceManager",instanceToCopy,keepUpdatedFixed);
+    constructor(app,instanceToCopy) {
+        super("referenceManager",instanceToCopy);
 
         this.app = app;
         

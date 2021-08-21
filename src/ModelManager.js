@@ -5,8 +5,8 @@ import componentInfo from "/apogeejs-app-lib/src/componentConfig.js";
 /** This class manages the user interface for a model object. */
 export default class ModelManager extends FieldObject {
 
-    constructor(app,instanceToCopy,keepUpdatedFixed) {
-        super("modelManager",instanceToCopy,keepUpdatedFixed);
+    constructor(app,instanceToCopy) {
+        super("modelManager",instanceToCopy);
 
         this.app = app;
 
@@ -108,7 +108,8 @@ export default class ModelManager extends FieldObject {
         }
         
         //response - get new member
-        let component = componentInfo.getComponentInstance(componentJson.type,member,this);
+        let specialCaseIdValue = componentJson.specialCaseIdValue; //if there is an id specified, we will use it. Usually this is not done.
+        let component = componentInfo.createComponentInstance(componentJson.type,member,this,specialCaseIdValue);
 
         //apply any serialized values
         if(componentJson) {
@@ -202,7 +203,8 @@ export default class ModelManager extends FieldObject {
         if(oldComponent) {
             if(oldComponent.getIsLocked()) {
                 //create an unlocked instance of the component
-                let newComponent = new oldComponent.constructor(oldComponent.getMember(),this,oldComponent,false,oldComponent.getComponentConfig());
+                let componentConfig = oldComponent.getComponentConfig();
+                let newComponent = new componentConfig.componentClass(oldComponent.getMember(),this,oldComponent,componentConfig);
 
                 //register this instance
                 this.registerComponent(newComponent);

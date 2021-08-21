@@ -7,8 +7,8 @@ export default class ReferenceEntry extends FieldObject {
     
     /** The reference data is a json entry with the referenceType, url and optionally nickname.
      * If this is a copy, the reference data wil be ignored and can be set to null. */
-    constructor(referenceData,instanceToCopy,keepUpdatedFixed) {
-        super("referenceEntry",instanceToCopy,keepUpdatedFixed);
+    constructor(referenceData,instanceToCopy) {
+        super("referenceEntry",instanceToCopy);
 
         if(instanceToCopy) {
             this.referenceType = instanceToCopy.referenceType;

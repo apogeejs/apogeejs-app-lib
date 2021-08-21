@@ -7,17 +7,15 @@ import { createFolderSchema, createEditorState, EMPTY_DOC_JSON } from "/apogeejs
  * It extends the component class. */
 export default class DocumentParentComponent extends Component {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig) {
+    constructor(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue) {
         //base constructor
-        super(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig);
+        super(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue);
 
-        //==============
-        //Fields
-        //==============
         //We must do a one time initialization of the prose mirror schema 
         if(!instanceToCopy) {
             //initialize the schema
-            this.initializeSchema(modelManager);
+            let schema = this.createSchema(modelManager);
+            this.setField("schema",schema);
         }
     }
 
@@ -38,10 +36,9 @@ export default class DocumentParentComponent extends Component {
 
     /** This method should be called only when a new component is created, and not when it is copied. It creates the schema
      * and an initial empty document for the page. It must be called after the parent folder for the page children is initialized. */
-    initializeSchema(modelManager) {
+    createSchema(modelManager) {
         let pageFolderMember = this.getParentFolderForChildren();
-        let schema = createFolderSchema(modelManager.getApp(),pageFolderMember.getId());
-        this.setField("schema",schema);
+        return createFolderSchema(modelManager.getApp(),pageFolderMember.getId());       
     }
 
     convertEditorStateToJson(fieldValue) {

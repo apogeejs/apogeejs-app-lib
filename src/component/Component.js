@@ -3,8 +3,8 @@ import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 /** This is the base functionality for a component. */
 export default class Component extends FieldObject {
 
-    constructor(member,modelManager,instanceToCopy,keepUpdatedFixed,componentConfig) {
-        super("component",instanceToCopy,keepUpdatedFixed);
+    constructor(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue) {
+        super("component",instanceToCopy,specialCaseIdValue);
 
         this.componentConfig = componentConfig;
 
