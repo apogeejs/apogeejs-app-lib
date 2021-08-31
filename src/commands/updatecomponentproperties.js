@@ -45,7 +45,7 @@ updateComponentProperties.createUndoCommand = function(workspaceManager,commandD
 }
 
 /** This method is used for updating property values from the property dialog. 
- * If there are additional property lines, in the generator, this method should
+ * If there are additional property lines, in the config, this method should
  * be extended to edit the values of those properties too. */
 updateComponentProperties.executeCommand = function(workspaceManager,commandData) {
     

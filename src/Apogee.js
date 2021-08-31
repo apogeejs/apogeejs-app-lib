@@ -38,7 +38,7 @@ export default class Apogee {
         //workspace manager
         this.workspaceManager = null;
         
-        //component generators
+        //component configs
         this.componentClasses = {};
         this.standardComponents = [];
         //these are a list of names of components that go in the "added component" list

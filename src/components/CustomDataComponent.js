@@ -48,7 +48,7 @@ class CustomDataComponent extends Component {
             }
         }
         else {
-            //generator not yet present
+            // not yet present
             resource = {};
         }
 
@@ -57,7 +57,7 @@ class CustomDataComponent extends Component {
 }
 
 //======================================
-// This is the control generator, to register the control
+// This is the control config, to register the control
 //======================================
 
 const CustomDataComponentConfig = {

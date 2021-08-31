@@ -495,48 +495,9 @@ export default class ModelManager extends FieldObject {
         console.log(JSON.stringify(this.createDependencies()));
     }
 
+    //this function should create a JSON giving the dependencies between members.
     createDependencies() {
         throw new Error("This needs to be rewritten, probably in Model rather than here.")
-        //for one thing I removed the model instance from componentInfo in the component map
-        //instead I should just read all the members from the model.
-
-        // let model = this.getField("model");
-        // var memberInfo = {};
-
-        // let componentMap = this.getField("componentMap");
-
-        // for(var key in componentMap) {
-        //     var componentInfo = componentMap[key];
-        //     if((componentInfo)&&(componentInfo.member)) {
-
-
-        //         var member = componentInfo.member;
-
-        //         var memberStruct = {};
-        //         memberStruct.type = member.constructor.generator.type;
-        //         var parentMember = member.getParentMember(model);
-        //         memberStruct.parent = parentMember ? parentMember.getFullName(model) : null;
-
-        //         if(member.isDependent) {
-        //             let depList = [];
-        //             let dependsOnMap = member.getDependsOn();
-        //             for(var idString in dependsOnMap) {
-        //                 dependencyType = dependsOnMap[idString];
-        //                 if(dependencyType == apogeeutil.NORMAL_DEPENDENCY) {
-        //                     let dependency = model.lookupMemberById(idString);
-        //                     depList.push(dependency.getFullName(model));
-        //                 }
-        //             }
-        //             if(depList.length > 0) {
-        //                 memberStruct.dep = depList;
-        //             }
-        //         }
-
-        //         memberInfo[member.getFullName(model)] = memberStruct;
-        //     }
-        // }
-
-        // return memberInfo;
     }
 
 }
