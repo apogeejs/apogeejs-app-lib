@@ -405,7 +405,7 @@ export default class Component extends FieldObject {
                     let childPropertyJson = propertyJson.children[childName];
                     let childComponentId = modelManager.getComponentIdByMemberId(childMemberId);
                     let childComponent = modelManager.getMutableComponentByComponentId(childComponentId);
-                    childComponent.loadPropertyValues(modelManager,childPropertyJson);
+                    childComponent.loadPropertyValues(childPropertyJson,modelManager);
                 }
             }
         }
