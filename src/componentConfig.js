@@ -39,14 +39,6 @@ let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
 /** This method registers a new component. It will be exposed when the user
  * requests to create a new component */
  componentInfo.registerComponent = function(componentConfig) {
-    ///////////////////////////////////////////////
-    //Legacy registration
-    //Construct the update component config from the old class object
-    if(componentConfig instanceof Component) {
-        componentConfig = createComponentConfigFromLegacyComponentClass(componentConfig);
-    }
-    ///////////////////////////////////////////////////
-    
     //we should maybe warn if another component bundle is being overwritten
     let componentType = componentConfig.defaultComponentJson.type;
     componentConfigMap[componentType] = componentConfig;
@@ -57,14 +49,6 @@ let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
 
 /** This method registers a component. */
 componentInfo.registerStandardComponent = function(componentConfig) {
-    ///////////////////////////////////////////////
-    //Legacy registration
-    //Construct the update component config from the old class object
-    if(componentConfig instanceof Component) {
-        componentConfig = createComponentConfigFromLegacyComponentClass(componentConfig);
-    }
-    ///////////////////////////////////////////////////
-
     //we should maybe warn if another component bundle is being overwritten 
     let componentType = componentConfig.defaultComponentJson.type;
     componentConfigMap[componentType] = componentConfig;
@@ -76,14 +60,6 @@ componentInfo.registerStandardComponent = function(componentConfig) {
 /** This method registers a new component. It will be exposed when the user
  * requests to create a new component */
 componentInfo.registerPageComponent = function(componentConfig) {
-    ///////////////////////////////////////////////
-    //Legacy registration
-    //Construct the update component config from the old class object
-    if(componentConfig instanceof Component) {
-        componentConfig = createComponentConfigFromLegacyComponentClass(componentConfig);
-    }
-    ///////////////////////////////////////////////////
-
     //we should maybe warn if another component bundle is being overwritten
     let componentType = componentConfig.defaultComponentJson.type;
     componentConfigMap[componentType] = componentConfig;
@@ -95,17 +71,7 @@ componentInfo.registerPageComponent = function(componentConfig) {
 /** This method unregisters a component. Note this method does not fire
  * a event (for now at least) */
 componentInfo.unregisterComponent = function(componentConfig) {
-    let componentType;
-    if(componentConfig instanceof Component) {
-        ///////////////////////////////////////////////
-        //Legacy registration
-        //component class passed in, not component config
-        ///////////////////////////////////////////////////
-        componentType = componentConfig.uniqueName
-    }
-    else {
-        componentType = componentConfig.defaultComponentJson.type;
-    }
+    let componentType = componentConfig.defaultComponentJson.type;
     
     delete componentConfigMap[componentType];
     let stdIndex = standardComponents.indexOf(componentType);
@@ -159,18 +125,6 @@ componentInfo.getAdditionalComponentTypes = function() {
 
 componentInfo.getPageComponentTypes = function() {
     return pageComponents;
-}
-
-/** This function creates the current componentConfig from the legacy component class. */
-function createComponentConfigFromLegacyComponentClass(legacyComponentClass) {
-    return {
-        displayName: legacyComponentClass.displayName,
-        defaultMemberjson: legacyComponentClass.DEFAULT_MEMBER_JSON,
-        deefaultComponentJson: {
-            type: legacyComponentClass.uniqueName
-        },
-        legacyComponentClass: componentClass
-    }
 }
 
 //===============================
