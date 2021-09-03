@@ -26,9 +26,8 @@ let componentInfo = {};
 export {componentInfo as default};
 
 let componentConfigMap = {};
-let standardComponents = [];
-let additionalComponents = [];
-let pageComponents = [];
+let preferredComponents = [];
+let components = [];
 
 let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
 
@@ -42,29 +41,21 @@ let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
     //we should maybe warn if another component bundle is being overwritten
     let componentType = componentConfig.defaultComponentJson.type;
     componentConfigMap[componentType] = componentConfig;
-    if(additionalComponents.indexOf(componentType) < 0) {
-        additionalComponents.push(componentType);
+    if(components.indexOf(componentType) < 0) {
+        components.push(componentType);
     }
 }
 
 /** This method registers a component. */
-componentInfo.registerStandardComponent = function(componentConfig) {
+componentInfo.registerPreferredComponent = function(componentConfig) {
     //we should maybe warn if another component bundle is being overwritten 
     let componentType = componentConfig.defaultComponentJson.type;
     componentConfigMap[componentType] = componentConfig;
-    if(standardComponents.indexOf(componentType) < 0) {
-        standardComponents.push(componentType);
+    if(components.indexOf(componentType) < 0) {
+        components.push(componentType);
     }
-}
-
-/** This method registers a new component. It will be exposed when the user
- * requests to create a new component */
-componentInfo.registerPageComponent = function(componentConfig) {
-    //we should maybe warn if another component bundle is being overwritten
-    let componentType = componentConfig.defaultComponentJson.type;
-    componentConfigMap[componentType] = componentConfig;
-    if(pageComponents.indexOf(componentType) < 0) {
-        pageComponents.push(componentType);
+    if(preferredComponents.indexOf(componentType) < 0) {
+        preferredComponents.push(componentType);
     }
 }
 
@@ -74,16 +65,15 @@ componentInfo.unregisterComponent = function(componentConfig) {
     let componentType = componentConfig.defaultComponentJson.type;
     
     delete componentConfigMap[componentType];
-    let stdIndex = standardComponents.indexOf(componentType);
-    if(stdIndex >= 0) {
-        standardComponents.splice(stdIndex,1);
+    let index = components.indexOf(componentType);
+    if(index >= 0) {
+        components.splice(stdIndex,1);
     }
-    else {
-        let pageIndex = pageComponents.indexOf(componentType);
-        if(pageIndex >= 0) {
-            pageComponents.splice(pageIndex,1);
-        }
+    index = preferredComponents.indexOf(componentType);
+    if(index >= 0) {
+        preferredComponents.splice(stdIndex,1);
     }
+    
 }
 
 /** This method returns the component config for the component of a given type. */
@@ -115,16 +105,12 @@ componentInfo.createComponentInstance = function(componentType,member,modelManag
     return new componentConfig.componentClass(member,modelManager,null,componentConfig,specialCaseIdValue);
 }
 
-componentInfo.getStandardComponentTypes = function() {
-    return standardComponents;
+componentInfo.getPreferredComponentTypes = function() {
+    return preferredComponents;
 }
 
-componentInfo.getAdditionalComponentTypes = function() {
-    return additionalComponents;
-}
-
-componentInfo.getPageComponentTypes = function() {
-    return pageComponents;
+componentInfo.getComponentTypes = function() {
+    return components;
 }
 
 //===============================
@@ -132,22 +118,20 @@ componentInfo.getPageComponentTypes = function() {
 //===============================
 
 //register standard child components
-componentInfo.registerStandardComponent(JsonTableComponentConfig);
-componentInfo.registerStandardComponent(FunctionComponentConfig);
-componentInfo.registerStandardComponent(FolderFunctionComponentConfig);
-componentInfo.registerStandardComponent(WebRequestComponentConfig);
+componentInfo.registerPreferredComponent(FolderComponentConfig);
+componentInfo.registerPreferredComponent(JsonTableComponentConfig);
+componentInfo.registerPreferredComponent(FunctionComponentConfig);
+componentInfo.registerPreferredComponent(FolderFunctionComponentConfig);
+componentInfo.registerPreferredComponent(WebRequestComponentConfig);
 
-componentInfo.registerStandardComponent(DesignerDataFormComponentConfig);
-componentInfo.registerStandardComponent(DesignerActionFormComponentConfig);
+componentInfo.registerPreferredComponent(DesignerDataFormComponentConfig);
+componentInfo.registerPreferredComponent(DesignerActionFormComponentConfig);
 
 //additional child components
 componentInfo.registerComponent(CustomComponentConfig);
 componentInfo.registerComponent(CustomDataComponentConfig);
 componentInfo.registerComponent(FullActionFormComponentConfig);
 componentInfo.registerComponent(FullDataFormComponentConfig);
-
-componentInfo.registerPageComponent(FolderComponentConfig);
-componentInfo.registerPageComponent(FolderFunctionComponentConfig);
 
 //legacy forms
 componentInfo.registerComponent(DynamicFormConfig);
