@@ -116,21 +116,31 @@ export default class Component extends FieldObject {
 
     /** This method returns a display name for the member object. */
     getDisplayName(useFullPath,modelManagerForFullPathOnly) {
+        let standardDisplayName;
         if(useFullPath) {
-            return this.getFullName(modelManagerForFullPathOnly);
+            standardDisplayName = this.getFullName(modelManagerForFullPathOnly);
         }
         else {
-            return this.getName();
+            standardDisplayName = this.getName();
+        }
+
+        if(this.componentConfig.instanceDisplayName) {
+            return this.componentConfig.instanceDisplayName.getDisplayName(this,standardDisplayName);
+        }
+        else {
+            return standardDisplayName;
         }
     }
 
-    /** This method returns true if the display name field is updated. This method exists because
-     * display name is potentially a compound field and this is a systematic way to see if it has changed.
-     * Components modifying the getDisplayName method should also update this method.
-     * Note this method only applies when useFullPath = false. If you are using useFullPath = true, also
-     * check if the fullName has changed. */
+    /** This method returns true if the display name field is updated. */
     isDisplayNameUpdated() {
-        return this.isMemberFieldUpdated("member","name");
+        if(this.componentConfig.instanceDisplayName) {
+            return this.componentConfig.instanceDisplayName.isDisplayNameUpdated(this);
+        }
+        else {
+            return this.isMemberFieldUpdated("member","name");
+        }
+        
     }
 
     /** This can be used to see if the component state has been updated. */
@@ -587,4 +597,7 @@ export default class Component extends FieldObject {
 //          jsonToField: (component,jsonFieldValue,modelManager) => fieldValue
 //          fieldToJson: (component,fieldValue,modelManager) => jsonFieldValue
 //          fieldChangeHandler: (component,fieldValue) => void
+//     instanceDisplayName: OPTIONAL if the display name is not the plain member name, such as for adding the arguments for a function
+//          getDisplayName: (component,standardDisplayName) => instanceDisplayName
+//          isDisplayNameUpdated: (component) => boolean 
 // }
