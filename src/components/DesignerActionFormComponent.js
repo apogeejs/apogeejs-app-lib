@@ -2,58 +2,38 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
-/** This is a simple custom component example. */
-class DesignerActionFormComponent extends Component {
-
-    //==============================
-    //Resource Accessors
-    //==============================
-
-    /** This method compiles the layout function entered by the user. It returns
-     * the fields  {formLayoutFunction,validatorFunction,errorMessage}. */
-     createActionFunctions(useSubmit,useCancel) {
-        let saveCodeText = this.getField("onSubmitCode");
-        let cancelCodeText = this.getField("onCancelCode");
-        let onSubmitFunction, onCancelFunction
-        let errorMessages = [];
-
-        if(useSubmit) {
-            if((saveCodeText !== undefined)&&(saveCodeText !== null))  {
-                try {
-                    //create the validator function
-                    onSubmitFunction = new Function("cmdMsngr","formValue","formObject",saveCodeText);
-                }
-                catch(error) {
-                    errorMessages.push("Error parsing validator function code: " + error.toString());
-                    if(error.stack) console.error(error.stack);
-                }
-            }
-            else {
-                onSubmitFunction = () => "";
-            }
-        }
-
-        if(useCancel) {
-            if((cancelCodeText !== undefined)&&(cancelCodeText !== null))  {
-                try {
-                    //create the validator function
-                    onCancelFunction = new Function("cmdMsngr","formObject",cancelCodeText);
-                }
-                catch(error) {
-                    errorMessages.push("Error parsing validator function code: " + error.toString());
-                    if(error.stack) console.error(error.stack);
-                }
-            }
-            else {
-                onCancelFunction = () => "";
-            }
-        }
-
-        let errorMessage;
-        if(errorMessages.length > 0) errorMessage = errorMessages.join("; ");
-        return {onSubmitFunction, onCancelFunction, errorMessage};
+function onSubmitCodeUpdate(component,submitCode) {
+    let onSubmitFunction;
+    if((submitCode === undefined)&&(submitCode === null)) submitCode = "";
+    
+    try {
+        //create the validator function
+        onSubmitFunction = new Function("cmdMsngr","formValue","formObject",submitCode);
     }
+    catch(error) {
+        if(error.stack) console.error(error.stack);
+        onSubmitFunction = error;
+    }
+
+    component.setField("onSubmitFunction",onSubmitFunction);
 }
+
+function onCancelCodeUpdate(component,cancelCode) {
+    let onCancelFunction;
+    if((cancelCode === undefined)&&(cancelCode === null)) cancelCode = "";
+    
+    try {
+        //create the validator function
+        onCancelFunction = new Function("cmdMsngr","formObject",cancelCode);
+    }
+    catch(error) {
+        if(error.stack) console.error(error.stack);
+        onCancelFunction = error;
+    }
+
+    component.setField("onCancelFunction",onCancelFunction);
+}
+
 
 const DATA_MEMBER_FUNCTION_BODY = `
 if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
@@ -64,7 +44,7 @@ else return [];
 const dataMemberTypeName = "apogee.DesignerActionFormMember";
 defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 const DesignerActionFormComponentConfig = {
-    componentClass: DesignerActionFormComponent,
+    componentClass: Component,
     displayName: "Action Form Cell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
     defaultComponentJson: {
@@ -74,7 +54,15 @@ const DesignerActionFormComponentConfig = {
             onSubmitCode: "",
             onCancelCode: ""
         }
-    }
+    },
+    fieldFunctions: {
+		onSubmitCode: {
+			fieldChangeHandler: onSubmitCodeUpdate 
+		},
+        onCancelCode: {
+			fieldChangeHandler: onCancelCodeUpdate 
+		}
+	}
 }
 export default DesignerActionFormComponentConfig;
 

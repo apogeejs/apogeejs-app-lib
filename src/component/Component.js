@@ -26,6 +26,7 @@ export default class Component extends FieldObject {
 
         //this is used to allow reacting to loca field changes, such as when swe want to store a field linked to another field (like code and its function)
         this.componentFieldChangeHandlers = {};
+        this._addFieldChangeHandlers();
 
         //==============
         //Fields
@@ -449,9 +450,9 @@ export default class Component extends FieldObject {
                 let fieldValue = this.getField(fieldName);
                 let jsonValue;
                 if(fieldValue !== undefined) {
-                    let fieldTranslators = this._getFieldTranslators(fieldName);
-                    if(fieldTranslators) {
-                        jsonValue = fieldTranslators.fieldToJson(this,fieldValue,modelManager);
+                    let fieldToJson = this._getFieldFunction(fieldName,"fieldToJson");
+                    if(fieldToJson) {
+                        jsonValue = fieldToJson(this,fieldValue,modelManager);
                     }
                     else {
                         jsonValue = fieldValue;
@@ -476,9 +477,9 @@ export default class Component extends FieldObject {
                 let newJsonValue = json.fields[fieldName];
                 let newFieldValue;
                 if(newJsonValue !== undefined) {
-                    let fieldTranslators = this._getFieldTranslators(fieldName);
-                    if(fieldTranslators) {
-                        newFieldValue = fieldTranslators.jsonToField(this,newJsonValue,modelManager);
+                    let jsonToField = this._getFieldFunction(fieldName,"jsonToField");
+                    if(jsonToField) {
+                        newFieldValue = jsonToField(this,newJsonValue,modelManager);
                     }
                     else {
                         newFieldValue = newJsonValue;
@@ -504,7 +505,7 @@ export default class Component extends FieldObject {
     _onComponentFieldChange(fieldName,fieldValue) {
         let handlerList = this.componentFieldChangeHandlers[fieldName];
         if(handlerList) {
-            handlerList.forEach(handler => handler(fieldValue))
+            handlerList.forEach( handler => handler(this,fieldValue))
         }
     }
 
@@ -522,12 +523,13 @@ export default class Component extends FieldObject {
         return componentJson.fields ? componentJson.fields : {};
     }
 
-    _getFieldTranslators(fieldName) {
-        if((this.componentConfig.fieldTranslators)&&(this.componentConfig.fieldTranslators[fieldName])) {
-            return this.componentConfig.fieldTranslators[fieldName];
+    _getFieldFunction(fieldName,functionName) {
+        if((this.componentConfig.fieldFunctions)&&(this.componentConfig.fieldFunctions[fieldName])) {
+            let fieldFunctions = this.componentConfig.fieldFunctions[fieldName];
+            return fieldFunctions[functionName];
         }
         else {
-            return null;
+            return undefined;
         }
     }
 
@@ -558,6 +560,18 @@ export default class Component extends FieldObject {
         }
     }
 
+    /** This method applies any field change handlers from the component config. */
+    _addFieldChangeHandlers() {
+        if(this.componentConfig.fieldFunctions) {
+            for(let fieldName in this.componentConfig.fieldFunctions) {
+                let fieldFunctionData = this.componentConfig.fieldFunctions[fieldName];
+                if(fieldFunctionData.fieldChangeHandler) {
+                    this.addComponentFieldChangeHandler(fieldName,fieldFunctionData.fieldChangeHandler)
+                }
+            }
+        }
+
+    }
 }
 
 //======================================
@@ -569,6 +583,8 @@ export default class Component extends FieldObject {
 //     displayName: The display name for this compononent - REQUIRED
 //     defaultMemberJson: The JSON that creates the default members for this component
 //     defaultComponentJson: The JSON that creates the default component.
-//     fieldTranslators: functions to convert between field values and the json value during save and load. This can be 
-//         omitted if the field value and the json value are the same. It is used if the json in converted on load or save. OPTIONAL
+//     fieldFunctions: functions related to field loading and saving OPTIONAL
+//          jsonToField: (component,jsonFieldValue,modelManager) => fieldValue
+//          fieldToJson: (component,fieldValue,modelManager) => jsonFieldValue
+//          fieldChangeHandler: (component,fieldValue) => void
 // }

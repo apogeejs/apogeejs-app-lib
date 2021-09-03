@@ -2,36 +2,21 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
-/** This is a simple custom component example. */
-class DesignerDataFormComponent extends Component {
-
-    //==============================
-    //Resource Accessors
-    //==============================
-
-    /** This method compiles the layout function entered by the user. It returns
-     * the fields  {formLayoutFunction,validatorFunction,errorMessage}. */
-     createValidatorFunction() {
-        var validatorCodeText = this.getField("validatorCode");
-        var validatorFunction, errorMessage;
-
-        if((validatorCodeText !== undefined)&&(validatorCodeText !== null))  {
-            try {
-                //create the validator function
-                validatorFunction = new Function("formValue","inputData",validatorCodeText);
-            }
-            catch(error) {
-                errorMessage = "Error parsing validator function code: " + error.toString()
-                if(error.stack) console.error(error.stack);
-            }
-        }
-        else {
-            validatorFunction = () => true;
-        }
-
-        return {validatorFunction, errorMessage};
+/** This updates the validator function when the validator code is updated. */
+function onValidatorCodeUpdate(component,validatorCode) {
+    let validatorFunctionFieldValue;
+    if((validatorCode === undefined)&&(validatorCode === null)) validatorCode = "";
+    
+    try {
+        //create the validator function
+        validatorFunctionFieldValue = new Function("formValue","inputData",validatorCode);
+    }
+    catch(error) {
+        if(error.stack) console.error(error.stack);
+        validatorFunctionFieldValue = error;
     }
 
+    component.setField("validatorFunction",validatorFunctionFieldValue);
 }
 
 const DATA_MEMBER_FUNCTION_BODY = `
@@ -55,7 +40,7 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
     }
 ];
 const DesignerDataFormComponentConfig = {
-    componentClass: DesignerDataFormComponent,
+    componentClass: Component,
 	displayName: "Data Form Cell",
 	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
     defaultComponentJson: {
@@ -64,7 +49,12 @@ const DesignerDataFormComponentConfig = {
             allowInputExpressions: true,
             validatorCode: "return true;"
         }
-    }
+    },
+    fieldFunctions: {
+        validatorCode: {
+			fieldChangeHandler: onValidatorCodeUpdate 
+		}
+	}
 }
 export default DesignerDataFormComponentConfig;
 

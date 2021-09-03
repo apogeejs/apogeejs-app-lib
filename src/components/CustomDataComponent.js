@@ -3,57 +3,44 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 /** This attempt has a single form edit page which returns an object. */
 // To add - I should make it so it does not call set data until after it is initialized. I will cache it rather 
 //than making the user do that.
+/** This method creates the resource. */
+function onUiCodeUpdate(component,uiGeneratorBody) {
+    var resource;
+    if((uiGeneratorBody)&&(uiGeneratorBody.length > 0)) {
+        //compile the user code for the generator
+        var generatorFunction;
+        try {
+            generatorFunction = new Function(uiGeneratorBody);
+        }
+        catch(error) {
+            resource = {
+                displayInvalid: true,
+                message: "Error parsing uiGenerator code: " + error.toString()
+            }
+            if(error.stack) console.error(error.stack);
+            generatorFunction = null;
+        }
 
-/** This is a custom resource component. 
- * To implement it, the resource script must have the methods "run()" which will
- * be called when the component is updated. It also must have any methods that are
- * confugred with initialization data from the model. */
-class CustomDataComponent extends Component {
-
-    //==============================
-    //Resource Accessors
-    //==============================
-
-    createResource() {
-        var uiGeneratorBody = this.getField("uiCode");
-        
-        var resource;
-        if((uiGeneratorBody)&&(uiGeneratorBody.length > 0)) {
-            //compile the user code for the generator
-            var generatorFunction;
+        //execute the generator function
+        if(generatorFunction) {
             try {
-                generatorFunction = new Function(uiGeneratorBody);
+                resource = generatorFunction();
             }
             catch(error) {
                 resource = {
                     displayInvalid: true,
-                    message: "Error parsing uiGenerator code: " + error.toString()
+                    message: "Error executing uiGenerator code: " + error.toString()
                 }
                 if(error.stack) console.error(error.stack);
-                generatorFunction = null;
-            }
-
-            //execute the generator function
-            if(generatorFunction) {
-                try {
-                    resource = generatorFunction();
-                }
-                catch(error) {
-                    resource = {
-                        displayInvalid: true,
-                        message: "Error executing uiGenerator code: " + error.toString()
-                    }
-                    if(error.stack) console.error(error.stack);
-                }
             }
         }
-        else {
-            // not yet present
-            resource = {};
-        }
-
-        return resource;
     }
+    else {
+        //generator not yet present
+        resource = {};
+    }
+
+    component.setField("resource",resource);
 }
 
 //======================================
@@ -61,7 +48,7 @@ class CustomDataComponent extends Component {
 //======================================
 
 const CustomDataComponentConfig = {
-    componentClass: CustomDataComponent,
+    componentClass: Component,
     displayName: "Custom Data Cell",
     defaultMemberJson: {
         "type": "apogee.Folder",
@@ -91,7 +78,12 @@ const CustomDataComponentConfig = {
             css: "",
             uiCode: ""
         }
-    }
+    },
+    fieldFunctions: {
+		uiCode: {
+			fieldChangeHandler: onUiCodeUpdate 
+		}
+	}
 }
 export default CustomDataComponentConfig;
 

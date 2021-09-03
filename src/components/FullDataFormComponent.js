@@ -1,62 +1,46 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-/** This is a custom resource component. 
- * To implement it, the resource script must have the methods "run()" which will
- * be called when the component is updated. It also must have any methods that are
- * confugred with initialization data from the model. */
-class FullDataFormComponent extends Component {
+//-----------------------
+// Handlers for field changes, to update linked fields
+//-----------------------
 
-    constructor(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue) {
-        super(member,modelManager,instanceToCopy,componentConfig,specialCaseIdValue);
+/** This updates the layout function when the layout code is updated. */
+function onLayoutCodeUpdate(component,layoutCode) {
+    let layoutFunctionFieldValue;
+    if((layoutCode === undefined)&&(layoutCode === null)) layoutCode = "";
 
-        //Here we link function updates to when the code field is updated 
-        this.addComponentFieldChangeHandler("layoutCode",layoutCode => this._onLayoutCodeUpdate(layoutCode))
-        this.addComponentFieldChangeHandler("validatorCode",validatorCode => this._onValidatorCodeUpdate(validatorCode))
+    try {
+        //create the validator function
+        layoutFunctionFieldValue = new Function("commandMessenger","inputData",layoutCode);
+    }
+    catch(error) {
+        if(error.stack) console.error(error.stack);
+        layoutFunctionFieldValue = error;
     }
 
-    //-----------------------
-    // Handlers for field changes, to update linked fields
-    //-----------------------
-
-    /** This updates the layout function when the layout code is updated. */
-    _onLayoutCodeUpdate(layoutCode) {
-        let layoutFunctionFieldValue;
-        if((layoutCode === undefined)&&(layoutCode === null)) layoutCode = "";
-
-        try {
-            //create the validator function
-            layoutFunctionFieldValue = new Function("commandMessenger","inputData",layoutCode);
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            layoutFunctionFieldValue = error;
-        }
-
-        this.setField("layoutFunction",layoutFunctionFieldValue);
-    }
-
-    /** This updates the validator function when the validator code is updated. */
-    _onValidatorCodeUpdate(validatorCode) {
-        let validatorFunctionFieldValue;
-        if((validatorCode === undefined)&&(validatorCode === null)) validatorCode = "";
-        
-        try {
-            //create the validator function
-            validatorFunctionFieldValue = new Function("formValue","inputData",validatorCode);
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            validatorFunctionFieldValue = error;
-        }
-
-        this.setField("validatorFunction",validatorFunctionFieldValue);
-    }
-
-
+    component.setField("layoutFunction",layoutFunctionFieldValue);
 }
 
+/** This updates the validator function when the validator code is updated. */
+function onValidatorCodeUpdate(component,validatorCode) {
+    let validatorFunctionFieldValue;
+    if((validatorCode === undefined)&&(validatorCode === null)) validatorCode = "";
+    
+    try {
+        //create the validator function
+        validatorFunctionFieldValue = new Function("formValue","inputData",validatorCode);
+    }
+    catch(error) {
+        if(error.stack) console.error(error.stack);
+        validatorFunctionFieldValue = error;
+    }
+
+    component.setField("validatorFunction",validatorFunctionFieldValue);
+}
+
+
 const FullDataFormComponentConfig = {
-    componentClass: FullDataFormComponent,
+    componentClass: Component,
 	displayName: "Full Data Form Cell",
 	defaultMemberJson: {
 		"type": "apogee.Folder",
@@ -84,7 +68,15 @@ const FullDataFormComponentConfig = {
             layoutCode: "return [];",
             validatorCode: "return true;"
         }
-    }
+    },
+    fieldFunctions: {
+		layoutCode: {
+			fieldChangeHandler: onLayoutCodeUpdate 
+		},
+        validatorCode: {
+			fieldChangeHandler: onValidatorCodeUpdate 
+		}
+	}
 }
 export default FullDataFormComponentConfig;
 

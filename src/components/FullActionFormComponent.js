@@ -1,48 +1,24 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
+/** This updates the layout function when the layout code is updated. */
+function onLayoutCodeUpdate(component,layoutCode) {
+    let layoutFunctionFieldValue;
+    if((layoutCode === undefined)&&(layoutCode === null)) layoutCode = "";
 
-/** This is a custom resource component. 
- * To implement it, the resource script must have the methods "run()" which will
- * be called when the component is updated. It also must have any methods that are
- * confugred with initialization data from the model. */
-class FullActionFormComponent extends Component {
-
-    //==============================
-    //Resource Accessors
-    //==============================
-
-    /** This method compiles the layout function entered by the user. It returns
-     * the fields  {formLayoutFunction,errorMessage}. */
-    createFormLayoutFunction() {
-        var formCodeText = this.getField("layoutCode");
-        
-        var formLayoutFunction;
-        var errorMessage;
-        if((formCodeText !== undefined)&&(formCodeText !== null)) {
-            try {
-                //create the layout function
-                formLayoutFunction = new Function("commandMessenger","inputData",formCodeText);
-            }
-            catch(error) {
-                errorMessage = "Error parsing uiGenerator code: " + error.toString()
-                if(error.stack) console.error(error.stack);
-            }
-        }
-        else {
-            formLayoutFunction = () => [];
-        }
-        
-        return {formLayoutFunction,errorMessage}
+    try {
+        //create the validator function
+        layoutFunctionFieldValue = new Function("commandMessenger","inputData",layoutCode);
+    }
+    catch(error) {
+        if(error.stack) console.error(error.stack);
+        layoutFunctionFieldValue = error;
     }
 
+    component.setField("layoutFunction",layoutFunctionFieldValue);
 }
 
-//======================================
-// This is the control config, to register the control
-//======================================
-
 const FullActionFormComponentConfig = {
-    componentClass: FullActionFormComponent,
+    componentClass: Component,
 	displayName: "Full Action Form Cell",
 	defaultMemberJson: {
 		"type": "apogee.JsonMember"
@@ -52,7 +28,12 @@ const FullActionFormComponentConfig = {
         fields: {
             "layoutCode": "return [];"
         }
-    }
+    },
+    fieldFunctions: {
+		layoutCode: {
+			fieldChangeHandler: onLayoutCodeUpdate 
+		}
+	}
 }
 export default FullActionFormComponentConfig;
 

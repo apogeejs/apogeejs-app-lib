@@ -16,7 +16,7 @@ const FolderComponentConfig = {
 		}
 	},
 	childParentFolderPath: ".",
-	fieldTranslators: {
+	fieldFunctions: {
 		editorState: {
 			fieldToJson: (component,fieldValue,modelManager) => component.convertEditorStateToJson(fieldValue),
 			jsonToField: (component,jsonValue,modelManager) => component.convertJsonToEditorState(jsonValue)
