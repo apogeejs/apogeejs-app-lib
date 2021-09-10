@@ -11,14 +11,14 @@ export function getFormComponentDefaultMemberJson(dataMemberTypeName,additionalC
         "children": {
             "formData": {
                 "name": "formData",
-                "type": "apogee.JsonMember",
+                "type": "apogee.DataMember",
                 "fields": {
                     "data": ""
                 }
             },
             "formResult": {
                 "name": "formResult",
-                "type": "apogee.JsonMember",
+                "type": "apogee.DataMember",
                 "fields": {
                     "data": "",
                     "contextParentGeneration": 2

@@ -33,7 +33,7 @@ defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
     {
         "name": "value",
-        "type": "apogee.JsonMember",
+        "type": "apogee.DataMember",
         "fields": {
             "data": ""
         }

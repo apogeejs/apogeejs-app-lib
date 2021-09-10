@@ -56,14 +56,14 @@ const CustomDataComponentConfig = {
         "children": {
             "input": {
                 "name": "input",
-                "type": "apogee.JsonMember",
+                "type": "apogee.DataMember",
                 "fields": {
                     "data":"",
                 }
             },
             "data": {
                 "name": "data",
-                "type": "apogee.JsonMember",
+                "type": "apogee.DataMember",
                 "fields": {
                     "data": "",
                 }

@@ -4,7 +4,7 @@ const JsonTableComponentConfig = {
     componentClass: Component,
     displayName: "Data Cell",
     defaultMemberJson: {
-        "type": "apogee.JsonMember"
+        "type": "apogee.DataMember"
     },
     defaultComponentJson: {
         type: "apogeeapp.JsonCell",

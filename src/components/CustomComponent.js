@@ -44,7 +44,7 @@ const CustomComponentConfig = {
     componentClass: Component,
     displayName: "Custom Cell",
     defaultMemberJson: {
-        "type": "apogee.JsonMember"
+        "type": "apogee.DataMember"
     },
     defaultComponentJson: {
         type: "apogeeapp.CustomCell",

@@ -21,7 +21,7 @@ const FullActionFormComponentConfig = {
     componentClass: Component,
 	displayName: "Full Action Form Cell",
 	defaultMemberJson: {
-		"type": "apogee.JsonMember"
+		"type": "apogee.DataMember"
 	},
     defaultComponentJson: {
         type: "apogeeapp.FullActionFormCell",

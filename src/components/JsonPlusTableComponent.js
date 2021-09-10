@@ -12,7 +12,7 @@ const JsonPlusTableComponentConfig = {
 	componentClass: Component,
 	displayName: "Extended Data Cell",
 	defaultMemberJson: {
-		type: "apogee.JsonMember"
+		type: "apogee.DataMember"
 	},
 	defaultComponentJson: {
 		type: "apogeeapp.ExtendedJsonCell"

@@ -48,14 +48,14 @@ const FullDataFormComponentConfig = {
 		"children": {
 			"input": {
 				"name": "input",
-				"type": "apogee.JsonMember",
+				"type": "apogee.DataMember",
 				"fields": {
 					"data": ""
 				}
 			},
 			"value": {
 				"name": "value",
-				"type": "apogee.JsonMember",
+				"type": "apogee.DataMember",
 				"fields": {
 					"data": ""
 				}

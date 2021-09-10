@@ -24,7 +24,7 @@ const FormDataComponentConfig = {
 			},
 			"data": {
 				"name": "data",
-				"type": "apogee.JsonMember",
+				"type": "apogee.DataMember",
 				"fields": {
 					"data": ""
 				}
