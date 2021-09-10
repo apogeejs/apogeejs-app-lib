@@ -1,6 +1,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
-import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
+import {defineHardcodedDataMember} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 function onSubmitCodeUpdate(component,submitCode) {
     let onSubmitFunction;
@@ -42,7 +42,7 @@ else return [];
 
 //this defines the hardcoded type we will use
 const dataMemberTypeName = "apogee.DesignerActionFormMember";
-defineHardcodedJsonTable(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
+defineHardcodedDataMember(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 const DesignerActionFormComponentConfig = {
     componentClass: Component,
     displayName: "Action Form Cell",

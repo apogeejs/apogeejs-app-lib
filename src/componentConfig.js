@@ -1,6 +1,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import JsonTableComponentConfig from "/apogeejs-app-lib/src/components/JsonTableComponent.js";
+import JsonComponentConfig from "/apogeejs-app-lib/src/components/JsonComponent.js";
 import FunctionComponentConfig from "/apogeejs-app-lib/src/components/FunctionComponent.js";
 import FolderComponentConfig from "/apogeejs-app-lib/src/components/FolderComponent.js";
 import FolderFunctionComponentConfig from "/apogeejs-app-lib/src/components/FolderFunctionComponent.js";
@@ -18,7 +18,7 @@ import DesignerDataFormComponentConfig from "/apogeejs-app-lib/src/components/De
 import DesignerActionFormComponentConfig from "/apogeejs-app-lib/src/components/DesignerActionFormComponent.js";
 
 //JSON PLUS COMPONENT
-import JsonPlusTableComponentConfig from "/apogeejs-app-lib/src/components/JsonPlusTableComponent.js";
+import JsonPlusComponentConfig from "/apogeejs-app-lib/src/components/JsonPlusComponent.js";
 
 /** This module initializes the default component classes. */
 
@@ -119,7 +119,7 @@ componentInfo.getComponentTypes = function() {
 
 //register standard child components
 componentInfo.registerPreferredComponent(FolderComponentConfig);
-componentInfo.registerPreferredComponent(JsonTableComponentConfig);
+componentInfo.registerPreferredComponent(JsonComponentConfig);
 componentInfo.registerPreferredComponent(FunctionComponentConfig);
 componentInfo.registerPreferredComponent(FolderFunctionComponentConfig);
 componentInfo.registerPreferredComponent(WebRequestComponentConfig);
@@ -138,7 +138,7 @@ componentInfo.registerComponent(DynamicFormConfig);
 componentInfo.registerComponent(FormDataComponentConfig);
 
 //JSON PLUS COMPONENT
-componentInfo.registerComponent(JsonPlusTableComponentConfig);
+componentInfo.registerComponent(JsonPlusComponentConfig);
 
 
 

@@ -1,5 +1,5 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import {defineHardcodedJsonTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
+import {defineHardcodedDataMember} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 
 /** This is a deprecated way of creating the FormInputBaseComponent. See documentation for the more up to date method.
@@ -13,7 +13,7 @@ export default class FormInputBaseComponent extends Component {
 
         //create the hard coded member
         dataMemberTypeName = cellUniqueName + "-data";
-        defineHardcodedJsonTable(dataMemberTypeName,memberFunctionBody);
+        defineHardcodedDataMember(dataMemberTypeName,memberFunctionBody);
 
         let classConfig = {};
         classConfig.displayName = cellDisplayName;

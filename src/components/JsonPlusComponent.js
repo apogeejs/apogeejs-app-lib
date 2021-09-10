@@ -1,6 +1,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-/** This component is similar to the JsonTableComponent except that it
+/** This component is similar to the JsonComponent except that it
  * also supports function elements. When displaying them it replaces the function
  * element with the string value for that function.
  * This component only allows the standard JSON view and it also does not support manually
@@ -8,7 +8,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
  * This implementation is also inefficient. It is not intended for large data objects.
  */
 
-const JsonPlusTableComponentConfig = {
+const JsonPlusComponentConfig = {
 	componentClass: Component,
 	displayName: "Extended Data Cell",
 	defaultMemberJson: {
@@ -18,4 +18,4 @@ const JsonPlusTableComponentConfig = {
 		type: "apogeeapp.ExtendedJsonCell"
 	}
 }
-export default JsonPlusTableComponentConfig;
+export default JsonPlusComponentConfig;

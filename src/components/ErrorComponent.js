@@ -1,6 +1,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-/** This component represents a json table object. */
+/** This component represents a error member object. */
 class ErrorComponent extends Component {
 
     /** This overrides the save method to return the original input. */

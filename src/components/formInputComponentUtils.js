@@ -1,4 +1,4 @@
-import {getSerializedHardcodedTable} from "/apogeejs-model-lib/src/apogeeModelLib.js";
+import {getSerializedHardcodedMember} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 /** This method gets the Defaule member json for a Form Input Component.
  * - dataMemberTypeName - the name for the data member type
@@ -24,7 +24,7 @@ export function getFormComponentDefaultMemberJson(dataMemberTypeName,additionalC
                     "contextParentGeneration": 2
                 }
             },
-            "data": getSerializedHardcodedTable("data",dataMemberTypeName)
+            "data": getSerializedHardcodedMember("data",dataMemberTypeName)
         }
     }
 

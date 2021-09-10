@@ -1,6 +1,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-const JsonTableComponentConfig = {
+const JsonComponentConfig = {
     componentClass: Component,
     displayName: "Data Cell",
     defaultMemberJson: {
@@ -13,7 +13,7 @@ const JsonTableComponentConfig = {
         }
     }
 }
-export default JsonTableComponentConfig;
+export default JsonComponentConfig;
 
 
 
