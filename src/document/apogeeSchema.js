@@ -140,7 +140,7 @@ export function createFolderSchema(app,pageMemberId) {
                 let modelManager = app.getWorkspaceManager().getModelManager();
                 let model = modelManager.getModel();
 
-                let pageMember = model.lookupMemberById(pageMemberId);
+                let pageMember = model.lookupObjectById(pageMemberId);
                 let nodeMemberId = pageMember.lookupChildId(name);
                 let nodeComponentId = modelManager.getComponentIdByMemberId(nodeMemberId);
                 let nodeComponent = modelManager.getComponentByComponentId(nodeComponentId);

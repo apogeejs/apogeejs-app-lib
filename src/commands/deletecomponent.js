@@ -31,11 +31,11 @@ deletecomponent.createUndoCommand = function(workspaceManager,commandData) {
     let parent;
 
     if(commandData.memberId) {
-        member = model.lookupMemberById(commandData.memberId);
+        member = model.lookupObjectById(commandData.memberId);
         parent = member.getParent(model);
     }
     else {
-        parent = model.lookupMemberById(commandData.parentId);
+        parent = model.lookupObjectById(commandData.parentId);
         member = parent.lookupChild(commandData.memberName);
     }
 
@@ -70,7 +70,7 @@ deletecomponent.executeCommand = function(workspaceManager,commandData) {
         actionJson.memberId = commandData.memberId;
     }
     else {
-        let parent = model.lookupMemberById(commandData.parentId);
+        let parent = model.lookupObjectById(commandData.parentId);
         let member = parent.lookupChild(model,commandData.memberName);
         actionJson.memberId = member.getId();
     }

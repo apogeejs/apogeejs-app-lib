@@ -14,7 +14,7 @@ let movecomponent = {};
 movecomponent.createUndoCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getModelManager();
     var model = modelManager.getModel();
-    var member = model.lookupMemberById(commandData.memberId);
+    var member = model.lookupObjectById(commandData.memberId);
     var parent = member.getParent(model);
     var oldMemberName = member.getName();
     

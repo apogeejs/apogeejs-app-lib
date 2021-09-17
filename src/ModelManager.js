@@ -409,7 +409,7 @@ export default class ModelManager extends FieldObject {
             let rootChildIdMap = model.getChildIdMap();
             for(let childName in rootChildIdMap) {
                 let childMemberId = rootChildIdMap[childName];
-                let childMember = model.lookupMemberById(childMemberId);
+                let childMember = model.lookupObjectById(childMemberId);
                 if(childMember) {
                     let childJson = componentsJson[childName];
                     let childCommandResult = this.createComponentFromMember(childMember,childJson);

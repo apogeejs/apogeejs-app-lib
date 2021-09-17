@@ -21,7 +21,7 @@ let updateComponentProperties = {};
 updateComponentProperties.createUndoCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getModelManager();
     let model = modelManager.getModel();
-    var member = model.lookupMemberById(commandData.memberId);
+    var member = model.lookupObjectById(commandData.memberId);
     var componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     var component = modelManager.getComponentByComponentId(componentId);
   
@@ -52,7 +52,7 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
     let modelManager = workspaceManager.getMutableModelManager();
     //wait to get a mutable model instance only if we need it
     let model = modelManager.getModel();
-    var member = model.lookupMemberById(commandData.memberId);
+    var member = model.lookupObjectById(commandData.memberId);
     var componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     var component = modelManager.getMutableComponentByComponentId(componentId);
     
