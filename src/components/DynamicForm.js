@@ -4,12 +4,7 @@ const DynamicFormConfig = {
 	componentClass: Component,
 	displayName: "Legacy Action Form Cell (deprecated)",
 	defaultMemberJson: {
-		"type": "apogee.FunctionMember",
-		"fields": {
-			"argList": [
-				"admin"
-			]
-		}
+		"type": "apogee.DataMember"
 	},
 	defaultComponentJson: {
 		type: "apogeeapp.ActionFormCell"

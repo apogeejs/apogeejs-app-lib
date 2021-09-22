@@ -3,6 +3,7 @@ import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
 import ModelManager from "/apogeejs-app-lib/src/ModelManager.js";
+import AppRunContext from "/apogeejs-app-lib/src/AppRunContext.js";
 
 
 /** This class manages the workspace. */
@@ -40,8 +41,10 @@ export default class WorkspaceManager extends FieldObject {
         }
 
         //==============
-        //Working variables
+        //NOn-field and working variables
         //==============
+        this.runContext = null;
+
         this.viewStateCallback = null;
         this.cachedViewState = null;
 
@@ -151,7 +154,7 @@ export default class WorkspaceManager extends FieldObject {
             return newModelManager;
         }
         else {
-            //return this instance since it si already unlocked
+            //return this instance since it is already unlocked
             return oldModelManager;
         }
     }
@@ -183,20 +186,12 @@ export default class WorkspaceManager extends FieldObject {
         setTimeout(() => this.app.executeCommand(commandData),0);
     }
 
-    getModelRunContext() {
-        let modelRunContext = {};
-        modelRunContext.doAsynchActionCommand = (modelId,action) => {
-            //create a command to run this action
-            let modelActionCommand = {};
-            modelActionCommand.type = "futureModelActionCommand";
-            modelActionCommand.modelId = modelId;
-            modelActionCommand.action = action;
-
-            //execut this command as a future command
-            this.runFutureCommand(modelActionCommand);
+    getRunContext() {
+        if(!this.runContext) {
+            this.runContext = new AppRunContext(this.app);
         }
 
-        return modelRunContext;
+        return this.runContext;
     }
 
     //====================================

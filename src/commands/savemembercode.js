@@ -31,7 +31,7 @@ savemembercode.createUndoCommand = function(workspaceManager,commandData) {
 savemembercode.executeCommand = function(workspaceManager,commandData) {
     
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
     
     var actionData = getSetCodeAction(model,
         commandData.memberId,

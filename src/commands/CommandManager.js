@@ -133,9 +133,11 @@ export default class CommandManager {
             //success - commit accept change - set (or clear) the workspace
             if(newWorkspaceManager.getIsClosed()) {
                 this.app.clearWorkspaceManager();
+                newWorkspaceManager.getRunContext().setStateValid(false);
             }
             else {
                 this.app.setWorkspaceManager(newWorkspaceManager);
+                newWorkspaceManager.getRunContext().setStateValid(true);
             }
 
             //add to history if the command was done and there is an undo command
@@ -160,6 +162,9 @@ export default class CommandManager {
             commandDone = true;
         }
         else {
+            //mark run context as invalid
+            newWorkspaceManager.getRunContext().setStateValid(false);
+
             //We want to update the state of any event listeners back to the state
             //before the failed calculation. For example, any failed code updates shoul
             //be cleared.

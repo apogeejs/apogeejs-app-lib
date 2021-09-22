@@ -45,7 +45,7 @@ savemembercompound.createUndoCommand = function(workspaceManager,commandData) {
 
 savemembercompound.executeCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
     
     let actionData = {};
     actionData.action = "compoundAction";

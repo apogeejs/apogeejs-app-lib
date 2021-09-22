@@ -33,7 +33,7 @@ updateworkspace.createUndoCommand = function(workspaceManager,commandData) {
 updateworkspace.executeCommand = function(workspaceManager,commandData) {
     
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
 
     var actionResult;    
     var actionData;

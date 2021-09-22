@@ -62,7 +62,7 @@ updateComponentProperties.executeCommand = function(workspaceManager,commandData
         var actionData = member.getPropertyUpdateAction(model,commandData.updatedMemberProperties);  
         if(actionData) {
             //get a new, mutable model instance here
-            model = modelManager.getMutableModel();
+            model = modelManager.getMutableModel(workspaceManager);
             actionResult = doAction(model,actionData);
             if(!actionResult.actionDone) {
                 throw new Error("Error updating member properties: " + actionResult.errorMsg);

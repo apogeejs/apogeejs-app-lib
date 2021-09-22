@@ -26,7 +26,7 @@ let futuremodelactioncommand = {};
 futuremodelactioncommand.executeCommand = function(workspaceManager,commandData) {
     
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
 
     var actionResult = doAction(model,commandData.action);
     if(!actionResult.actionDone) {

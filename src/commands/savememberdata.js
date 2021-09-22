@@ -28,7 +28,7 @@ savememberdata.createUndoCommand = function(workspaceManager,commandData) {
 
 savememberdata.executeCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
     
     var actionData = getSaveDataAction(model,commandData.memberId,commandData.data);
     

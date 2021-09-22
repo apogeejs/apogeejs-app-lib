@@ -21,7 +21,7 @@ export function getFormComponentDefaultMemberJson(dataMemberTypeName,additionalC
                 "type": "apogee.DataMember",
                 "fields": {
                     "data": "",
-                    "contextParentGeneration": 2
+                    "scopeParentGeneration": 2
                 }
             },
             "data": getSerializedHardcodedMember("data",dataMemberTypeName)

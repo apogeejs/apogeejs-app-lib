@@ -61,7 +61,7 @@ deletecomponent.createUndoCommand = function(workspaceManager,commandData) {
 deletecomponent.executeCommand = function(workspaceManager,commandData) {
     
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
 
     var actionJson = {};
     actionJson.action = "deleteMember";

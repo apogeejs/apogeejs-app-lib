@@ -49,10 +49,12 @@ export default class ModelManager extends FieldObject {
 
     /** This method returns a mutable instance of the model. If the active model is already mutable
      * it returns that. If not, it returns a mutble copy that also becomes the current model instance. */
-    getMutableModel() {
+    getMutableModel(workspaceManager) {
         let oldModel = this.getModel();
+        let runContext = workspaceManager.getRunContext();
         if(oldModel.getIsLocked()) {
-            let newModel = oldModel.getMutableModel();
+            let newModel = oldModel.getMutableModel(runContext);
+            runContext.registerModel(newModel);
             this.setField("model",newModel);
             
             //add listeners
@@ -63,7 +65,8 @@ export default class ModelManager extends FieldObject {
 
             return newModel;
         }
-        else {
+        else if(oldModel.getRunContext() == runContext) {
+            //already unlocked
             return oldModel;
         }
     }
@@ -381,7 +384,9 @@ export default class ModelManager extends FieldObject {
         if(!componentsJson) componentsJson = ModelManager.EMPTY_MODEL_COMPONENT_JSON;
 
         //create model
-        let model = new Model(workspaceManager.getModelRunContext());
+        let runContext = workspaceManager.getRunContext();
+        let model = new Model(runContext);
+        runContext.registerModel(model);
         this.setField("model",model);
         
         //add listeners

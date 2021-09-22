@@ -30,7 +30,7 @@ movecomponent.createUndoCommand = function(workspaceManager,commandData) {
 movecomponent.executeCommand = function(workspaceManager,commandData) {
     
     let modelManager = workspaceManager.getMutableModelManager();
-    let model = modelManager.getMutableModel();
+    let model = modelManager.getMutableModel(workspaceManager);
 
     var actionData = {};
     actionData.action = "moveMember";
