@@ -3,6 +3,7 @@ import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 import {EventManager} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 import WorkspaceManager from "/apogeejs-app-lib/src/WorkspaceManager.js";
+import AppRunContext from "/apogeejs-app-lib/src/AppRunContext.js";
 
 /** @private */
 let apogeeInstance = null;
@@ -37,6 +38,7 @@ export default class Apogee {
         
         //workspace manager
         this.workspaceManager = null;
+        this.appRunContext = null;
         
         //component configs
         this.componentClasses = {};
@@ -85,7 +87,17 @@ export default class Apogee {
         return this.workspaceManager;
     }
 
+    getRunContext() {
+        return this.appRunContext;
+    }
+
     createWorkspaceManager() {
+        if(this.appRunContext) {
+            //this should already be closed and set to null
+            this.appRunContext.deactivate = true;
+        }
+
+        this.appRunContext = new AppRunContext(this);
         return new WorkspaceManager(this);
     }
 
@@ -127,6 +139,10 @@ export default class Apogee {
     clearWorkspaceManager() {
         //remove the workspace from the app
         this.workspaceManager = null;
+        if(this.appRunContext) {
+            this.appRunContext.deactivate();
+        }
+        this.appRunContext = null;
         
         return true;
     }

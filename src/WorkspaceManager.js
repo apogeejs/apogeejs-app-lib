@@ -3,7 +3,7 @@ import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
 import ModelManager from "/apogeejs-app-lib/src/ModelManager.js";
-import AppRunContext from "/apogeejs-app-lib/src/AppRunContext.js";
+import { ModelRunContextLink } from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 
 /** This class manages the workspace. */
@@ -43,7 +43,7 @@ export default class WorkspaceManager extends FieldObject {
         //==============
         //NOn-field and working variables
         //==============
-        this.runContext = null;
+        this.runContextLink = new ModelRunContextLink(this.app.getRunContext());
 
         this.viewStateCallback = null;
         this.cachedViewState = null;
@@ -186,12 +186,8 @@ export default class WorkspaceManager extends FieldObject {
         setTimeout(() => this.app.executeCommand(commandData),0);
     }
 
-    getRunContext() {
-        if(!this.runContext) {
-            this.runContext = new AppRunContext(this.app);
-        }
-
-        return this.runContext;
+    getRunContextLink() {
+        return this.runContextLink;
     }
 
     //====================================
