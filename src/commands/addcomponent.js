@@ -39,6 +39,7 @@ addcomponent.executeCommand = function(workspaceManager,commandData) {
     let createAction = {};
     createAction.action = "createMember";
     createAction.parentId = commandData.parentId;
+    if(model.getId() == commandData.parentId) createAction.modelIsParent = true;
     createAction.createData = commandData.memberJson;
     let actionResult = doAction(model,createAction);
     
