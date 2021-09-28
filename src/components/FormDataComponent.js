@@ -17,10 +17,7 @@ const FormDataComponentConfig = {
 		"children": {
 			"layout": {
 				"name": "layout",
-				"type": "apogee.FunctionMember",
-				"fields": {
-					"argList": []
-				}
+				"type": "apogee.DataMember"
 			},
 			"data": {
 				"name": "data",
