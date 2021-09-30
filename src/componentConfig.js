@@ -67,11 +67,11 @@ componentInfo.unregisterComponent = function(componentConfig) {
     delete componentConfigMap[componentType];
     let index = components.indexOf(componentType);
     if(index >= 0) {
-        components.splice(stdIndex,1);
+        components.splice(index,1);
     }
     index = preferredComponents.indexOf(componentType);
     if(index >= 0) {
-        preferredComponents.splice(stdIndex,1);
+        preferredComponents.splice(index,1);
     }
     
 }

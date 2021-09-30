@@ -24,15 +24,6 @@ export function getFormComponentDefaultMemberJson(dataMemberTypeName,additionalC
                     "scopeParentGeneration": 2
                 }
             },
-            "isValid": {
-                "name": "isValid",
-                "type": "apogee.FunctionMember",
-                "fields": {
-                    "argList": ["formValue"],
-                    "functionBody": "return true;",
-                    "supplementalCode": ""
-                }
-            },
             "data": getSerializedHardcodedMember("data",dataMemberTypeName)
         }
     }
