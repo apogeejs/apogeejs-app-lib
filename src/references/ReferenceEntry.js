@@ -167,6 +167,25 @@ export default class ReferenceEntry extends FieldObject {
             promise = this.loadEntry(workspaceManager);
         }
 
+        ///////////////////////////////////////////////////
+        //temp import logic
+
+        //module name change
+        if(oldNickname != data.nickname) {
+            let module = this.getField("module");
+            if(module) {
+                apogeeplatform.removeImport(oldNickname);
+                if(oldUrl == data.url) {
+                    //if we aren't reloading a new module, this is just a rename
+                    //otherwise wait for download to set module 
+                    apogeeplatform.addImport(data.nickname,module);
+                }
+            }
+        }
+        //end temp import logic
+        /////////////////////////////////////////////////////
+
+
         return promise;
     }
 

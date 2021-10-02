@@ -44,7 +44,14 @@ export default class EsModuleEntry extends ReferenceEntry {
         if(module) {
             if((module.default)&&(module.default.removeApogeeModule)) module.default.removeApogeeModule();
             this.clearField("module");
+
+            ///////////////////////////////////////////////////
+            //temp import logic
+            apogeeplatform.removeImport(this.getNickname());
+            //end temp import logic
+            /////////////////////////////////////////////////////
         }
+
         return true;
     }
     
@@ -85,6 +92,13 @@ setesmodule.executeCommand = function(workspaceManager,commandData) {
     if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
     
     referenceEntry.setField("module",commandData.module);
+
+    ///////////////////////////////////////////
+    // temp import logic
+    let importName = referenceEntry.getNickname();
+    apogeeplatform.addImport(importName,commandData.module);
+    //end temp import logic
+    /////////////////////////////////////////////
 }
 
 setesmodule.commandInfo = {
