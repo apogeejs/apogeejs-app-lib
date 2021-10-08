@@ -109,7 +109,15 @@ export default class CommandManager {
                 description = commandObject.commandInfo.type;
 
                 //execute the command
-                commandObject.executeCommand(newWorkspaceManager,command);
+                //makeUndo,exeComRetVal are temporary!!!
+                let makeUndo = ((!suppressFromHistory)||(!undoCommand));
+                let exeComRetVal = commandObject.executeCommand(newWorkspaceManager,command,makeUndo);
+
+                ///////////////////////////////////////////
+                //temporary - execute command return logic
+                if((exeComRetVal)&&(!undoCommand)) {
+                    undoCommand = exeComRetVal;
+                }
             }
             catch(error) {
                 if(error.stack) console.error(error.stack);

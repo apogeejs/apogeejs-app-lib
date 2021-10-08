@@ -27,28 +27,19 @@ updateComponentField.executeCommand = function(workspaceManager,commandData) {
     let modelManager = workspaceManager.getMutableModelManager();
     let componentId = modelManager.getComponentIdByMemberId(commandData.memberId);
     let component = modelManager.getMutableComponentByComponentId(componentId);
-    var commandResult = {};
     if(component) {
         try {
             component.setField(commandData.fieldName,commandData.targetValue);
-
-            commandResult.cmdDone = true;
-            commandResult.target = component;
-            commandResult.eventAction = "updated";
         }
         catch(error) {
             if(error.stack) console.error(error.stack);
             let msg = error.message ? error.message : error;
-            commandResult.cmdDone = false;
-            commandResult.alertMsg = "Exception on custom component update: " + msg;
+            throw new Error("Exception on custom component update: " + msg);
         }
     }
     else {
-        commandResult.cmdDone = false;
-        commandResult.alertMsg = "Component not found: " + commandData.memberId;
+        throw new Error("Component not found: " + commandData.memberId);
     }
-    
-    return commandResult;
 }
 
 updateComponentField.commandInfo = {

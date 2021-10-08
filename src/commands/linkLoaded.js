@@ -21,7 +21,6 @@ let linkLoaded = {};
 
 linkLoaded.executeCommand = function(workspaceManager,commandData) {
     
-    var commandResult = {};
     var referenceManager = workspaceManager.getMutableReferenceManager();
     
     //lookup entry for this reference
@@ -30,7 +29,6 @@ linkLoaded.executeCommand = function(workspaceManager,commandData) {
         //update entry status
         //add event handlers
         if(commandData.success) {
-            commandResult.cmdDone = true;
             referenceEntry.setClearState();
             if(commandData.data) {
                 referenceEntry.setField("data",data);
@@ -49,8 +47,6 @@ linkLoaded.executeCommand = function(workspaceManager,commandData) {
         //reference entry not found
         throw new Error("Reference entry not found: " + commandData.id);
     }
-    
-    return commandResult;
 }
 
 linkLoaded.commandInfo = {
