@@ -5,6 +5,7 @@ import "/apogeejs-app-lib/src/commands/compoundcommand.js";
 import "/apogeejs-app-lib/src/commands/deletecomponent.js";
 import "/apogeejs-app-lib/src/commands/deletelink.js";
 import "/apogeejs-app-lib/src/commands/futuremodelactioncommand.js";
+import "/apogeejs-app-lib/src/commands/linkLoaded.js";
 import "/apogeejs-app-lib/src/commands/literatepagetransaction.js";
 import "/apogeejs-app-lib/src/commands/literatepagesetstateplugins.js";
 import "/apogeejs-app-lib/src/commands/movecomponent.js";

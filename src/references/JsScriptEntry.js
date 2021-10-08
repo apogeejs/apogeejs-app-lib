@@ -7,15 +7,35 @@ import {getLinkLoader} from "/apogeejs-app-lib/src/references/LinkLoader.js";
  * and open the template in the editor.
  */
 export default class JsScriptEntry extends ReferenceEntry {
-    
-    constructor(referenceList,referenceData) {
-        super(referenceList,referenceData,JsScriptEntry.REFERENCE_TYPE_INFO);
 
+    getDisplayName() {
+        let data = this.getData();
+        if(data) return data.name
+        else return ReferenceEntry.NO_NAME_AVAILABLE;
+    }
+
+    getReferenceString() {
+        return this.getUrl();
+    }
+
+    getUrl() {
+        let data = this.getData();
+        if(data) return data.url;
+        else return null; //shouldn't happen
+    }
+
+    preprocessData(data) {
+        if(data.name) return data;
+
+        let name = this.urlToDisplayName(data.url);
+        let newData = {};
+        Object.assign(newData,data);
+        newData.name = name;
+        return newData;
     }
 
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
-        this.linkCallerId = getLinkLoader().createLinkCallerId();
         getLinkLoader().addLinkElement("script",this.getUrl(),this.getId(),onLoad,onError);
     }
     
@@ -23,10 +43,6 @@ export default class JsScriptEntry extends ReferenceEntry {
     removeEntry() {
         getLinkLoader().removeLinkElement("script",this.getUrl(),this.getId());
         return true;
-    }
-    
-    _getLinkCallerHandle() {
-        return "JsScriptEntry-" + this.getId();
     }
 }
 

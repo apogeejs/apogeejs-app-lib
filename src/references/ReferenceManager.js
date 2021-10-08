@@ -55,50 +55,21 @@ export default class ReferenceManager extends FieldObject {
 
     
     /** This method creates a reference entry. This does nto however load it, to 
-     * do that ReferenceEntry.loadEntry() method must be called.  */
-    createEntry(entryCommandData) {
-        let oldEntryMap = this.getField("referenceEntryMap");
-        //check if we already have this reference entry. Do not re-load it if we do.
-        let entryKey = this._getEntryKey(entryCommandData.entryType,entryCommandData.url);
-        let referenceEntry = oldEntryMap[entryKey];
+     * do that ReferenceEntry.loadEntry() method must be called. 
+     * The argument specialCaseId is provided so an entry with a specific id can be created. This 
+     * should not normally be done. It is provided for "undo/redo" functionality to keep the 
+     * same id for an entry.. */
+    createEntry(entryCommandData,specialCaseId) {
+        let referenceEntry = this._findRefEntryByCommand(entryCommandData);
         if(!referenceEntry) {
             //load the entry
             let referenceEntryClass = this.referenceClassMap[entryCommandData.entryType];
             if(!referenceEntryClass) throw new Error("Entry type nopt found: " + entryCommandData.entryType);
-            referenceEntry = new referenceEntryClass(entryCommandData);
+            referenceEntry = new referenceEntryClass(entryCommandData,null,specialCaseId);
             this.registerRefEntry(referenceEntry);
         }
         return referenceEntry;
     }
-
-    // updateEntry(entryType,url,entryData) {
-    //     let refEntryId = this.lookupRefEntryId(entryType,url);
-    //     if(!refEntryId) throw new Error("Reference entry not found. " + entryType + ":" + url);
-
-    //     let referenceEntry = this.getMutableRefEntryById(refEntryId);
-    //     if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
-
-    //     //update entry
-    //     let targetUrl = (entryData.newUrl !== undefined) ? entryData.newUrl : referenceEntry.getUrl();
-    //     let targetNickname = (entryData.newNickname !== undefined) ? entryData.newNickname : referenceEntry.getNickname();
-    //     referenceEntry.updateData(this.workspaceManager,targetUrl,targetNickname);
-
-    //     this.registerRefEntry(referenceEntry);
-
-    // }
-
-    // removeEntry(entryType,url) {
-    //     let refEntryId = this.lookupRefEntryId(entryType,url);
-    //     if(!refEntryId) throw new Error("Reference entry not found. " + entryType + ":" + url);
-
-    //     let referenceEntry = getMutableRefEntryById(refEntryId);
-    //     if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
-
-    //     referenceEntry.remove();
-
-    //     this.unregisterRefEntry(referenceEntry);
-
-    // }
 
     /** This method should be called when the parent is closed. It removes all links. */
     close() {
@@ -112,7 +83,8 @@ export default class ReferenceManager extends FieldObject {
     /** This returns a list of urls loaded for the given module type. (Note that
      * url for a NPM module is just the module name). */
     getModuleList(moduleType) {
-       let moduleList = [];
+        //FIX THIS!!//
+        let moduleList = [];
         let referenceEntryMap = this.getField("referenceEntryMap");
         for(let entryId in referenceEntryMap) {
             let entry = referenceEntryMap[entryId];
@@ -182,24 +154,6 @@ export default class ReferenceManager extends FieldObject {
         }
     }
 
-    /** This method returns the ref entry ID for a given entry type and url. */
-    lookupRefEntryId(entryType,url) {
-        let urlMap = this.getField("urlMap");
-        let entryKey = this._getEntryKey(entryType,url)
-        return urlMap[entryKey];
-    }
-
-    /** This method returns the ref entry for a given entry type and url. */
-    lookupEntry(entryType,url) {
-        let refEntryId = this.lookupRefEntryId(entryType,url);
-        if(refEntryId) {
-            return this.getRefEntryById(refEntryId);
-        }
-        else {
-            return null;
-        }
-    }
-
     /** This method stores the reference entry instance. It must be called when a
      * new reference entry is created and when a reference entry instance is replaced. */
     registerRefEntry(referenceEntry) {
@@ -212,21 +166,6 @@ export default class ReferenceManager extends FieldObject {
         Object.assign(newRefEntryMap,oldRefEntryMap);
         newRefEntryMap[refEntryId] = referenceEntry;
         this.setField("referenceEntryMap",newRefEntryMap);
-
-        //update the url map for this entry
-        let oldUrlMap = this.getField("urlMap");
-        let newUrlMap = {};
-        Object.assign(newUrlMap,oldUrlMap);
-        let newUrlKey = this._getEntryKey(referenceEntry.getEntryType(),referenceEntry.getUrl());
-        if(oldRefEntry) {
-            let oldUrlKey = this._getEntryKey(referenceEntry.getEntryType(),referenceEntry.getUrl());
-            //delete the old entry id the key changed
-            if(oldUrlKey != newUrlKey) {
-                delete newUrlMap[oldUrlKey];
-            }
-        }
-        newUrlMap[newUrlKey] = refEntryId;
-        this.setField("urlMap",newUrlMap);
 
         //update the change map
         let oldChangeEntry = this.workingChangeMap[refEntryId];  
@@ -258,18 +197,6 @@ export default class ReferenceManager extends FieldObject {
         delete newRefEntryMap[refEntryId];
         //save the updated map
         this.setField("referenceEntryMap",newRefEntryMap);
-
-        //update the url map
-        let oldUrlMap = this.getField("urlMap");
-        let newUrlMap = {};
-        Object.assign(newUrlMap,oldUrlMap);
-        for(let urlKey in newUrlMap) {
-            let urlRefEntryId = newUrlMap[urlKey];
-            if(urlRefEntryId == refEntryId) {
-                delete newUrlMap[urlKey];
-            }
-        }
-        this.setField("urlMap",newUrlMap);
 
         //update the change map
         let oldChangeEntry = this.workingChangeMap[refEntryId];
@@ -380,8 +307,8 @@ export default class ReferenceManager extends FieldObject {
     // Private
     //=================================
 
-    _getEntryKey(entryType,url) {
-        return entryType + "|"  + url;
+    _findRefEntryByCommand(entryCommandData) {
+        return null;
     }
 
     /** This method returns the reference entry type classes which will be used in the app. */

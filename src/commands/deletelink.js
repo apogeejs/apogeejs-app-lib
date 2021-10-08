@@ -20,12 +20,13 @@ deletelink.createUndoCommand = function(workspaceManager,commandData) {
     var undoCommandJson;
 
     var referenceManager = workspaceManager.getReferenceManager();
-    var referenceEntry = referenceManager.lookupEntry(commandData.entryType,commandData.url);
+    var referenceEntry = referenceManager.getRefEntryById(commandData.id);
 
     if(referenceEntry) {
         undoCommandJson = {};
         undoCommandJson.type = "addLink";
         undoCommandJson.data = referenceEntry.getData();
+        undoCommandJson.specialCaseId = commandData.id;
     }
     
     return undoCommandJson;
@@ -35,7 +36,7 @@ deletelink.executeCommand = function(workspaceManager,commandData) {
     var referenceManager = workspaceManager.getMutableReferenceManager();
     
     //lookup entry
-    let referenceEntry = referenceManager.lookupEntry(commandData.entryType,commandData.url);
+    let referenceEntry = referenceManager.getRefEntryById(commandData.id);
     if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
 
     referenceEntry.removeEntry();

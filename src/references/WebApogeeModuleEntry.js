@@ -1,5 +1,4 @@
 import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
-import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /* 
  * To change this license header, choose License Headers in Project Properties.
@@ -8,24 +7,37 @@ import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
  */
 export default class EsModuleEntry extends ReferenceEntry {
     
-    constructor(referenceList,referenceData) {
-        super(referenceList,referenceData,EsModuleEntry.REFERENCE_TYPE_INFO);
+    getDisplayName() {
+        return this.getReferenceStering();
+    }
+
+    getReferenceString() {
+        return this.getModuleName() + "@v" + this.getModuleVersion();
+    }
+
+    getModuleName() {
+        let data = this.getData();
+        if(data) return data.name;
+        else return null; //shouldn't happen
+    }
+
+    getVersion() {
+        let data = this.getData();
+        if(data) return data.version;
+        else return null; //shouldn't happen
     }
             
     /** This method loads the actual link. */
-    implementationLoadEntry(onLoad,onError,workspaceManager) {
+    implementationLoadEntry(onLoad,onError) {
         let localOnLoad = (module) => {
             if(module) {
                 if((module.default)&&(module.default.initApogeeModule)) module.default.initApogeeModule();
             
-                let commandData = {
-                    type: "setEsModule",
-                    entryType: this.referenceType,
-                    url: this.getUrl(),
-                    module: module
-                };
-                workspaceManager.getApp().executeCommand(commandData);
-                onLoad();
+                let data = this.getData();
+                let newData = {};
+                Object.load(newData,data);
+                newData.module = module;
+                onLoad(newData);
             }
             else {
                 onError("Unknown error: Module not properly loaded. " + this.getUrl());
@@ -34,7 +46,7 @@ export default class EsModuleEntry extends ReferenceEntry {
         }
 
         //load the module
-        var moduleLoadPromise = import(this.getUrl()).then(localOnLoad).catch(onError);
+        import(this.getUrl()).then(localOnLoad).catch(onError);
     }
     
     /** This method removes the link. This returns a command result for the removed link. */
@@ -43,13 +55,12 @@ export default class EsModuleEntry extends ReferenceEntry {
         let module = this.getField("module");
         if(module) {
             if((module.default)&&(module.default.removeApogeeModule)) module.default.removeApogeeModule();
-            this.clearField("module");
 
-            ///////////////////////////////////////////////////
-            //temp import logic
-            apogeeplatform.removeImport(this.getNickname());
-            //end temp import logic
-            /////////////////////////////////////////////////////
+            let data = this.getData();
+            let newData = {};
+            Object.load(newData,data);
+            delete newData.module;
+            this.setField("data",data);
         }
 
         return true;
@@ -58,54 +69,3 @@ export default class EsModuleEntry extends ReferenceEntry {
 }
 
 EsModuleEntry.REFERENCE_TYPE = "es module";
-
-//=====================================
-//Load Module Command
-// These are commands run to update the status of the link after loading completes
-//=====================================
-
-/*
- *
- * Command JSON format:
- * {
- *   "type":"setEsModule",
- *   "entryType":(entry type),
- *   "url":(url),
- *   "module":(the module),
- * }
- * 
- */ 
-
-let setesmodule = {};
-
-//No undo command. Only the original call needs to be undone.
-//setesmodule.createUndoCommand = function(workspaceManager,commandData) {
-
-setesmodule.executeCommand = function(workspaceManager,commandData) {
-    
-    let referenceManager = workspaceManager.getMutableReferenceManager();
-
-    let refEntryId = referenceManager.lookupRefEntryId(commandData.entryType,commandData.url);
-    if(!refEntryId) throw new Error("Reference entry not found. " + commandData.entryType + ":" + commandData.url);
-
-    let referenceEntry = referenceManager.getMutableRefEntryById(refEntryId);
-    if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
-    
-    referenceEntry.setField("module",commandData.module);
-
-    ///////////////////////////////////////////
-    // temp import logic
-    let importName = referenceEntry.getNickname();
-    apogeeplatform.addImport(importName,commandData.module);
-    //end temp import logic
-    /////////////////////////////////////////////
-}
-
-setesmodule.commandInfo = {
-    "type": "setEsModule",
-    "targetType": "referenceEntry",
-    "event": "updated"
-}
-
-CommandManager.registerCommand(setesmodule);
-

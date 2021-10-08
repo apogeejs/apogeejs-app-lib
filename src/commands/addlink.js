@@ -6,8 +6,7 @@ import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
  * {
  *   "type":"addLink",
  *   "entryType":(entry type),
- *   "url":(url),
- *   "nickname":(nickname - optional)
+ *   "data":(data),
  * }
  */ 
 let addlink = {};
@@ -19,8 +18,7 @@ let addlink = {};
 addlink.createUndoCommand = function(workspaceManager,commandData) {
     var undoCommandJson = {};
     undoCommandJson.type = "deleteLink";
-    undoCommandJson.entryType = commandData.data.entryType;
-    undoCommandJson.url = commandData.url;
+    undoCommandJson.id = commandData.id;
     return undoCommandJson;
 }
 

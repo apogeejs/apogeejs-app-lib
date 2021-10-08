@@ -6,48 +6,39 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
  * and open the template in the editor.
  */
 export default class NpmModuleEntry extends ReferenceEntry {
-    
-    constructor(referenceList,referenceData) {
-        super(referenceList,referenceData,NpmModuleEntry.REFERENCE_TYPE_INFO);
 
+    //note - we should differentiate the requested version (with wildcard entries like ~) and the actual version
+    
+    getDisplayName() {
+        return this.getReferenceStering();
     }
 
+    getReferenceString() {
+        return this.getModuleName() + "@v" + this.getModuleVersion();
+    }
+
+    getModuleName() {
+        let data = this.getData();
+        if(data) return data.name;
+        else return null; //shouldn't happen
+    }
+
+    getVersion() {
+        let data = this.getData();
+        if(data) return data.version;
+        else return null; //shouldn't happen
+    }
+            
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
-
-        try {
-            let module = require(this.getUrl());
-            if((module)&&(module.initApogeeModule)) module.initApogeeModule();
-            this.setField("module",module);
-            
-            //we need to call this asynchronously
-            setTimeout(onLoad,0);
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            
-            //we need to call this asynchronously
-            setTimeout(onError(error),0);
-        }
-
+        throw new Error("Load not implemented!");
     }
     
-    /** This method removes the link. */
+    /** This method removes the link. This returns a command result for the removed link. */
     removeEntry() {
-        //allow for an optional module remove step
-        let module = this.getField("module");
-        if(module) {
-            if(module.removeApogeeModule) module.removeApogeeModule();
-
-            this.clearField("module");
-        }
-        
-        //we aren't really removing it...
-        //require.undef(this.url);
-
-        return true;
+        throw new Error("Remove not implemented!");
     }
-    
+
 }
 
 NpmModuleEntry.REFERENCE_TYPE = "npm module";

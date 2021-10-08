@@ -21,12 +21,12 @@ updatelink.createUndoCommand = function(workspaceManager,commandData) {
     var undoCommandJson;
     
     var referenceManager = workspaceManager.getReferenceManager();
-    var referenceEntry = referenceManager.lookupEntry(commandData.data.entryType,commandData.oldUrl);
+    var referenceEntry = referenceManager.getRefEntryById(commandData.id);
     if(referenceEntry) {
         undoCommandJson = {};
         undoCommandJson.type = updatelink.commandInfo.type;
+        undoCommandJson.id = commandData.id;
         undoCommandJson.data = referenceEntry.getData();
-        undoCommandJson.initialUrl = commandData.data.url;
     }
     
     return undoCommandJson;
@@ -35,10 +35,7 @@ updatelink.createUndoCommand = function(workspaceManager,commandData) {
 updatelink.executeCommand = function(workspaceManager,commandData) {
     let referenceManager = workspaceManager.getMutableReferenceManager();
 
-    let refEntryId = referenceManager.lookupRefEntryId(commandData.data.entryType,commandData.initialUrl);
-    if(!refEntryId) throw new Error("Reference entry not found. " + commandData.data.entryType + ":" + commandData.initialUrl);
-
-    let referenceEntry = referenceManager.getMutableRefEntryById(refEntryId);
+    let referenceEntry = referenceManager.getMutableRefEntryById(commandData.id);
     if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + commandData.data.entryType);
 
     //update entry

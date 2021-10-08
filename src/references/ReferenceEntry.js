@@ -1,14 +1,13 @@
 import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
-import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 
 /** This class manages references for the web page.*/
 export default class ReferenceEntry extends FieldObject {
     
     /** The reference data is a json entry with the referenceType, url and optionally nickname.
      * If this is a copy, the reference data wil be ignored and can be set to null. */
-    constructor(referenceData,instanceToCopy) {
-        super("referenceEntry",instanceToCopy);
+    constructor(referenceData,instanceToCopy,specialCaseIdValue) {
+        super("referenceEntry",instanceToCopy,specialCaseIdValue);
 
         if(instanceToCopy) {
             this.referenceType = instanceToCopy.referenceType;
@@ -24,7 +23,7 @@ export default class ReferenceEntry extends FieldObject {
         if(!instanceToCopy) {
             if(!referenceData.nickname) {
                 //assigne a nickname if there isnot one
-                referenceData = this.createNewDataWithNickname(referenceData);
+                referenceData = this.preprocessData(referenceData);
             }
             this.setField("data",referenceData);
 
@@ -60,14 +59,6 @@ export default class ReferenceEntry extends FieldObject {
         return this.getField("data");
     }
 
-    getUrl() {
-        return this.getData().url;
-    }
-
-    getNickname() {
-        return this.getData().nickname;
-    }
-
     setViewStateCallback(viewStateCallback) {
         this.viewStateCallback = viewStateCallback;
     }
@@ -75,7 +66,6 @@ export default class ReferenceEntry extends FieldObject {
     getCachedViewState() {
         return this.cachedViewState;
     }
-
 
 
     ///////////////////////////////////////////////////////////////////////////
@@ -88,13 +78,16 @@ export default class ReferenceEntry extends FieldObject {
 
             //create load event handlers
             //on completion execute a command to update the link status
-            let onLoad = () => {
+            let onLoad = (updatedData) => {
                 let commandData = {
-                    type: "updateLinkLoadStatus",
-                    entryType: this.referenceType,
-                    url: this.getUrl(),
+                    type: "linkLoaded",
+                    id: this.getId(),
                     success: true
                 };
+                if(updatedData != undefined) {
+                    commandData.data = updatedData;
+                }
+
                 workspaceManager.getApp().executeCommand(commandData);
                 //call resolve in any case
                 resolve();
@@ -107,9 +100,8 @@ export default class ReferenceEntry extends FieldObject {
                 }
 
                 let commandData = {
-                    type: "updateLinkLoadStatus",
-                    entryType: this.referenceType,
-                    url: this.getUrl(),
+                    type: "linkLoaded",
+                    id: this.getId(),
                     success: false,
                     error: error
                 };
@@ -123,6 +115,12 @@ export default class ReferenceEntry extends FieldObject {
 
         return entryLoadPromise;
     }
+
+    /** This is the display name for the entry. */
+    //getDisplayName();
+
+    /** This is the string that uniquely identifies the asset (such as the URI) */
+    //getReferenceString();
 
     /** This method loads the link onto the page. It should call the 
      * appropriate callback on completion. */
@@ -150,43 +148,26 @@ export default class ReferenceEntry extends FieldObject {
     updateData(workspaceManager,data) {
         let promise;
 
-        //create a nickname if there is not one
-        if(!data.nickname) {
-            data = this.createNewDataWithNickname(data);
-        }
+        //this does any processing for the data, if needed (such as creating a display name if needed)
+        data = this.preprocessData(data);
 
-        let oldUrl = this.getUrl();
-        let oldNickname = this.getNickname();
+        let oldReferenceString = this.getReferenceString();
 
         //save data
         this.setField("data",data);
 
-        //load new url
-        if(oldUrl != data.url) {
+        //load new url if the reference string changes
+        if(oldReferenceString != this.getReferenceString()) {
             this.removeEntry();
             promise = this.loadEntry(workspaceManager);
         }
 
-        ///////////////////////////////////////////////////
-        //temp import logic
-
-        //module name change
-        if(oldNickname != data.nickname) {
-            let module = this.getField("module");
-            if(module) {
-                apogeeplatform.removeImport(oldNickname);
-                if(oldUrl == data.url) {
-                    //if we aren't reloading a new module, this is just a rename
-                    //otherwise wait for download to set module 
-                    apogeeplatform.addImport(data.nickname,module);
-                }
-            }
-        }
-        //end temp import logic
-        /////////////////////////////////////////////////////
-
-
         return promise;
+    }
+
+    /** This method will modify the data, if needed. An entry implementation should override this if needed. */
+    preprocessData(data) {
+        return data;
     }
 
     //===================================
@@ -219,8 +200,8 @@ export default class ReferenceEntry extends FieldObject {
         }
     }
 
-    createNewDataWithNickname(oldData) {
-        let url = oldData.url;
+    /** THis is a utility to create a display name from a url. */
+    urlToDisplayName(url) {
         let lastSeperatorIndex = url.lastIndexOf("/");
         if(lastSeperatorIndex == 0) return url.substr(0,MAX_AUTO_NICKNAME_LENGTH);
 
@@ -232,12 +213,7 @@ export default class ReferenceEntry extends FieldObject {
         if(fileName.length > MAX_AUTO_NICKNAME_LENGTH) {
             fileName = fileName.substring(0,MAX_AUTO_NICKNAME_LENGTH);
         }
-
-        let newData = {};
-        Object.assign(newData,oldData);
-        newData.nickname = fileName;
-
-        return newData;
+        return fileName;
     }
 
 }
@@ -248,71 +224,9 @@ export default class ReferenceEntry extends FieldObject {
 
 let MAX_AUTO_NICKNAME_LENGTH = 24;
 
-
-ReferenceEntry.ELEMENT_ID_BASE = "__apogee_link_element_";
-
-//=====================================
-// Status Commands
-// These are commands run to update the status of the link after loading completes
-//=====================================
-
-/*
- *
- * Command JSON format:
- * {
- *   "type":"updateLinkLoadStatus",
- *   "entryType":(entry type),
- *   "url":(url),
- *   "success":(boolean),
- *   "error":(error object or error string - optional. Only used in the success=false case)
- * }
- * 
- */ 
-
-let updatelinkstatus = {};
-
-//No undo command. Only the original call needs to be undone.
-//updatelinkstatus.createUndoCommand = function(workspaceManager,commandData) {
-
-updatelinkstatus.executeCommand = function(workspaceManager,commandData) {
-    
-    var commandResult = {};
-    var referenceManager = workspaceManager.getMutableReferenceManager();
-    
-    //lookup entry for this reference
-    let refEntryId = referenceManager.lookupRefEntryId(commandData.entryType,commandData.url);
-    let referenceEntry = referenceManager.getMutableRefEntryById(refEntryId);
-    if(referenceEntry) {
-        //update entry status
-        //add event handlers
-        if(commandData.success) {
-            commandResult.cmdDone = true;
-            referenceEntry.setClearState();
-        }
-        else {
-            var errorMsg = "Failed to load link '" + referenceEntry.getUrl() + "':" + commandData.error.toString();
-            console.error(errorMsg);
-            referenceEntry.setError(errorMsg);
-        }
-
-        //save the updated entry
-        referenceManager.registerRefEntry(referenceEntry);
-    }
-    else {
-        //reference entry not found
-        throw new Error("Reference entry not found: " + commandData.url);
-    }
-    
-    return commandResult;
-}
-
-updatelinkstatus.commandInfo = {
-    "type": "updateLinkLoadStatus",
-    "targetType": "referenceEntry",
-    "event": "updated"
-}
-
-CommandManager.registerCommand(updatelinkstatus);
-
-
 const PENDING_STATE_MSG = "loading..."
+
+
+ReferenceEntry.ELEMENT_ID_BASE = "__apogee_reference_entry_";
+
+ReferenceEntry.NO_NAME_AVAILABLE = "<no name available>";
