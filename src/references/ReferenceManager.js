@@ -60,11 +60,12 @@ export default class ReferenceManager extends FieldObject {
      * should not normally be done. It is provided for "undo/redo" functionality to keep the 
      * same id for an entry.. */
     createEntry(entryCommandData,specialCaseId) {
-        let referenceEntry = this._findRefEntryByCommand(entryCommandData);
+        let referenceEntryClass = this.referenceClassMap[entryCommandData.entryType];
+        if(!referenceEntryClass) throw new Error("Entry type not found: " + entryCommandData.entryType);
+        let referenceEntry = this._getExistingReferenceEntry(referenceEntryClass,entryCommandData);
         if(!referenceEntry) {
             //load the entry
             let referenceEntryClass = this.referenceClassMap[entryCommandData.entryType];
-            if(!referenceEntryClass) throw new Error("Entry type nopt found: " + entryCommandData.entryType);
             referenceEntry = new referenceEntryClass(entryCommandData,null,specialCaseId);
             this.registerRefEntry(referenceEntry);
         }
@@ -307,8 +308,17 @@ export default class ReferenceManager extends FieldObject {
     // Private
     //=================================
 
-    _findRefEntryByCommand(entryCommandData) {
-        return null;
+    /** This checks if there is an existing reference entry matching the newly requested reference. */
+    _getExistingReferenceEntry(referenceEntryClass,entryCommandData) {
+        let inputReferenceString = referenceEntryClass.getReferenceString(entryCommandData);
+
+        let referenceEntryMap = this.getField("referenceEntryMap");
+        for(let id in referenceEntryMap) {
+            let referenceEntry = referenceEntryMap[id];
+            if(referenceEntry.getInstanceReferenceString() == inputReferenceString) {
+                return referenceEntry; 
+            }
+        }
     }
 
     /** This method returns the reference entry type classes which will be used in the app. */

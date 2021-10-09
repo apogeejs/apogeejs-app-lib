@@ -14,14 +14,14 @@ export default class CssEntry extends ReferenceEntry {
         else return ReferenceEntry.NO_NAME_AVAILABLE;
     }
 
-    getReferenceString() {
-        return this.getUrl();
-    }
-
     getUrl() {
         let data = this.getData();
         if(data) return data.url;
         else return null; //shouldn't happen
+    }
+
+    static getReferenceString(data) {
+        return data.url;
     }
 
     preprocessData(data) {

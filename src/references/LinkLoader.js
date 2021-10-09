@@ -10,21 +10,12 @@ class LinkLoader {
     constructor() {          
         this.scriptElements = [];
         this.cssElements = [];
-        this.nextLinkCallerId = 1;
-    }
-    
-    /** This returns a unique caller id which should bbe used when adding or removing
-     * a link. This is done to allow mulitple callers to share a link.
-     */
-    createLinkCallerId() {
-        return this.nextLinkCallerId++;
     }
 
     /** 
      * This method adds a link element to a page, supporting 'css' and 'script'. 
      * The caller identifer should be a unique identifier among people
-     * requesting links of this given type. It cna be requested from
-     * ReferenceEntry._createId
+     * requesting links of this given type.
      * @protected
      */
     addLinkElement(type,url,linkCallerId,onLoad,onError) {

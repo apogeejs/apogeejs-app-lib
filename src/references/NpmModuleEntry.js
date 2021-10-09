@@ -10,11 +10,7 @@ export default class NpmModuleEntry extends ReferenceEntry {
     //note - we should differentiate the requested version (with wildcard entries like ~) and the actual version
     
     getDisplayName() {
-        return this.getReferenceStering();
-    }
-
-    getReferenceString() {
-        return this.getModuleName() + "@v" + this.getModuleVersion();
+        return this.getModuleName() + "@v" + this.getVersion();
     }
 
     getModuleName() {
@@ -27,6 +23,10 @@ export default class NpmModuleEntry extends ReferenceEntry {
         let data = this.getData();
         if(data) return data.version;
         else return null; //shouldn't happen
+    }
+
+    static getReferenceString(data) {
+        return data.name + "@v" + data.version;
     }
             
     /** This method loads the actual link. */

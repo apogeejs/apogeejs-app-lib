@@ -31,7 +31,7 @@ linkLoaded.executeCommand = function(workspaceManager,commandData) {
         if(commandData.success) {
             referenceEntry.setClearState();
             if(commandData.data) {
-                referenceEntry.setField("data",data);
+                referenceEntry.setField("data",commandData.data);
             }
         }
         else {

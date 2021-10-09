@@ -116,11 +116,13 @@ export default class ReferenceEntry extends FieldObject {
         return entryLoadPromise;
     }
 
+    /** This method gets the reference string for this instance. */
+    getInstanceReferenceString() {
+        return this.constructor.getReferenceString(this.getData());
+    }
+
     /** This is the display name for the entry. */
     //getDisplayName();
-
-    /** This is the string that uniquely identifies the asset (such as the URI) */
-    //getReferenceString();
 
     /** This method loads the link onto the page. It should call the 
      * appropriate callback on completion. */
@@ -128,6 +130,9 @@ export default class ReferenceEntry extends FieldObject {
     
     /** This method removes the reference. It returns true if the link remove is successful. */
     //remove()
+
+    /** This is the string that uniquely identifies the asset within the given reference type (such as the URI). */
+    //static getReferenceString(data);
     
     
     ///////////////////////////////////////////////////////////////////////////
@@ -151,14 +156,18 @@ export default class ReferenceEntry extends FieldObject {
         //this does any processing for the data, if needed (such as creating a display name if needed)
         data = this.preprocessData(data);
 
-        let oldReferenceString = this.getReferenceString();
+        let referenceStringChange = (this.getInstanceReferenceString() != this.constructor.getReferenceString(data));
+
+        //replace the link if the reference string changes
+        if(referenceStringChange) {
+            this.removeEntry();
+        }
 
         //save data
         this.setField("data",data);
 
-        //load new url if the reference string changes
-        if(oldReferenceString != this.getReferenceString()) {
-            this.removeEntry();
+        //replace the link if the reference string changes
+        if(referenceStringChange) {          
             promise = this.loadEntry(workspaceManager);
         }
 
