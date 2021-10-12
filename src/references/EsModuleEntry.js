@@ -30,7 +30,11 @@ export default class EsModuleEntry extends ReferenceEntry {
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
         //standard es module import
-        importModule(this.getModuleName(),this.getUrl(),false).then(module => onLoad()).catch(onError);
+        let moduleName = this.getModuleName();
+        importModule(moduleName,this.getUrl(),false).then(module => {
+            addNameToModelModules(moduleName,module);
+            onLoad();
+        }).catch(onError);
     }
     
     /** This method removes the link. This returns a command result for the removed link. */

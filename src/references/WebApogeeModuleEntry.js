@@ -5,14 +5,10 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-export default class EsModuleEntry extends ReferenceEntry {
+export default class WebApogeeModuleEntry extends ReferenceEntry {
     
     getDisplayName() {
-        return this.getReferenceStering();
-    }
-
-    getReferenceString() {
-        return this.getModuleName() + "@v" + this.getModuleVersion();
+        return this.getModuleName();
     }
 
     getModuleName() {
@@ -26,23 +22,44 @@ export default class EsModuleEntry extends ReferenceEntry {
         if(data) return data.version;
         else return null; //shouldn't happen
     }
+
+    ////////////////////////////////
+    //temp
+    getUrl() {
+        let data = this.getData();
+        if(data) return data.url;
+        else return null; //shouldn't happen
+    }
+
+    static getReferenceString(data) {
+        return data.url;
+    }
+    /////////////////////////////
             
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
         let localOnLoad = (module) => {
-            if(module) {
-                if((module.default)&&(module.default.initApogeeModule)) module.default.initApogeeModule();
+            let moduleName = this.getModuleName();
+
+            if(!module.default) throw new Error("Format Error: No default export found for apogee module: " + moduleName);
+            let moduleObject = module.default;
+            if(!moduleObject.initApogeeModule) throw new Error("Format Error: initApogeeModule not found: "  + moduleName);
             
-                let data = this.getData();
-                let newData = {};
-                Object.load(newData,data);
-                newData.module = module;
-                onLoad(newData);
-            }
-            else {
-                onError("Unknown error: Module not properly loaded. " + this.getUrl());
+            //install module
+            moduleObject.initApogeeModule();
+
+            //store data export
+            if(moduleObject.getDataExport) {
+                let dataExport = moduleObject.getDataExport();
+                addApogeeModuleExport(moduleName,dataExport,false);
             }
 
+            //update reference entry data
+            let data = this.getData();
+            let newData = {};
+            Object.assign(newData,data);
+            newData.module = module;
+            onLoad(newData);
         }
 
         //load the module
@@ -51,11 +68,26 @@ export default class EsModuleEntry extends ReferenceEntry {
     
     /** This method removes the link. This returns a command result for the removed link. */
     removeEntry() {
-        //allow for an optional module remove step
-        let module = this.getField("module");
-        if(module) {
-            if((module.default)&&(module.default.removeApogeeModule)) module.default.removeApogeeModule();
+        let moduleName = this.getModuleName();
 
+        //allow for an optional module remove step
+        let moduleObject = this.getField("module");
+        if(moduleObject) {
+            //try to uninstall module
+            try {
+                if(moduleObject.removeApogeeModule) moduleObject.removeApogeeModule();
+            }
+            catch(error) {
+                console.log("Error uninstalling module: " + moduleName);
+                if(error.stack) console.error(error.stack);
+            }
+
+            //remove data export
+            if(moduleObject.getDataExport) {
+                removeApogeeModuleExport(moduleName);
+            }
+
+            //update reference entry data
             let data = this.getData();
             let newData = {};
             Object.load(newData,data);
@@ -68,4 +100,4 @@ export default class EsModuleEntry extends ReferenceEntry {
     
 }
 
-EsModuleEntry.REFERENCE_TYPE = "es module";
+WebApogeeModuleEntry.REFERENCE_TYPE = "web apogee module";
