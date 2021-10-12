@@ -10,7 +10,7 @@ import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.
 
 let referenceClassArray = [];
 if(__APOGEE_ENVIRONMENT__ == "WEB") {
-    //referenceClassArray.push(WebApogeeModuleEntry);
+    referenceClassArray.push(WebApogeeModuleEntry);
     referenceClassArray.push(EsModuleEntry);
     referenceClassArray.push(JsScriptEntry);
     referenceClassArray.push(CssEntry);
