@@ -5,50 +5,95 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-export default class NpmModuleEntry extends ReferenceEntry {
+export default class NodeApogeeModuleEntry extends ReferenceEntry {
     
-    constructor(referenceList,referenceData) {
-        super(referenceList,referenceData,NpmModuleEntry.REFERENCE_TYPE_INFO);
-
+    getDisplayName() {
+        return this.getModuleName();
     }
 
+    getModuleName() {
+        let data = this.getData();
+        if(data) return data.name;
+        else return null; //shouldn't happen
+    }
+
+    getVersion() {
+        let data = this.getData();
+        if(data) return data.version;
+        else return null; //shouldn't happen
+    }
+
+    static getReferenceString(data) {
+        return data.name;
+    }
+            
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
 
-        try {
-            let module = require(this.getUrl());
-            if((module)&&(module.initApogeeModule)) module.initApogeeModule();
-            this.setField("module",module);
-            
-            //we need to call this asynchronously
-            setTimeout(onLoad,0);
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            
-            //we need to call this asynchronously
-            setTimeout(onError(error),0);
-        }
+        let moduleName = this.getModuleName();
+        let module = require(this.getModuleName());
 
+        //I insert a delay here because the update commands in onLoad and onError must be sent
+        //asynchronously (at least at the time of this comment - but that will probably change)
+
+        let completeLoad = () => {
+            if(!module) onError("Apogee module not found: " + moduleName);
+            if(!module.default) onError("Format Error: No default export found for apogee module: " + moduleName);
+            let moduleObject = module.default;
+            if(!moduleObject.initApogeeModule) onError("Format Error: initApogeeModule not found: "  + moduleName);
+            
+            //install module
+            moduleObject.initApogeeModule();
+
+            //store data export
+            if(moduleObject.getDataExport) {
+                let dataExport = moduleObject.getDataExport();
+                addApogeeModuleExport(moduleName,dataExport,false);
+            }
+
+            //update reference entry data
+            let data = this.getData();
+            let newData = {};
+            Object.assign(newData,data);
+            newData.module = module;
+            onLoad(newData);
+        }
+        setTimeout(completeLoad,0);
     }
     
-    /** This method removes the link. */
+    /** This method removes the link. This returns a command result for the removed link. */
     removeEntry() {
-        //allow for an optional module remove step
-        let module = this.getField("module");
-        if(module) {
-            if(module.removeApogeeModule) module.removeApogeeModule();
+        let moduleName = this.getModuleName();
 
-            this.clearField("module");
+        //allow for an optional module remove step
+        let moduleObject = this.getField("module");
+        if(moduleObject) {
+            //try to uninstall module
+            try {
+                if(moduleObject.removeApogeeModule) moduleObject.removeApogeeModule();
+            }
+            catch(error) {
+                console.log("Error uninstalling module: " + moduleName);
+                if(error.stack) console.error(error.stack);
+            }
+
+            //remove data export
+            if(moduleObject.getDataExport) {
+                removeApogeeModuleExport(moduleName);
+            }
+
+            //update reference entry data
+            let data = this.getData();
+            let newData = {};
+            Object.load(newData,data);
+            delete newData.module;
+            this.setField("data",data);
         }
-        
-        //we aren't really removing it...
-        //require.undef(this.url);
 
         return true;
     }
     
 }
 
-NpmModuleEntry.REFERENCE_TYPE = "npm module";
+NodeApogeeModuleEntry.REFERENCE_TYPE = "node apogee module";
 

@@ -1,4 +1,5 @@
 import WebApogeeModuleEntry from "/apogeejs-app-lib/src/references/WebApogeeModuleEntry.js";
+import NodeApogeeModuleEntry from "/apogeejs-app-lib/src/references/NodeApogeeModuleEntry.js";
 import EsModuleEntry from "/apogeejs-app-lib/src/references/EsModuleEntry.js";
 import NpmModuleEntry from "/apogeejs-app-lib/src/references/NpmModuleEntry.js";
 import JsScriptEntry from "/apogeejs-app-lib/src/references/JsScriptEntry.js";
@@ -16,6 +17,7 @@ if(__APOGEE_ENVIRONMENT__ == "WEB") {
     referenceClassArray.push(CssEntry);
 }
 else if(__APOGEE_ENVIRONMENT__ == "NODE") {
+    referenceClassArray.push(NodeApogeeModuleEntry);
     referenceClassArray.push(NpmModuleEntry);
 }
 else {
