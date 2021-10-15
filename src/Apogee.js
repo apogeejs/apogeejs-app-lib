@@ -53,7 +53,9 @@ export default class Apogee {
         this.commandManager = new CommandManager(this);
 
         //module manager
-        this.moduleManager = apogeeplatform.getModuleManagerInstance(this);
+        if(__globals__.apogeeplatform) {
+            this.moduleManager = apogeeplatform.getModuleManagerInstance(this);
+        }
 
         //subscribe to app events
         this.subscribeToAppEvents()

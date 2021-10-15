@@ -22,8 +22,10 @@ const WebRequestComponentConfig = {
 }
 export default WebRequestComponentConfig;
 
-
 __globals__.WebRequestCell = {};
+addNameToModelGlobals("WebRequestCell");
+
+
 WebRequestCell.formResultToRequest = function(formResult) {
     let url = formResult.url;
     if(url) {
