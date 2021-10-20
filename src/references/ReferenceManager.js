@@ -90,7 +90,7 @@ export default class ReferenceManager extends FieldObject {
         for(let entryId in referenceEntryMap) {
             let entry = referenceEntryMap[entryId];
             if(entry.getEntryType() == moduleType) {
-                moduleList.push(entry.getReferenceString());
+                moduleList.push(entry.getInstanceReferenceString());
             }
         }
         return moduleList;
