@@ -24,7 +24,7 @@ export default class NodeApogeeModuleEntry extends ReferenceEntry {
     }
 
     static getReferenceString(data) {
-        return data.name;
+        return `${data.name}|${data.version}` ;
     }
             
     /** This method loads the actual link. */
@@ -92,8 +92,7 @@ export default class NodeApogeeModuleEntry extends ReferenceEntry {
 
         return true;
     }
-    
 }
 
-NodeApogeeModuleEntry.REFERENCE_TYPE = "node apogee module";
+NodeApogeeModuleEntry.REFERENCE_TYPE = "apogee module";
 

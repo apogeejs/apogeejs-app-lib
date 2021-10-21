@@ -23,18 +23,9 @@ export default class WebApogeeModuleEntry extends ReferenceEntry {
         else return null; //shouldn't happen
     }
 
-    ////////////////////////////////
-    //temp
-    getUrl() {
-        let data = this.getData();
-        if(data) return data.url;
-        else return null; //shouldn't happen
-    }
-
     static getReferenceString(data) {
-        return data.url;
+        return `${data.name}|${data.version}` ;
     }
-    /////////////////////////////
             
     /** This method loads the actual link. */
     implementationLoadEntry(onLoad,onError) {
@@ -97,7 +88,17 @@ export default class WebApogeeModuleEntry extends ReferenceEntry {
 
         return true;
     }
+
+    _getUrl() {
+        let data = this.getData();
+        if(!data) return null;
+            
+        let esInfo = data.es;
+        if(!es) return null;
+
+        return esInfo.url;
+    }
     
 }
 
-WebApogeeModuleEntry.REFERENCE_TYPE = "web apogee module";
+WebApogeeModuleEntry.REFERENCE_TYPE = "apogee module";
