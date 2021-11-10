@@ -20,6 +20,10 @@ import DesignerActionFormComponentConfig from "/apogeejs-app-lib/src/components/
 //JSON PLUS COMPONENT
 import JsonPlusComponentConfig from "/apogeejs-app-lib/src/components/JsonPlusComponent.js";
 
+//TESTING
+import ReactElementCellConfig from "/apogeejs-admin/dev/jsxModule/src/ReactElementCell.js";
+import ReactDisplayCellConfig from "/apogeejs-admin/dev/jsxModule/src/ReactDisplayCell.js";
+
 /** This module initializes the default component classes. */
 
 let componentInfo = {};
@@ -139,6 +143,10 @@ componentInfo.registerComponent(FormDataComponentConfig);
 
 //JSON PLUS COMPONENT
 componentInfo.registerComponent(JsonPlusComponentConfig);
+
+//TESTING
+componentInfo.registerComponent(ReactElementCellConfig);
+componentInfo.registerComponent(ReactDisplayCellConfig);
 
 
 
