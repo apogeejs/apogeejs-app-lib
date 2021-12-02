@@ -8,6 +8,10 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
 export default class NpmModuleEntry extends ReferenceEntry {
 
     //note - we should differentiate the requested version (with wildcard entries like ~) and the actual version
+
+    getEntryType() {
+        return NpmModuleEntry.REFERENCE_TYPE
+    }
     
     getDisplayName() {
         return this.getModuleName() + "@v" + this.getVersion();

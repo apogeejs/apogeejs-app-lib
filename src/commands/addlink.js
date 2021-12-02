@@ -24,7 +24,7 @@ let addlink = {};
 addlink.executeCommand = function(workspaceManager,commandData,makeUndo) {
     let referenceManager = workspaceManager.getMutableReferenceManager();
     //this creates the entry but does not load it
-    let referenceEntry = referenceManager.createEntry(commandData.data);
+    let referenceEntry = referenceManager.createEntry(commandData.entryType,commandData.data);
     //this loads the entry - it will cause an asynchronouse command on completion
     referenceEntry.loadEntry(workspaceManager);
 

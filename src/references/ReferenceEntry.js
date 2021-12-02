@@ -9,13 +9,6 @@ export default class ReferenceEntry extends FieldObject {
     constructor(referenceData,instanceToCopy,specialCaseIdValue) {
         super("referenceEntry",instanceToCopy,specialCaseIdValue);
 
-        if(instanceToCopy) {
-            this.referenceType = instanceToCopy.referenceType;
-        }
-        else {
-            this.referenceType = referenceData.entryType;
-        }
-
         //==============
         //Fields
         //==============
@@ -25,7 +18,10 @@ export default class ReferenceEntry extends FieldObject {
                 //assigne a nickname if there isnot one
                 referenceData = this.preprocessData(referenceData);
             }
-            this.setField("data",referenceData);
+
+            //allow for back compatibility - when data was not a chidl object of the reference data
+            let data = referenceData.data ? referenceData.data : referenceData;
+            this.setField("data",data);
 
             //we create in a pending state because the link is not loaded.
             this.setField("state",apogeeutil.STATE_PENDING);
@@ -42,10 +38,6 @@ export default class ReferenceEntry extends FieldObject {
     //---------------------------
     // references entry interface
     //---------------------------
-    
-    getEntryType() {
-        return this.referenceType;
-    }
 
     getState() {
         return this.getField("state");
@@ -141,7 +133,9 @@ export default class ReferenceEntry extends FieldObject {
      * resolves when the link is loaded. */
     toJson() {
         var entryJson = {};
-        Object.assign(entryJson,this.getData());
+        entryJson.entryType = this.getEntryType();
+        entryJson.data = {};
+        Object.assign(entryJson.data,this.getData());
         return entryJson;
     }
 

@@ -8,6 +8,10 @@ import {getLinkLoader} from "/apogeejs-app-lib/src/references/LinkLoader.js";
  */
 export default class CssEntry extends ReferenceEntry {
 
+    getEntryType() {
+        return CssEntry.REFERENCE_TYPE
+    }
+
     getDisplayName() {
         let data = this.getData();
         if(data) return data.name

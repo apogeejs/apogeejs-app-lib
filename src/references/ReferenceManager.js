@@ -59,14 +59,14 @@ export default class ReferenceManager extends FieldObject {
      * The argument specialCaseId is provided so an entry with a specific id can be created. This 
      * should not normally be done. It is provided for "undo/redo" functionality to keep the 
      * same id for an entry.. */
-    createEntry(entryCommandData,specialCaseId) {
-        let referenceEntryClass = this.referenceClassMap[entryCommandData.entryType];
-        if(!referenceEntryClass) throw new Error("Entry type not found: " + entryCommandData.entryType);
-        let referenceEntry = this._getExistingReferenceEntry(referenceEntryClass,entryCommandData);
+    createEntry(entryType,entryData,specialCaseId) {
+        let referenceEntryClass = this.referenceClassMap[entryType];
+        if(!referenceEntryClass) throw new Error("Entry type not found: " + entryType);
+        let referenceEntry = this._getExistingReferenceEntry(referenceEntryClass,entryData);
         if(!referenceEntry) {
             //load the entry
-            let referenceEntryClass = this.referenceClassMap[entryCommandData.entryType];
-            referenceEntry = new referenceEntryClass(entryCommandData,null,specialCaseId);
+            let referenceEntryClass = this.referenceClassMap[entryType];
+            referenceEntry = new referenceEntryClass(entryData,null,specialCaseId);
             this.registerRefEntry(referenceEntry);
         }
         return referenceEntry;
@@ -251,8 +251,17 @@ export default class ReferenceManager extends FieldObject {
 
             //construct the load function
             let loadRefEntry = refEntryJson => {
+                let data = refEntryJson.data
+                //backward compatibility-----------------
+                if(!data) {
+                    data = {};
+                    Object.assign(data,refEntryJson);
+                    delete data.entryType;
+                }
+                //----------------------------------------
+
                 //create the entry (this does not actually load it)
-                let referenceEntry = this.createEntry(refEntryJson);
+                let referenceEntry = this.createEntry(refEntryJson.entryType,data);
 
                 //load the entry - this will be asynchronous
                 let loadEntryPromise = referenceEntry.loadEntry(workspaceManager);

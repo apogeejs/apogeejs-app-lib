@@ -6,6 +6,10 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
  * and open the template in the editor.
  */
 export default class WebApogeeModuleEntry extends ReferenceEntry {
+
+    getEntryType() {
+        return WebApogeeModuleEntry.REFERENCE_TYPE
+    }
     
     getDisplayName() {
         return this.getModuleName();
