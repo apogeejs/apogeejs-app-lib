@@ -17,13 +17,19 @@ export default class WebApogeeModuleEntry extends ReferenceEntry {
 
     getModuleName() {
         let data = this.getData();
-        if(data) return data.name;
+        if(data) return data.moduleName;
         else return null; //shouldn't happen
     }
 
     getVersion() {
         let data = this.getData();
         if(data) return data.version;
+        else return null; //shouldn't happen
+    }
+
+    getUrl() {
+        let data = this.getData();
+        if(data) return data.url;
         else return null; //shouldn't happen
     }
 
