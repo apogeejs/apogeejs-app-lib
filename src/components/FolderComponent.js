@@ -21,7 +21,10 @@ const FolderComponentConfig = {
 			fieldToJson: (component,fieldValue,modelManager) => component.convertEditorStateToJson(fieldValue),
 			jsonToField: (component,jsonValue,modelManager) => component.convertJsonToEditorState(jsonValue)
 		}
-	}
+	},
+
+    isParentOfChildEntries: true,
+    iconResPath: "/icons3/pageIcon.png"
 }
 export default FolderComponentConfig;
 

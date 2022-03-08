@@ -1,4 +1,5 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
+import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-view-lib/src/datasource/standardDataDisplay.js";
 
 /** This overrides the get title method of member to return the function declaration. */
 function getDisplayName(component,standardDisplayName) {
@@ -29,7 +30,28 @@ const FunctionComponentConfig = {
     instanceDisplayName: {
         getDisplayName: getDisplayName,
         isDisplayNameUpdated: isDisplayNameUpdated
-    }
+    },
+
+    viewModes: [
+        getErrorViewModeEntry(),
+        getFormulaViewModeEntry("member",{name: "Code", label: "Function Body", isActive: true}),
+        getPrivateViewModeEntry("member")  
+    ],
+    iconResPath: "/icons3/functionCellIcon.png",
+    propertyDialogEntries: [
+        {
+            member: ".",
+            propertyKey: "argList",
+            dialogElement: {
+                "type":"textField",
+                "label":"Arg List: ",
+                "size": 80,
+                "key":"argListString"
+            },
+            propertyToForm: argListValue => argListValue.toString(),
+            formToProperty: argListString => apogeeutil.parseStringArray(argListString)
+        },
+    ]
 }
 export default FunctionComponentConfig;
 

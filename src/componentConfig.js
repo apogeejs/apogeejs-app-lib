@@ -21,8 +21,8 @@ import DesignerActionFormComponentConfig from "/apogeejs-app-lib/src/components/
 import JsonPlusComponentConfig from "/apogeejs-app-lib/src/components/JsonPlusComponent.js";
 
 //TESTING
-import ReactElementCellConfig from "/apogeejs-admin/dev/jsxModule/src/ReactElementCell.js";
-import ReactDisplayCellConfig from "/apogeejs-admin/dev/jsxModule/src/ReactDisplayCell.js";
+//import ReactElementCellConfig from "/apogeejs-admin/dev/jsxModule/src/ReactElementCell.js";
+//import ReactDisplayCellConfig from "/apogeejs-admin/dev/jsxModule/src/ReactDisplayCell.js";
 
 /** This module initializes the default component classes. */
 
@@ -85,13 +85,6 @@ componentInfo.getComponentConfig = function(componentType) {
     return componentConfigMap[componentType];
 }
 
-/** This method returns the component config for the component of a given type. */
-componentInfo.getComponentDisplayName = function(componentType) {
-    let componentConfig = componentInfo.getComponentConfig(componentType);
-    if(componentConfig) return componentConfig.displayName;
-    else throw new Error("Component config not found: " + componentType);
-}
-
 /** This method returns a component instance of the given component type. */
 componentInfo.createComponentInstance = function(componentType,member,modelManager,specialCaseIdValue) {
     let componentConfig = componentInfo.getComponentConfig(componentType);
@@ -109,12 +102,21 @@ componentInfo.createComponentInstance = function(componentType,member,modelManag
     return new componentConfig.componentClass(member,modelManager,null,componentConfig,specialCaseIdValue);
 }
 
+//these functions below, and stuff above, can probably be refactored to simplify it (I am in the process of big changes)
 componentInfo.getPreferredComponentTypes = function() {
     return preferredComponents;
 }
 
 componentInfo.getComponentTypes = function() {
     return components;
+}
+
+componentInfo.getPreferredComponentConfigs = function() {
+    return preferredComponents.map(componentType => componentConfigMap[componentType])
+}
+
+componentInfo.getComponentConfigs = function() {
+    return components.map(componentType => componentConfigMap[componentType])
 }
 
 //===============================
@@ -145,8 +147,8 @@ componentInfo.registerComponent(FormDataComponentConfig);
 componentInfo.registerComponent(JsonPlusComponentConfig);
 
 //TESTING
-componentInfo.registerComponent(ReactElementCellConfig);
-componentInfo.registerComponent(ReactDisplayCellConfig);
+// componentInfo.registerComponent(ReactElementCellConfig);
+// componentInfo.registerComponent(ReactDisplayCellConfig);
 
 
 

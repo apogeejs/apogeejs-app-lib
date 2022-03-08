@@ -1,5 +1,8 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
+import ErrorDisplay from "/apogeejs-view-lib/src/datadisplay/ErrorDisplay.js";
+
+
 /** This component represents a error member object. */
 class ErrorComponent extends Component {
 
@@ -23,7 +26,17 @@ const ErrorComponentConfig = {
 	},
 	defaultComponentJson: {
 		type: "apogeeapp.ErrorCell"
-	}
+	},
+
+    viewModes: [
+        {
+            name: "ComponentError",
+            label: "Component Error",
+            isActive: true,
+            getDataDisplay: (componentView,displayContainer) => new ErrorDisplay(displayContainer,false)
+        }
+    ],
+    iconResPath: "/icons3/errorCellIcon.png"
 }
 export default ErrorComponentConfig;
 

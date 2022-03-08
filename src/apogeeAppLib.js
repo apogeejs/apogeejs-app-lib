@@ -12,8 +12,3 @@ export {default as componentInfo} from "/apogeejs-app-lib/src/componentConfig.js
 import "/apogeejs-app-lib/src/commandConfig.js";
 import "/apogeejs-app-lib/src/referenceConfig.js";
 
-//legacy exports ============================
-//these are deprecated interfaces. provided for back compatibility
-export {default as FormInputBaseComponent} from "/apogeejs-app-lib/src/components/FormInputBaseComponent.js";
-//end legacy exports
-//============================================
