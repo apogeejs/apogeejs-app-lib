@@ -1,8 +1,8 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import HtmlJsDataDisplay from "/apogeejs-view-lib/src/datadisplay/HtmlJsDataDisplay.js";
-import dataDisplayHelper from "/apogeejs-view-lib/src/datadisplay/dataDisplayHelper.js";
-import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-view-lib/src/datasource/standardDataDisplay.js";
+import HtmlJsDataDisplay from "/apogeejs-app-lib/src/datadisplay/HtmlJsDataDisplay.js";
+import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 //import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 /** This method creates the resource. */

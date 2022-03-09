@@ -1,9 +1,9 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import AceTextEditor from "/apogeejs-view-lib/src/datadisplay/AceTextEditor.js";
-import HandsonGridEditor from "/apogeejs-view-lib/src/datadisplay/HandsonGridEditor.js";
-import dataDisplayHelper from "/apogeejs-view-lib/src/datadisplay/dataDisplayHelper.js";
-import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-view-lib/src/datasource/standardDataDisplay.js";
+import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
+import HandsonGridEditor from "/apogeejs-app-lib/src/datadisplay/HandsonGridEditor.js";
+import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 ///////////////////////////////////////////////////////

@@ -1,6 +1,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import ErrorDisplay from "/apogeejs-view-lib/src/datadisplay/ErrorDisplay.js";
+import ErrorDisplay from "/apogeejs-app-lib/src/datadisplay/ErrorDisplay.js";
 
 
 /** This component represents a error member object. */

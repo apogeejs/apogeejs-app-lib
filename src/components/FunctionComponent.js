@@ -1,5 +1,5 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
-import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-view-lib/src/datasource/standardDataDisplay.js";
+import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 
 /** This overrides the get title method of member to return the function declaration. */
 function getDisplayName(component,standardDisplayName) {

@@ -2,10 +2,10 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedDataMember} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
-import {getConfigViewModeEntry}  from "/apogeejs-view-lib/src/componentviews/FormInputBaseComponentView.js";
-import AceTextEditor from "/apogeejs-view-lib/src/datadisplay/AceTextEditor.js";
-import dataDisplayHelper from "/apogeejs-view-lib/src/datadisplay/dataDisplayHelper.js";
-import {getErrorViewModeEntry} from "/apogeejs-view-lib/src/datasource/standardDataDisplay.js";
+import {getConfigViewModeEntry}  from "/apogeejs-app-lib/src/components/FormInputBaseComponentView.js";
+import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
+import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import {getErrorViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 
 
 const DATA_MEMBER_FUNCTION_BODY = `
