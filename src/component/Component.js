@@ -160,7 +160,7 @@ export default class Component extends FieldObject {
 
     /** TEMPIORARY - this is making the error info list ib the fly. Later we should make and cache it, I think. */
     getErrorInfoList() {
-        return _constructErrorInfo
+        return this._constructErrorInfo()
     }
 
     /** This gets the map of members in this component. The key is the member ID and
