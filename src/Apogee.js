@@ -226,7 +226,7 @@ export default class Apogee {
      * @private
      * */    
     async _initApp() {
-            
+
         try {
             //open the initial workspace or create a new workspace
             let workspaceJson = await this._getInitialWorkspace();
