@@ -14,20 +14,21 @@ function getDataViewDisplay(componentHolder, displayContainer) {
     let dataDisplaySource;
     let dataView = componentHolder.getComponent().getField("dataView");
     //update the display container state bar
-    _setDisplayContainerStatus(displayContainer,dataView);
+    //ADD THIS AGAIN
+    //_setDisplayContainerStatus(displayContainer,dataView);
     switch(dataView) {
         case COLORIZED_DATA_VEW:
         default:
             dataDisplaySource = _wrapSourceForViewChange(componentHolder, dataDisplayHelper.getMemberDataTextDataSource(componentHolder,"member"));
-            return new AceTextEditor(displayContainer,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+            return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
             
         case TEXT_DATA_VEW:
             dataDisplaySource =_wrapSourceForViewChange(componentHolder, dataDisplayHelper.getMemberDataJsonDataSource(componentHolder,"member"));
-            return new AceTextEditor(displayContainer,dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
+            return new AceTextEditor(dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
             
         case GRID_DATA_VEW:
             dataDisplaySource = _wrapSourceForViewChange(componentHolder, dataDisplayHelper.getMemberDataJsonDataSource(componentHolder,"member"));
-            return new HandsonGridEditor(displayContainer,dataDisplaySource);
+            return new HandsonGridEditor(dataDisplaySource);
     }
 }
 

@@ -39,9 +39,9 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 
 /** This is the display/editor for the custom control output. */
 export default class HtmlJsDataDisplay extends DataDisplay {
-    constructor(displayContainer,dataSource) {
+    constructor(dataSource) {
         
-        super(displayContainer,dataSource);
+        super(dataSource);
         
         this.isLoaded = false;
         this.cachedData = undefined;
@@ -50,7 +50,7 @@ export default class HtmlJsDataDisplay extends DataDisplay {
             "position":"relative"
         });
 
-        this._constructDisplay(displayContainer,dataSource);
+        this._constructDisplay();
     }
 
     getContent() {
@@ -59,7 +59,6 @@ export default class HtmlJsDataDisplay extends DataDisplay {
 
     /** This method implements the methods needed for the display interface from the data source */
     _constructDisplay() {
-        let displayContainer = this.getDisplayContainer();
         let dataSource = this.getDataSource();
 
         let displayValid;
@@ -76,8 +75,8 @@ export default class HtmlJsDataDisplay extends DataDisplay {
             if(resource.displayInvalid) {
                 let messageType = (resource.messageType !== undefined) ? resource.messageType : DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR;
                 let message = (resource.message !== undefined) ? resource.message : "Display unavailable";
-                this.displayContainer.setHideDisplay(true);
-                this.displayContainer.setMessage(messageType,message);
+                this.setHideDisplay(true);
+                this.setMessage(messageType,message);
                 this.setDisplayValid(false);
                 return;
             }
@@ -88,8 +87,8 @@ export default class HtmlJsDataDisplay extends DataDisplay {
                 let dataResult = dataSource.getDisplayData();
                 if(dataResult.hideDisplay) {
                     //display invalid! hide display and show message
-                    this.displayContainer.setHideDisplay(dataResult.hideDisplay);
-                    this.displayContainer.setMessage(dataResult.messageType,dataResult.message);
+                    this.setHideDisplay(dataResult.hideDisplay);
+                    this.setMessage(dataResult.messageType,dataResult.message);
                     this.setDisplayValid(false);
                     return
                 }
@@ -159,8 +158,8 @@ export default class HtmlJsDataDisplay extends DataDisplay {
 
 
                         let errorMsg = errorPrefix + error.message ? error.message : error ? error.toString() : "Unknown";
-                        displayContainer.setHideDisplay(true);
-                        displayContainer.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
+                        this.setHideDisplay(true);
+                        this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
                         //set display invalid because this is part of creating the display
                         this.setDisplayValid(false);
 
@@ -209,8 +208,8 @@ export default class HtmlJsDataDisplay extends DataDisplay {
                 catch(error) {
                     //hide dispay and show error message
                     let errorMsg = "Error in setData in display: " + error.message ? error.message : error ? error.toString() : "Unknown";
-                    displayContainer.setHideDisplay(true);
-                    displayContainer.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
+                    this.setHideDisplay(true);
+                    this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
                     //note - do not set display invalid here because this is part of data loading, not display loading
 
                     if(error.stack) console.error(error.stack);
@@ -270,8 +269,8 @@ export default class HtmlJsDataDisplay extends DataDisplay {
                 }
                 catch(error) {
                     let errorMsg = "Error in init of display: " + error.message ? error.message : error ? error.toString() : "Unknown";
-                    displayContainer.setHideDisplay(true);
-                    displayContainer.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
+                    this.setHideDisplay(true);
+                    this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
                     //set display invalid because this is part of creating the display
                     this.setDisplayValid(false);
 
@@ -284,8 +283,8 @@ export default class HtmlJsDataDisplay extends DataDisplay {
         }
         catch(error) {
             let errorMsg = "Error loading display: " + error.message ? error.message : error ? error.toString() : "Unknown";
-            displayContainer.setHideDisplay(true);
-            displayContainer.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
+            this.setHideDisplay(true);
+            this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR,errorMsg);
 
             if(error.stack) console.error(error.stack);
 

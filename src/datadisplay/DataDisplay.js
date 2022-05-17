@@ -20,14 +20,37 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
  *      components to pass non-model data (like the HTML or the UI generator code) into the data display.
  */ 
 export default class DataDisplay {
-    constructor(displayContainer,dataSource) {
-        this.displayContainer = displayContainer;
+    constructor(dataSource) {
         this.dataSource = dataSource ? dataSource : {};
         this.editOk = false;
         this.displayValid = true; //default this to true, so simple displays don't need to use it
 
+        this.inEditMode = false
+        this.message = null
+        this.hideDisplay = false
+
         //defaults for container sizing logic
         this.useContainerHeightUi = false;
+    }
+
+    isInEditMode() {
+        return this.isInEditMode
+    }
+
+    setMessage(message) {
+        this.message = message
+    }
+
+    getMessage() {
+        return this.message
+    }
+    
+    setHideDisplay(hideDisplay) {
+        this.hideDisplay = hideDisplay
+    }
+
+    getHideDisplay() {
+        return this.hideDisplay
     }
 
     /** This method returns {reloadDataDisplay, reloadData}, indicating if the data display or the data need to be updated. */
@@ -90,7 +113,7 @@ export default class DataDisplay {
     /** For edit mode, this is used to cancel editing. */
     cancel() {
         //reset the original data
-        var cancelComplete = this.displayContainer.onCancel();
+        //var cancelComplete = this.displayContainer.onCancel();
 
         if(cancelComplete) {
             this.endEditMode();
@@ -98,7 +121,8 @@ export default class DataDisplay {
     }
 
     getDisplayContainer() {
-        return this.displayContainer;
+        //return this.displayContainer;
+        alert("DOH! getDisplayContainer of DataDisplay")
     }
 
     getDataSource() {
@@ -106,7 +130,8 @@ export default class DataDisplay {
     }
 
     getComponentView() {
-        return this.displayContainer.getComponentView();
+        //return this.displayContainer.getComponentView();
+        alert("DOH! getComponetView of DataDisplay")
     }
     
     //=============================
@@ -208,23 +233,23 @@ export default class DataDisplay {
 
         //update the display data
         let dataResult = this.dataSource.getData();
-        this.displayContainer.setHideDisplay(dataResult.hideDisplay);
-        this.displayContainer.setMessage(dataResult.messageType,dataResult.message);
+        this.setHideDisplay(dataResult.hideDisplay);
+        this.setMessage(dataResult.messageType,dataResult.message);
         this.setData(dataResult.data);
     }
 
     /** @protected */
     endEditMode() {
-        this.displayContainer.endEditMode();
-
+        //this.displayContainer.endEditMode();
+        this.inEditMode = false
     }
     
     /** @protected */
     startEditMode() {
-        var onSave = () => this.save();
-        var onCancel = () => this.cancel();
-
-        this.displayContainer.startEditMode(onSave,onCancel);
+        //var onSave = () => this.save();
+        //var onCancel = () => this.cancel();
+        //this.displayContainer.startEditMode(onSave,onCancel);
+        this.inEditMode = true
     }
 
     /** @protected */

@@ -7,8 +7,8 @@ import Handsontable from "/apogeejs-releases/releases/ext/handsontable/v6.2.2/ha
 /** This is a grid editor using hands on table*/
 export default class HandsonGridEditor extends DataDisplay {
     
-    constructor(displayContainer,dataSource) {
-        super(displayContainer,dataSource);
+    constructor(dataSource) {
+        super(dataSource);
 
         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
         this.savedPixelHeight = DEFAULT_PIXEL_HEIGHT;
@@ -36,9 +36,9 @@ export default class HandsonGridEditor extends DataDisplay {
         this.setUseContainerHeightUi(true)
 
         //we will use a listener to see when the page is resized
-        let app = this.displayContainer.getComponentView().getApp();
-        this.frameWidthListener = () => this.onFrameWidthResize();
-        app.addListener("frameWidthResize",this.frameWidthListener);
+        // let app = this.displayContainer.getComponentView().getApp();
+        // this.frameWidthListener = () => this.onFrameWidthResize();
+        // app.addListener("frameWidthResize",this.frameWidthListener);
 
     }
 
@@ -77,14 +77,12 @@ export default class HandsonGridEditor extends DataDisplay {
             //clear the display
             this.cachedDisplayData = [[]];
             //the displaly shoudl be hidden, but do it again anyway
-            let displayContainer = this.getDisplayContainer();
-            displayContainer.setHideDisplay(true);
+            this.setHideDisplay(true);
             this.dataError = true;
         }
         else if(!this.dataIsValidFormat(json)) {
-            let displayContainer = this.getDisplayContainer();
-            displayContainer.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in grid: value is not an array of arrays")
-            displayContainer.setHideDisplay(true);
+            this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in grid: value is not an array of arrays")
+            this.setHideDisplay(true);
             //clear the display
             this.cachedDisplayData = [[]];
             this.dataError = true;
@@ -118,9 +116,9 @@ export default class HandsonGridEditor extends DataDisplay {
         }
         //remove the frame width listener
         if(this.frameWidthListener) {
-            let app = this.displayContainer.getComponentView().getApp();
-            app.removeListener("frameWidthResize",this.frameWidthListener);
-            this.frameWidthListener = null;
+            //let app = this.displayContainer.getComponentView().getApp();
+            //app.removeListener("frameWidthResize",this.frameWidthListener);
+            //this.frameWidthListener = null;
         }
     }
 

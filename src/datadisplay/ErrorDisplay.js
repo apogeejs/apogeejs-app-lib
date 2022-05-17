@@ -15,12 +15,12 @@ import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 /** This is the display/editor for the custom control output. */
 export default class ErrorDisplay extends DataDisplay {
-    constructor(displayContainer) {
+    constructor() {
         var dataSource = {
             doUpdate: () => false,
             getData: () => null
         }
-        super(displayContainer,dataSource);
+        super(dataSource);
         
         var msg = "ERROR - Component not loaded!";
         var msgDiv = uiutil.createElement("div");

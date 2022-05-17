@@ -6,14 +6,13 @@ import ace from "/apogeejs-releases/releases/ext/ace/v1.4.12/ace.es.js";
 
 /** Editor that uses the Ace text editor.
  * 
- * @param {type} displayContainer - the display container
  * @param {type} dataSource - {doUpdate,getData,getEditOk,setData}; format for data is text
  * @param {type} aceMode - the display format, such as "ace/mode/json"
  */
 export default class AceTextEditor extends DataDisplay {
     
-    constructor(displayContainer,dataSource,aceMode,options) {
-        super(displayContainer,dataSource);
+    constructor(dataSource,aceMode,options) {
+        super(dataSource);
 
         this.destroyed = false;
 
@@ -133,14 +132,13 @@ export default class AceTextEditor extends DataDisplay {
             //clear the display
             this.cachedDisplayData = "";
             //the dispaly shoudl be hidden, but do it again anyway
-            let displayContainer = this.getDisplayContainer();
-            displayContainer.setHideDisplay(true);
+
+            this.setHideDisplay(true);
             this.dataError = true;
         }
         else if(!apogeeutil.isString(text)) {
-            let displayContainer = this.getDisplayContainer();
-            displayContainer.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in editor: value is not text")
-            displayContainer.setHideDisplay(true);
+            this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in editor: value is not text")
+            this.setHideDisplay(true);
             //clear the display
             this.cachedDisplayData = "";
             this.dataError = true;
@@ -187,7 +185,7 @@ export default class AceTextEditor extends DataDisplay {
     checkStartEditMode() {
         if(this.destroyed) return;
 
-        if((!this.displayContainer.isInEditMode())&&(this.editor)) {
+        if((!this.isInEditMode())&&(this.editor)) {
             var activeData = this.editor.getSession().getValue();
             if(activeData != this.cachedDisplayData) {
                 this.onTriggerEditMode();

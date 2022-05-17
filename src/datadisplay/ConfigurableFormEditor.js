@@ -6,7 +6,6 @@ import {ConfigurablePanel} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 export default class ConfigurableFormEditor extends DataDisplay {
     
     /** This allows for a static or dynamic layout setting
-     * @param {type} displayContainer - the displayContainer
      * @param {type} dataSource - {
      *  - doUpdate - this should return reloadDataDisplay = true if the form should be reconfigured. 
      *          otherwise it should return reloadData if the form data should be reloaded.
@@ -16,14 +15,14 @@ export default class ConfigurableFormEditor extends DataDisplay {
      *  - getDisplayData - This returns the layout for the configurable form.
      *  }
      */
-    constructor(displayContainer,dataSource) {
-        super(displayContainer,dataSource);
+    constructor(dataSource) {
+        super(dataSource);
 
         //TEMP - to raise the z index
-        let domElement = this.displayContainer.getDisplayElement();
-        if(domElement) {
-            domElement.style.zIndex = 2;
-        }
+        // let domElement = this.displayContainer.getDisplayElement();
+        // if(domElement) {
+        //     domElement.style.zIndex = 2;
+        // }
         
         //construct the display
         this.panel = new ConfigurablePanel();
@@ -33,8 +32,8 @@ export default class ConfigurableFormEditor extends DataDisplay {
             let dataResult = this.dataSource.getDisplayData();
             if(dataResult.hideDisplay) {
                 //display invalid! hide display and show message
-                this.displayContainer.setHideDisplay(dataResult.hideDisplay);
-                this.displayContainer.setMessage(dataResult.messageType,dataResult.message);
+                this.setHideDisplay(dataResult.hideDisplay);
+                this.setMessage(dataResult.messageType,dataResult.message);
                 this.setDisplayValid(false);
             }
             else {
