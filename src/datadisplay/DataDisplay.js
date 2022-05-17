@@ -25,16 +25,22 @@ export default class DataDisplay {
         this.editOk = false;
         this.displayValid = true; //default this to true, so simple displays don't need to use it
 
-        this.inEditMode = false
+        this.setEditMode = undefined
         this.message = null
         this.hideDisplay = false
 
         //defaults for container sizing logic
-        this.useContainerHeightUi = false;
+        this.useContainerHeightUi = false
+    }
+
+    /** This is used to pass is and clear the setEditMode function */
+    setEditModeState(editMode,setEditMode) {
+        this.editMode = editMode
+        this.setEditMode = setEditMode
     }
 
     isInEditMode() {
-        return this.isInEditMode
+        return this.editMode
     }
 
     setMessage(message) {
@@ -114,10 +120,14 @@ export default class DataDisplay {
     cancel() {
         //reset the original data
         //var cancelComplete = this.displayContainer.onCancel();
+        //
+        //if(cancelComplete) {
+        //    this.endEditMode();
+        //}
 
-        if(cancelComplete) {
-            this.endEditMode();
-        }
+        //reshow old data
+        this.dataDisplay.showData();
+        this.endEditMode();
     }
 
     getDisplayContainer() {
@@ -241,7 +251,7 @@ export default class DataDisplay {
     /** @protected */
     endEditMode() {
         //this.displayContainer.endEditMode();
-        this.inEditMode = false
+        if(this.setEditMode) this.setEditMode(false)
     }
     
     /** @protected */
@@ -249,7 +259,7 @@ export default class DataDisplay {
         //var onSave = () => this.save();
         //var onCancel = () => this.cancel();
         //this.displayContainer.startEditMode(onSave,onCancel);
-        this.inEditMode = true
+        if(this.setEditMode) this.setEditMode(true)
     }
 
     /** @protected */
