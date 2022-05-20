@@ -4,15 +4,16 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
 import { FormResultFunctionGenerator } from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 
-function _getFormDataDisplay(component, displayContainer, getFormLayout) {
-    let dataDisplaySource = _getInputFormDataSource(component,getFormLayout);
-    return new ConfigurableFormEditor(displayContainer,dataDisplaySource);
+function _getFormDataDisplay(componentHolder, getFormLayout) {
+    let dataDisplaySource = _getInputFormDataSource(componentHolder,getFormLayout);
+    return new ConfigurableFormEditor(dataDisplaySource);
 }
 
 /** This is the data source for the input form data display */
-function _getInputFormDataSource(component,getFormLayout) {
+function _getInputFormDataSource(componentHolder,getFormLayout) {
     return {
         doUpdate: () => {
+            let component = componentHolder.getComponent()
             //data updates should only be triggered by the form itself
             let reloadData = component.isMemberDataUpdated("member.formData");
             //form layout constant
@@ -21,22 +22,23 @@ function _getInputFormDataSource(component,getFormLayout) {
         }, 
         getDisplayData: () => {
             return {
-                data: getFormLayout(component)
+                data: getFormLayout(componentHolder.getComponent())
             }
         },
-        getData: () => dataDisplayHelper.getWrappedMemberData(component,"member.formData"),
+        getData: () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.formData"),
         getEditOk: () => true,
-        saveData: (formData) => _onSubmit(formData)
+        saveData: (formData) => _onSubmit(componentHolder,formData)
     }
 }
 
 /** This method saves the form result converted to a function body that handles expression inputs.
  * This is saved to the formula for the member object. */
-function _onSubmit(component, formData) {
+function _onSubmit(componentHolder, formData) {
+    let component = componentHolder.getComponent()
     //load the form meta - we have to look it up from the data display (this is a little clumsy)
     let formMeta;
     //FIX THIS!!!/////////////////////
-    let formEditor = this.getCurrentDataDisplayInstance(VIEW_INPUT);
+    let formEditor = componentHolder.getDataDisplay()
     //////////////////////////////////
     if(formEditor) {
         formMeta = formEditor.getFormMeta();
@@ -102,6 +104,6 @@ export function getConfigViewModeEntry(getFormLayout,optionalAlternateLabel) {
         name: VIEW_INPUT,
         label: optionalAlternateLabel ? optionalAlternateLabel : "Configuration",
         isActive: true,
-        getDataDisplay: (component,displayContainer) => _getFormDataDisplay(component,displayContainer,getFormLayout)
+        getDataDisplay: (componentHolder) => _getFormDataDisplay(componentHolder,getFormLayout)
     }
 }

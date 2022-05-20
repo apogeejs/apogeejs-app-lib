@@ -71,7 +71,7 @@ export default class WorkspaceManager extends FieldObject {
     getName() {
         let modelManager = this.getModelManager()
         let model = modelManager.getModel()
-        return model ? model.getName() : Workspace_OPENING_NAME
+        return model ? model.getName() : WORKSPACE_TEMP_NAME //there should be a model, unless we are waiing for asynch opening
     }
 
     getIconUrl() {
@@ -374,3 +374,4 @@ CommandManager.registerCommand(loadmodelmanager);
 
 
 const ICON_RES_PATH = "/icons3/workspaceIcon.png"; 
+const WORKSPACE_TEMP_NAME = "-"

@@ -85,11 +85,11 @@ function onUiCodeUpdate(component,uiGeneratorBody) {
 // }
 
 
-function getOutputDataDisplay(componentHolder, displayContainer) {
+function getOutputDataDisplay(componentHolder) {
     //TODO: Oops - If the value of this field changes I do not handle it properly, I don't think
-    displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
+    //displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
     var dataDisplaySource = getOutputDataDisplaySource(componentHolder);
-    return new HtmlJsDataDisplay(displayContainer,dataDisplaySource);
+    return new HtmlJsDataDisplay(dataDisplaySource);
 }
 
 function getOutputDataDisplaySource(componentHolder) {
@@ -173,7 +173,7 @@ const CustomComponentConfig = {
             name: "Display", 
             label: "Display", 
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getOutputDataDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getOutputDataDisplay(componentHolder)
         },
         getAppCodeViewModeEntry("html",null,"HTML","HTML",{sourceType: "data", textDisplayMode: "ace/mode/html"}),
         getAppCodeViewModeEntry("css",null,"CSS", "CSS",{sourceType: "data", textDisplayMode: "ace/mode/css"}),

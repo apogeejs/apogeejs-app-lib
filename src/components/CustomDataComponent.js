@@ -88,10 +88,10 @@ function onUiCodeUpdate(component,uiGeneratorBody) {
 //     super.onDelete();
 // }
 
-function getOutputDataDisplay(component, displayContainer) {
-    displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
+function getOutputDataDisplay(component) {
+    //displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
     var dataDisplaySource = getOutputDataDisplaySource(component);
-    return new HtmlJsDataDisplay(displayContainer,dataDisplaySource);
+    return new HtmlJsDataDisplay(dataDisplaySource);
 }
 
 function getOutputDataDisplaySource(componentHolder) {
@@ -207,7 +207,7 @@ const CustomDataComponentConfig = {
             name: "Display", 
             label: "Display", 
             isActive: true,
-            getDataDisplay: (component,displayContainer) => getOutputDataDisplay(component,displayContainer)
+            getDataDisplay: (component) => getOutputDataDisplay(component)
         },
         getAppCodeViewModeEntry("html",null,"HTML","HTML",{sourceType: "data", textDisplayMode: "ace/mode/html"}),
         getAppCodeViewModeEntry("css",null,"CSS", "CSS",{sourceType: "data", textDisplayMode: "ace/mode/css"}),

@@ -17,9 +17,9 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay(componentHolder, displayContainer) {
+function getFormViewDisplay(componentHolder) {
     let dataDisplaySource = getFormEditorCallbacks(componentHolder);
-    return new ConfigurableFormEditor(displayContainer,dataDisplaySource);
+    return new ConfigurableFormEditor(dataDisplaySource);
 }
 
 function getFormEditorCallbacks(componentHolder) {
@@ -128,7 +128,7 @@ const FormDataComponentConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getFormViewDisplay(componentHolder, displayContainer)
+            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
         },
         getFormulaViewModeEntry("member.layout",{name:"Layout Code",label:"Layout Code"}),
         getPrivateViewModeEntry("member.layout",{name:"Layout Private",label:"Layout Private"}),

@@ -54,9 +54,9 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
     return ConfigurablePanel.getFormDesignerLayout(flags);
 }
 
-function getFormViewDataDisplay(componentHolder,displayContainer) {
+function getFormViewDataDisplay(componentHolder) {
     let dataDisplaySource = _getOutputFormDataSource(componentHolder);
-    return new ConfigurableFormEditor(displayContainer,dataDisplaySource);
+    return new ConfigurableFormEditor(dataDisplaySource);
 }
 
 function _getOutputFormDataSource(componentHolder) {
@@ -149,7 +149,7 @@ const DesignerDataFormComponentConfig = {
             name: "Form",
             label: "Form", 
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getFormViewDataDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getFormViewDataDisplay(componentHolder)
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer"),
         getFormulaViewModeEntry("member.isValid",{name:"IsValidFunction",label:"IsValid Function",argList:"formValue"}),

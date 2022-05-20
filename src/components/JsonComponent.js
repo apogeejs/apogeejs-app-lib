@@ -10,7 +10,7 @@ import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 // view code
 ////////////////////////////////////////////////////////
 
-function getDataViewDisplay(componentHolder, displayContainer) {
+function getDataViewDisplay(componentHolder) {
     let dataDisplaySource;
     let dataView = componentHolder.getComponent().getField("dataView");
     //update the display container state bar
@@ -44,20 +44,20 @@ function _wrapSourceForViewChange(componentHolder, dataDisplaySource) {
     return dataDisplaySource;
 }
 
-function _setDisplayContainerStatus(displayContainer,dataView) {
-    let displayBarElement = displayContainer.getDisplayBarElement();
-    if(displayBarElement) {
-        uiutil.removeAllChildren(displayBarElement);
-        let statusElement = document.createElement("span");
-        statusElement.innerHTML = "Display Format: " + VIEW_DISPLAY_NAMES[dataView];
-        statusElement.style.fontSize = "smaller";
-        statusElement.style.color = "gray";
-        statusElement.style.marginLeft = "20px";
-        statusElement.style.userSelect ; "none";
-        statusElement.className = "visiui_hideSelection";
-        displayBarElement.appendChild(statusElement);
-    }
-}
+// function _setDisplayContainerStatus(displayContainer,dataView) {
+//     let displayBarElement = displayContainer.getDisplayBarElement();
+//     if(displayBarElement) {
+//         uiutil.removeAllChildren(displayBarElement);
+//         let statusElement = document.createElement("span");
+//         statusElement.innerHTML = "Display Format: " + VIEW_DISPLAY_NAMES[dataView];
+//         statusElement.style.fontSize = "smaller";
+//         statusElement.style.color = "gray";
+//         statusElement.style.marginLeft = "20px";
+//         statusElement.style.userSelect ; "none";
+//         statusElement.className = "visiui_hideSelection";
+//         displayBarElement.appendChild(statusElement);
+//     }
+// }
 
 //===============================
 // Internal Settings
@@ -95,7 +95,7 @@ const JsonComponentConfig = {
             sourceType: "data",
             suffix: "",
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getDataViewDisplay(componentHolder, displayContainer)
+            getDataDisplay: (componentHolder) => getDataViewDisplay(componentHolder)
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")  

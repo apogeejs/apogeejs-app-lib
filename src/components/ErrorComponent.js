@@ -33,7 +33,7 @@ const ErrorComponentConfig = {
             name: "ComponentError",
             label: "Component Error",
             isActive: true,
-            getDataDisplay: (componentView,displayContainer) => new ErrorDisplay(displayContainer,false)
+            getDataDisplay: (componentView) => new ErrorDisplay(false)
         }
     ],
     iconResPath: "/icons3/errorCellIcon.png"

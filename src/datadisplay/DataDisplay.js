@@ -1,4 +1,4 @@
-import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js"
 
 /** This is the base class for data displays, which show individual edit/display fields for a component. For example, a standard JSON
  * data component has three data displays, for the component value, the function body and the supplemental code.
@@ -26,6 +26,7 @@ export default class DataDisplay {
         this.displayValid = true; //default this to true, so simple displays don't need to use it
 
         this.setEditMode = undefined
+        this.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
         this.message = null
         this.hideDisplay = false
 
@@ -43,14 +44,19 @@ export default class DataDisplay {
         return this.editMode
     }
 
-    setMessage(message) {
-        this.message = message
+    getMessageType() {
+        return this.messageType
     }
 
     getMessage() {
         return this.message
     }
-    
+
+    setMessage(messageType,message) {
+        this.messageType = messageType ? messageType : DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE 
+        this.message = message
+    }
+
     setHideDisplay(hideDisplay) {
         this.hideDisplay = hideDisplay
     }
@@ -158,7 +164,7 @@ export default class DataDisplay {
     //onLoad() {}
     
     //this method is called on unloading the display. OPTIONAL
-    //onUnLoad() {}
+    //onUnload() {}
 
     //this method is called when the display will be destroyed. OPTIONAL
     //destroy() {}
@@ -242,10 +248,17 @@ export default class DataDisplay {
         }
 
         //update the display data
-        let dataResult = this.dataSource.getData();
-        this.setHideDisplay(dataResult.hideDisplay);
-        this.setMessage(dataResult.messageType,dataResult.message);
-        this.setData(dataResult.data);
+        let dataResult = this.dataSource.getData()
+        this.hideDisplay = (this.hideDisplay === true) 
+        if(dataResult.messageType) {
+            this.messageType = dataResult.messageType
+            this.message = dataResult.message
+        }
+        else {
+            this.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+            this.message = ""
+        }
+        this.setData(dataResult.data)
     }
 
     /** @protected */

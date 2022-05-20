@@ -29,9 +29,9 @@ function onLayoutCodeUpdate(component,layoutCode) {
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay(componentHolder, displayContainer) {
+function getFormViewDisplay(componentHolder) {
     let dataDisplaySource = getOutputDataDisplaySource(componentHolder);
-    return new ConfigurableFormEditor(displayContainer,dataDisplaySource);
+    return new ConfigurableFormEditor(dataDisplaySource);
 }
 
 function getOutputDataDisplaySource(componentHolder) {
@@ -115,7 +115,7 @@ const FullActionFormComponentConfig = {
             name: "form",
             label: "Form",
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getFormViewDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
         },
         getAppCodeViewModeEntry("layoutCode",null,"layout","Layout Code",{argList:"commandMessenger,inputData",isActive: true}),
         getFormulaViewModeEntry("member",{name: "input", label:"Input Data Code"}),

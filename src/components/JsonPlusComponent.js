@@ -17,9 +17,9 @@ import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} f
 ////////////////////////////////////////////////////////
 
 
-function getDataDataDisplay(componentHolder, displayContainer) {
+function getDataDataDisplay(componentHolder) {
     let dataDisplaySource = getDataSource(componentHolder);
-    return new AceTextEditor(displayContainer,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+    return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
 
@@ -123,7 +123,7 @@ const JsonPlusComponentConfig = {
             sourceLayer: "model",
             sourceType: "data",
             isActive: true,
-            getDataDisplay: (component,displayContainer) => getDataDataDisplay(component,displayContainer)
+            getDataDisplay: (component) => getDataDataDisplay(component)
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")

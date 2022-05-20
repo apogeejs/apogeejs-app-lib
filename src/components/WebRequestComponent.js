@@ -21,14 +21,14 @@ defineHardcodedDataMember(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 ////////////////////////////////////////////////////////
 
 
-function getMetaViewDisplay(componentHolder,displayContainer) {
+function getMetaViewDisplay(componentHolder) {
     let dataDisplaySource = _getMetaDataSource(componentHolder);
-    return new AceTextEditor(displayContainer,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+    return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
-function getBodyViewDisplay(componentHolder,displayContainer) {
+function getBodyViewDisplay(componentHolder) {
     let dataDisplaySource = _getBodyDataSource(componentHolder);
-    return new AceTextEditor(displayContainer,dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+    return new AceTextEditor(dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
 /** This method returns the form layout.
@@ -265,7 +265,7 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.meta",
             isActive: false,
-            getDataDisplay: (componentHolder,displayContainer) => getMetaViewDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getMetaViewDisplay(componentHolder)
     
         },
         {
@@ -275,7 +275,7 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.body",
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getBodyViewDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getBodyViewDisplay(componentHolder)
         },
         getConfigViewModeEntry(getFormLayout),
     ],

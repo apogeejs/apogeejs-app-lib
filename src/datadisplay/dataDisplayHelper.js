@@ -8,6 +8,7 @@ const MIME_TYPE_JSON = "application/json"
 const SPACING_FORMAT_STRING = "\t";
 
 // ComponentHolder - A class that holds the current component, accessible with the function getComponent()
+//Currently this is used to the current version of the component can be passed to the data source.
 
 
 /** This function creates the data display data source  for the data of the given member. The

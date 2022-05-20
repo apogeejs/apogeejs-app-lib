@@ -26,9 +26,9 @@ else return [];
     return ConfigurablePanel.getFormDesignerLayout(flags);
 }
 
-function getFormViewDataDisplay(displayContainer) {
+function getFormViewDataDisplay() {
     let dataDisplaySource = _getOutputFormDataSource(component);
-    return new ConfigurableFormEditor(displayContainer,dataDisplaySource);
+    return new ConfigurableFormEditor(dataDisplaySource);
 }
 
 function _getOutputFormDataSource(componentHolder) {
@@ -70,7 +70,7 @@ const DesignerActionFormComponentConfig = {
             name: "Form",
             label: "Form", 
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getFormViewDataDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getFormViewDataDisplay(componentHolder)
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer")
     ],

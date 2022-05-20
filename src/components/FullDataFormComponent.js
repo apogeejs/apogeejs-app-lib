@@ -50,9 +50,9 @@ function onValidatorCodeUpdate(component,validatorCode) {
 ////////////////////////////////////////////////////////
 
 
-function getFormViewDisplay(componentHolder,displayContainer) {
+function getFormViewDisplay(componentHolder) {
     let dataDisplaySource = getOutputDataDisplaySource(componentHolder);
-    return new ConfigurableFormEditor(displayContainer,dataDisplaySource);
+    return new ConfigurableFormEditor(dataDisplaySource);
 }
 
 function getOutputDataDisplaySource(componentHolder) {
@@ -197,7 +197,7 @@ const FullDataFormComponentConfig = {
             sourceType: "data",
             suffix: ".value", 
             isActive: true,
-            getDataDisplay: (componentHolder,displayContainer) => getFormViewDisplay(componentHolder,displayContainer)
+            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
         },
         getAppCodeViewModeEntry("layoutCode","layoutFunction","layout","Layout Code",{argList:"commandMessenger,inputData",isActive: true}),
         getAppCodeViewModeEntry("validatorCode","validatorFunction","validator","Validator Code",{argList:"formValue,inputData"}),
