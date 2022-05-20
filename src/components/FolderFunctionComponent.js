@@ -1,4 +1,4 @@
-import DocumentParentComponent from "/apogeejs-app-lib/src/component/DocumentParentComponent.js";
+import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 /** This overrides the get display method of componnet to return the function declaration. */
 function getDisplayName(component,standardDisplayName) {
@@ -26,7 +26,7 @@ function isDisplayNameUpdated(component) {
 
 
 const FolderFunctionComponentConfig = {
-    componentClass: DocumentParentComponent,
+    componentClass: Component,
 	displayName: "Multi-Cell Function",
 	defaultMemberJson: {
 		"type": "apogee.FolderFunction",
@@ -39,19 +39,19 @@ const FolderFunctionComponentConfig = {
 	},
 	defaultComponentJson: {
 		type: "apogeeapp.PageFunctionComponent",
-        fields: {
-			editorState: {
-				doc: {"type":"doc","content":[{"type":"paragraph"}]}
-			}
-		}
+        // fields: {
+		// 	editorState: {
+		// 		doc: {"type":"doc","content":[{"type":"paragraph"}]}
+		// 	}
+		// }
 	},
 	childParentFolderPath: "body",
-    fieldFunctions: {
-		editorState: {
-			fieldToJson: (component,fieldValue,modelManager) => component.convertEditorStateToJson(fieldValue),
-			jsonToField: (component,jsonValue,modelManager) => component.convertJsonToEditorState(jsonValue)
-		}
-	},
+    // fieldFunctions: {
+	// 	editorState: {
+	// 		fieldToJson: (component,fieldValue,modelManager) => component.convertEditorStateToJson(fieldValue),
+	// 		jsonToField: (component,jsonValue,modelManager) => component.convertJsonToEditorState(jsonValue)
+	// 	}
+	// },
     instanceDisplayName: {
         getDisplayName: getDisplayName,
         isDisplayNameUpdated: isDisplayNameUpdated

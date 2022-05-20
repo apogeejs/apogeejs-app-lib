@@ -1,4 +1,5 @@
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
+import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 /** This is the base functionality for a component. */
 export default class Component extends FieldObject {
@@ -56,6 +57,18 @@ export default class Component extends FieldObject {
     //==============================
     // Public Instance Methods
     //==============================
+
+    /////////////////////////////
+    // TEMPORARY
+    getStatus() {
+        return "normal"
+    }
+
+    getStatusMessage() {
+        return ""
+    }
+
+    //////////////////////////////
 
     //--------------------------
     // Accessors and convencience functions
@@ -139,6 +152,26 @@ export default class Component extends FieldObject {
         }
         else {
             return standardDisplayName;
+        }
+    }
+
+    /** This method returns the icon url for the component. */
+    getIconUrl() {
+        if(this.componentConfig.ICON_URL) {
+            return this.componentConfig.ICON_URL;
+        }
+        else {
+            var resPath = this.componentConfig.iconResPath;
+            if(!resPath) {
+                if(this.componentConfig.isParentOfChildEntries) {
+                    resPath = ComponentView.DEFAULT_PAGE_ICON;
+                }
+                else {
+                    resPath = ComponentView.DEFAULT_CELL_ICON;
+                }
+            }
+            //cell/page icons are in the app domain/repo
+            return uiutil.getResourcePath(resPath,"app");
         }
     }
 

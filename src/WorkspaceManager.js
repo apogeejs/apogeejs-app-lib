@@ -1,5 +1,7 @@
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 
+import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
+
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
 import ModelManager from "/apogeejs-app-lib/src/ModelManager.js";
@@ -54,6 +56,29 @@ export default class WorkspaceManager extends FieldObject {
     //====================================
     // Workspace Management
     //====================================
+
+    /////////////////////////////
+    // TEMPORARY
+    getStatus() {
+        return "normal"
+    }
+
+    getStatusMessage() {
+        return ""
+    }
+
+    //This might be weird - the workspace manager uses the model name, the model manager uses the name "code"
+    getName() {
+        let modelManager = this.getModelManager()
+        let model = modelManager.getModel()
+        return model ? model.getName() : Workspace_OPENING_NAME
+    }
+
+    getIconUrl() {
+        return uiutil.getResourcePath(ICON_RES_PATH,"app")
+    }
+
+    //////////////////////////////
 
     /** This gets the application instance. */
     getApp() {
@@ -346,3 +371,6 @@ loadmodelmanager.commandInfo = {
 }
 
 CommandManager.registerCommand(loadmodelmanager);
+
+
+const ICON_RES_PATH = "/icons3/workspaceIcon.png"; 

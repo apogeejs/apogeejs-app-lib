@@ -37,6 +37,26 @@ export default class ModelManager extends FieldObject {
     // Methods
     //====================================
 
+    /////////////////////////////
+    // TEMPORARY
+    getStatus() {
+        return "normal"
+    }
+
+    getStatusMessage() {
+        return ""
+    }
+
+    getIconUrl() {
+        return apogeeui.uiutil.getResourcePath(ICON_RES_PATH,"app")
+    }
+
+    getName() {
+        return MODEL_FOLDER_LABEL
+    }
+
+    //////////////////////////////
+
     /** This gets the application instance. */
     getApp() {
         return this.app;
@@ -521,3 +541,7 @@ ModelManager.EMPTY_MODEL_COMPONENT_JSON = {
           }
     }
 };
+
+let MODEL_FOLDER_LABEL = "Code";
+
+let ICON_RES_PATH = "/icons3/folderIcon.png";  

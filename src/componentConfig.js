@@ -26,12 +26,13 @@ import JsonPlusComponentConfig from "/apogeejs-app-lib/src/components/JsonPlusCo
 
 /** This module initializes the default component classes. */
 
-let componentInfo = {};
-export {componentInfo as default};
+let componentInfo = {}
+export {componentInfo as default}
 
-let componentConfigMap = {};
-let preferredComponents = [];
-let components = [];
+let componentConfigMap = {}
+let components = []
+let childComponents = []
+let parentComponents = []
 
 let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
 
@@ -45,21 +46,14 @@ let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
     //we should maybe warn if another component bundle is being overwritten
     let componentType = componentConfig.defaultComponentJson.type;
     componentConfigMap[componentType] = componentConfig;
-    if(components.indexOf(componentType) < 0) {
-        components.push(componentType);
+    if(components.indexOf(componentConfig) < 0) {
+        components.push(componentConfig);
     }
-}
-
-/** This method registers a component. */
-componentInfo.registerPreferredComponent = function(componentConfig) {
-    //we should maybe warn if another component bundle is being overwritten 
-    let componentType = componentConfig.defaultComponentJson.type;
-    componentConfigMap[componentType] = componentConfig;
-    if(components.indexOf(componentType) < 0) {
-        components.push(componentType);
+    if((componentConfig.isParentOfChildEntries)&&(parentComponents.indexOf(componentConfig) < 0)) {
+        parentComponents.push(componentConfig);
     }
-    if(preferredComponents.indexOf(componentType) < 0) {
-        preferredComponents.push(componentType);
+    if((componentConfig.viewModes)&&(childComponents.indexOf(componentConfig) < 0)) {
+        childComponents.push(componentConfig);
     }
 }
 
@@ -69,13 +63,17 @@ componentInfo.unregisterComponent = function(componentConfig) {
     let componentType = componentConfig.defaultComponentJson.type;
     
     delete componentConfigMap[componentType];
-    let index = components.indexOf(componentType);
+    let index = components.indexOf(componentConfig);
     if(index >= 0) {
         components.splice(index,1);
     }
-    index = preferredComponents.indexOf(componentType);
+    index = parentComponents.indexOf(componentConfig);
     if(index >= 0) {
-        preferredComponents.splice(index,1);
+        parentComponents.splice(index,1);
+    }
+    index = childComponents.indexOf(componentConfig);
+    if(index >= 0) {
+        childComponents.splice(index,1);
     }
     
 }
@@ -102,21 +100,18 @@ componentInfo.createComponentInstance = function(componentType,member,modelManag
     return new componentConfig.componentClass(member,modelManager,null,componentConfig,specialCaseIdValue);
 }
 
-//these functions below, and stuff above, can probably be refactored to simplify it (I am in the process of big changes)
-componentInfo.getPreferredComponentTypes = function() {
-    return preferredComponents;
-}
 
-componentInfo.getComponentTypes = function() {
+
+componentInfo.getComponentConfigs = function() {
     return components;
 }
 
-componentInfo.getPreferredComponentConfigs = function() {
-    return preferredComponents.map(componentType => componentConfigMap[componentType])
+componentInfo.getParentComponentConfigs = function() {
+    return parentComponents
 }
 
-componentInfo.getComponentConfigs = function() {
-    return components.map(componentType => componentConfigMap[componentType])
+componentInfo.getChildComponentConfigs = function() {
+    return childComponents
 }
 
 //===============================
@@ -124,14 +119,14 @@ componentInfo.getComponentConfigs = function() {
 //===============================
 
 //register standard child components
-componentInfo.registerPreferredComponent(FolderComponentConfig);
-componentInfo.registerPreferredComponent(JsonComponentConfig);
-componentInfo.registerPreferredComponent(FunctionComponentConfig);
-componentInfo.registerPreferredComponent(FolderFunctionComponentConfig);
-componentInfo.registerPreferredComponent(WebRequestComponentConfig);
+componentInfo.registerComponent(FolderComponentConfig);
+componentInfo.registerComponent(JsonComponentConfig);
+componentInfo.registerComponent(FunctionComponentConfig);
+componentInfo.registerComponent(FolderFunctionComponentConfig);
+componentInfo.registerComponent(WebRequestComponentConfig);
 
-componentInfo.registerPreferredComponent(DesignerDataFormComponentConfig);
-componentInfo.registerPreferredComponent(DesignerActionFormComponentConfig);
+componentInfo.registerComponent(DesignerDataFormComponentConfig);
+componentInfo.registerComponent(DesignerActionFormComponentConfig);
 
 //additional child components
 componentInfo.registerComponent(CustomComponentConfig);
