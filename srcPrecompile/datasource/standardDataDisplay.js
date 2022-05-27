@@ -2,6 +2,7 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import StandardErrorDisplay from "/apogeejs-app-lib/src/datadisplay/StandardErrorDisplay.js";
 import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 //============================
 //Component Error View Mode
@@ -13,10 +14,10 @@ export function getErrorViewModeEntry() {
         isActive: false,
         isTransient: true,
         isErrorView: true,
-        getDataDisplay: () => {
-            let dataDisplaySource = dataDisplayHelper.getStandardErrorDataSource();
-            return new StandardErrorDisplay(dataDisplaySource);
-        }
+        getViewModeElement: (component,showing) => <VanillaViewModeElement
+            component={component}
+            getDataDisplay={() => new StandardErrorDisplay(dataDisplayHelper.getStandardErrorDataSource())}
+            showing={showing} />
     }
 }
 
@@ -55,7 +56,10 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         sourceType: "data",
         suffix: suffix, //default value comes from member field name 
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
-        getDataDisplay: () => getMemberDataTextDisplay(memberFieldName,options),
+        getViewModeElement: (component,showing) => <VanillaViewModeElement
+            component={component}
+            getDataDisplay={() => getMemberDataTextDisplay(memberFieldName,options)}
+            showing={showing} />,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 }
@@ -77,7 +81,10 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
         sourceType: "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getDataDisplay: () => getFormulaDataDisplay(memberFieldName,options),
+        getViewModeElement: (component,showing) => <VanillaViewModeElement
+            component={component}
+            getDataDisplay={() => getFormulaDataDisplay(memberFieldName,options)}
+            showing={showing} />,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 }
@@ -95,7 +102,10 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
         sourceLayer: "model",
         sourceType: "private code",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getDataDisplay: () => getPrivateDataDisplay(memberFieldName,options),
+        getViewModeElement: (component,showing) => <VanillaViewModeElement
+            component={component}
+            getDataDisplay={() => getPrivateDataDisplay(memberFieldName,options)}
+            showing={showing} />,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 } 
@@ -123,7 +133,10 @@ export function getAppCodeViewModeEntry(componentFieldName,componentCompiledFiel
         sourceType: ((options)&&(options.sourceType)) ? options.sourceType : "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getDataDisplay: () => getAppCodeDataDisplay(componentFieldName,componentCompiledFieldName,options),
+        getViewModeElement: (component,showing) => <VanillaViewModeElement
+            component={component}
+            getDataDisplay={() => getAppCodeDataDisplay(componentFieldName,componentCompiledFieldName,options)}
+            showing={showing} />,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 }

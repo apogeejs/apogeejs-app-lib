@@ -3,7 +3,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import HtmlJsDataDisplay from "/apogeejs-app-lib/src/datadisplay/HtmlJsDataDisplay.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
-//import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 /** This method creates the resource. */
 function onUiCodeUpdate(component,uiGeneratorBody) {
@@ -85,45 +85,44 @@ function onUiCodeUpdate(component,uiGeneratorBody) {
 // }
 
 
-function getOutputDataDisplay(componentHolder) {
+function getOutputDataDisplay() {
     //TODO: Oops - If the value of this field changes I do not handle it properly, I don't think
     //displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
-    var dataDisplaySource = getOutputDataDisplaySource(componentHolder);
+    var dataDisplaySource = getOutputDataDisplaySource();
     return new HtmlJsDataDisplay(dataDisplaySource);
 }
 
-function getOutputDataDisplaySource(componentHolder) {
+function getOutputDataDisplaySource() {
 
     return {
 
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
-        doUpdate: () => {
+        doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let component = componentHolder.getComponent()
             let reloadData = component.isMemberDataUpdated("member");
             let reloadDataDisplay = component.areAnyFieldsUpdated(["html","resource"]);
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: () => {
-            dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member")
+        getData: (component) => {
+            dataDisplayHelper.getWrappedMemberData(component,"member")
         },
 
         //below - custom methods for HtmlJsDataDisplay
 
         //returns the HTML for the data display
-        getHtml: () => {
-            return componentHolder.getComponent().getField("html");
+        getHtml: (component) => {
+            return component.getField("html");
         },
 
         //returns the resource for the data display
-        getResource: () => {
-            return componentHolder.getComponent().getField("resource");
+        getResource: (component) => {
+            return component.getField("resource");
         },
 
         //gets the mebmer used as a refernce for the UI manager passed to the resource functions 
-        getScopeMember: () => {
-            return componentHolder.getComponent().getMember();
+        getScopeMember: (component) => {
+            return component.getMember();
         }
     }
 }
@@ -173,7 +172,10 @@ const CustomComponentConfig = {
             name: "Display", 
             label: "Display", 
             isActive: true,
-            getDataDisplay: (componentHolder) => getOutputDataDisplay(componentHolder)
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={getOutputDataDisplay}
+                showing={showing} />,
         },
         getAppCodeViewModeEntry("html",null,"HTML","HTML",{sourceType: "data", textDisplayMode: "ace/mode/html"}),
         getAppCodeViewModeEntry("css",null,"CSS", "CSS",{sourceType: "data", textDisplayMode: "ace/mode/css"}),

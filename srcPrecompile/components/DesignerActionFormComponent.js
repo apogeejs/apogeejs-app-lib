@@ -6,6 +6,7 @@ import {getConfigViewModeEntry} from "/apogeejs-app-lib/src/components/FormInput
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {ConfigurablePanel} from "/apogeejs-ui-lib/src/apogeeUiLib.js"
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 const DATA_MEMBER_FUNCTION_BODY = `
 if(formResult) return apogeeui.ConfigurablePanel.getGeneratedFormLayout(formResult);
@@ -31,22 +32,22 @@ function getFormViewDataDisplay() {
     return new ConfigurableFormEditor(dataDisplaySource);
 }
 
-function _getOutputFormDataSource(componentHolder) {
+function _getOutputFormDataSource() {
 
     return {
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
-        doUpdate: () => {
+        doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
             let reloadData = false;
-            let reloadDataDisplay = componentHolder.getComponent().isMemberFieldUpdated("member.data","data");
+            let reloadDataDisplay = component.isMemberFieldUpdated("member.data","data");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.data"),
+        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.data"),
 
-        getData: () => { return {"data": null}; },
+        getData: (component) => { return {"data": null}; },
 
-        getEditOk: () => false
+        getEditOk: (component) => false
     }
 }
 
@@ -70,7 +71,10 @@ const DesignerActionFormComponentConfig = {
             name: "Form",
             label: "Form", 
             isActive: true,
-            getDataDisplay: (componentHolder) => getFormViewDataDisplay(componentHolder)
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={getFormViewDataDisplay}
+                showing={showing} />
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer")
     ],

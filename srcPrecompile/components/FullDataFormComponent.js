@@ -6,6 +6,7 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 //-----------------------
 // Handlers for field changes, to update linked fields
@@ -194,7 +195,10 @@ const FullDataFormComponentConfig = {
             sourceType: "data",
             suffix: ".value", 
             isActive: true,
-            getDataDisplay: () => getFormViewDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getFormViewDisplay}
+				showing={showing} />
         },
         getAppCodeViewModeEntry("layoutCode","layoutFunction","layout","Layout Code",{argList:"commandMessenger,inputData",isActive: true}),
         getAppCodeViewModeEntry("validatorCode","validatorFunction","validator","Validator Code",{argList:"formValue,inputData"}),

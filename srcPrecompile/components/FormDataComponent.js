@@ -4,6 +4,7 @@ import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/Configurab
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 /** This ccomponent represents a data value, with input being from a configurable form.
  * This is an example of componound component. The data associated with the form
@@ -126,7 +127,10 @@ const FormDataComponentConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getDataDisplay: () => getFormViewDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={getFormViewDisplay}
+                showing={showing} />
         },
         getFormulaViewModeEntry("member.layout",{name:"Layout Code",label:"Layout Code"}),
         getPrivateViewModeEntry("member.layout",{name:"Layout Private",label:"Layout Private"}),

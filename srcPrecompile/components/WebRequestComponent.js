@@ -6,6 +6,7 @@ import {getConfigViewModeEntry}  from "/apogeejs-app-lib/src/components/FormInpu
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 
 const DATA_MEMBER_FUNCTION_BODY = `
@@ -261,7 +262,10 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.meta",
             isActive: false,
-            getDataDisplay: () => getMetaViewDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getMetaViewDisplay}
+				showing={showing} />
     
         },
         {
@@ -271,7 +275,10 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.body",
             isActive: true,
-            getDataDisplay: () => getBodyViewDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getBodyViewDisplay}
+				showing={showing} />
         },
         getConfigViewModeEntry(getFormLayout),
     ],

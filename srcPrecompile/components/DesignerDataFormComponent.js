@@ -8,6 +8,7 @@ import {getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewMod
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {ConfigurablePanel} from "/apogeejs-ui-lib/src/apogeeUiLib.js"
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 
 const DATA_MEMBER_FUNCTION_BODY = `
@@ -54,31 +55,29 @@ const ADDITIONAL_CHILD_MEMBER_ARRAY =  [
     return ConfigurablePanel.getFormDesignerLayout(flags);
 }
 
-function getFormViewDataDisplay(componentHolder) {
-    let dataDisplaySource = _getOutputFormDataSource(componentHolder);
+function getFormViewDataDisplay() {
+    let dataDisplaySource = _getOutputFormDataSource();
     return new ConfigurableFormEditor(dataDisplaySource);
 }
 
-function _getOutputFormDataSource(componentHolder) {
+function _getOutputFormDataSource() {
 
     return {
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
-        doUpdate: () => {
+        doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let component = componentHolder.getComponent()
             let reloadData = component.isMemberDataUpdated("member.value");
             let reloadDataDisplay = component.isMemberFieldUpdated("member.data","data");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: () =>  dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.data"),
+        getDisplayData: (component) =>  dataDisplayHelper.getWrappedMemberData(component,"member.data"),
 
-        getData: () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.value"),
+        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.value"),
 
-        getEditOk: () => true,
+        getEditOk: (component) => true,
 
-        saveData: (formValue) => {
-            let component = componentHolder.getComponent()
+        saveData: (formValue,component) => {
             let isValidMember = component.getField("member.isValid");
             let isValidFunction;
             let issueMessage;
@@ -149,7 +148,11 @@ const DesignerDataFormComponentConfig = {
             name: "Form",
             label: "Form", 
             isActive: true,
-            getDataDisplay: (componentHolder) => getFormViewDataDisplay(componentHolder)
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={getFormViewDataDisplay}
+                showing={showing} />
+
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer"),
         getFormulaViewModeEntry("member.isValid",{name:"IsValidFunction",label:"IsValid Function",argList:"formValue"}),

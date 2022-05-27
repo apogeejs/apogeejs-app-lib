@@ -49,6 +49,11 @@ export default class ReferenceManager extends FieldObject {
         return this.app;
     }
 
+    /** FIX THIS */
+    getStatus() {
+        return "normal"
+    }
+
     //====================================
     // Reference Lifecycle Methods
     //====================================

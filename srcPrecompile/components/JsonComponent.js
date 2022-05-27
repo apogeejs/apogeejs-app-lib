@@ -4,6 +4,7 @@ import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import HandsonGridEditor from "/apogeejs-app-lib/src/datadisplay/HandsonGridEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 ///////////////////////////////////////////////////////
 // view code
@@ -94,7 +95,10 @@ const JsonComponentConfig = {
             sourceType: "data",
             suffix: "",
             isActive: true,
-            getDataDisplay: (component) => getDataViewDisplay(component)
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={() => getDataViewDisplay(component)}
+				showing={showing} />
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")  

@@ -3,6 +3,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 /** This component is similar to the JsonComponent except that it
  * also supports function elements. When displaying them it replaces the function
@@ -121,7 +122,10 @@ const JsonPlusComponentConfig = {
             sourceLayer: "model",
             sourceType: "data",
             isActive: true,
-            getDataDisplay: () => getDataDataDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getDataDataDisplay}
+				showing={showing} />
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")

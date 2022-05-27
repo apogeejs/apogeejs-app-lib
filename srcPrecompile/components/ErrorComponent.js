@@ -1,6 +1,7 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 import ErrorDisplay from "/apogeejs-app-lib/src/datadisplay/ErrorDisplay.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 
 /** This component represents a error member object. */
@@ -33,7 +34,10 @@ const ErrorComponentConfig = {
             name: "ComponentError",
             label: "Component Error",
             isActive: true,
-            getDataDisplay: (componentView) => new ErrorDisplay(false)
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={() => new ErrorDisplay(false)}
+                showing={showing} />
         }
     ],
     iconResPath: "/icons3/errorCellIcon.png"

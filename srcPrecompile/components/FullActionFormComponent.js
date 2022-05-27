@@ -6,6 +6,7 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 
 /** This updates the layout function when the layout code is updated. */
@@ -113,7 +114,10 @@ const FullActionFormComponentConfig = {
             name: "form",
             label: "Form",
             isActive: true,
-            getDataDisplay: () => getFormViewDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getFormViewDisplay}
+				showing={showing} />
         },
         getAppCodeViewModeEntry("layoutCode",null,"layout","Layout Code",{argList:"commandMessenger,inputData",isActive: true}),
         getFormulaViewModeEntry("member",{name: "input", label:"Input Data Code"}),

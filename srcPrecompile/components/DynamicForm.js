@@ -3,6 +3,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 ///////////////////////////////////////////////////////
 // view code
@@ -49,7 +50,10 @@ const DynamicFormConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getDataDisplay: () => getFormViewDisplay()
+            getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={getFormViewDisplay}
+                showing={showing} />
         },
         getFormulaViewModeEntry("member",{name:"Input Code",label:"Layout Code",argList:""}),
         getPrivateViewModeEntry("member",{name:"Input Private",label:"Layout Private"}),
