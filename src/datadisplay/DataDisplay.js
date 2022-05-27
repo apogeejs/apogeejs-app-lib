@@ -21,6 +21,7 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
  */ 
 export default class DataDisplay {
     constructor(dataSource) {
+        this.component = null
         this.dataSource = dataSource ? dataSource : {};
         this.editOk = false;
         this.displayValid = true; //default this to true, so simple displays don't need to use it
@@ -32,6 +33,14 @@ export default class DataDisplay {
 
         //defaults for container sizing logic
         this.useContainerHeightUi = false
+    }
+
+    setComponent(component) {
+        this.component = component
+    }
+
+    getComponent() {
+        return this.component
     }
 
     /** This is used to pass is and clear the setEditMode function */
@@ -68,7 +77,7 @@ export default class DataDisplay {
     /** This method returns {reloadDataDisplay, reloadData}, indicating if the data display or the data need to be updated. */
     doUpdate() {
         if(this.dataSource) {
-            return this.dataSource.doUpdate();
+            return this.dataSource.doUpdate(this.component);
         }
         else {
             return {
@@ -102,7 +111,7 @@ export default class DataDisplay {
 
             if(this.dataSource.saveData) {
                 try {
-                    saveComplete = this.dataSource.saveData(data);
+                    saveComplete = this.dataSource.saveData(data,this.component);
                 }
                 catch(error) {
                     if(error.stack) console.error(error.stack);
@@ -241,14 +250,14 @@ export default class DataDisplay {
 
         //get edit ok
         if(this.dataSource.getEditOk) {
-            this.editOk = this.dataSource.getEditOk()
+            this.editOk = this.dataSource.getEditOk(this.component)
         }
         else {
             this.editOk = false;
         }
 
         //update the display data
-        let dataResult = this.dataSource.getData()
+        let dataResult = this.dataSource.getData(this.component)
         this.hideDisplay = (this.hideDisplay === true) 
         if(dataResult.messageType) {
             this.messageType = dataResult.messageType

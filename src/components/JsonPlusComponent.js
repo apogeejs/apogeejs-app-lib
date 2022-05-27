@@ -17,26 +17,24 @@ import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} f
 ////////////////////////////////////////////////////////
 
 
-function getDataDataDisplay(componentHolder) {
-    let dataDisplaySource = getDataSource(componentHolder);
+function getDataDataDisplay() {
+    let dataDisplaySource = getDataSource();
     return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
 
 /** This data source is read only (no edit). It returns text for a json */
-function getDataSource(componentHolder) {
+function getDataSource() {
 
     return {
-        doUpdate: () => {
+        doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let component = componentHolder.getComponent()
             let reloadData = component.isMemberDataUpdated("member");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: () => {
-            let component = componentHolder.getComponent()
+        getData: (component) => {
             let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"member")
             //if we have valid data, update it to display the functions with the otherwise JSON data.
             if(wrappedData.data != apogeeutil.INVALID_VALUE) {
@@ -123,7 +121,7 @@ const JsonPlusComponentConfig = {
             sourceLayer: "model",
             sourceType: "data",
             isActive: true,
-            getDataDisplay: (component) => getDataDataDisplay(component)
+            getDataDisplay: () => getDataDataDisplay()
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")

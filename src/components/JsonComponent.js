@@ -4,41 +4,40 @@ import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import HandsonGridEditor from "/apogeejs-app-lib/src/datadisplay/HandsonGridEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
-import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 ///////////////////////////////////////////////////////
 // view code
 ////////////////////////////////////////////////////////
 
-function getDataViewDisplay(componentHolder) {
+function getDataViewDisplay(component) {
     let dataDisplaySource;
-    let dataView = componentHolder.getComponent().getField("dataView");
+    let dataView = component.getField("dataView");
     //update the display container state bar
     //ADD THIS AGAIN
     //_setDisplayContainerStatus(displayContainer,dataView);
     switch(dataView) {
         case COLORIZED_DATA_VEW:
         default:
-            dataDisplaySource = _wrapSourceForViewChange(componentHolder, dataDisplayHelper.getMemberDataTextDataSource(componentHolder,"member"));
+            dataDisplaySource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataTextDataSource("member"));
             return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
             
         case TEXT_DATA_VEW:
-            dataDisplaySource =_wrapSourceForViewChange(componentHolder, dataDisplayHelper.getMemberDataJsonDataSource(componentHolder,"member"));
+            dataDisplaySource =_wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"));
             return new AceTextEditor(dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
             
         case GRID_DATA_VEW:
-            dataDisplaySource = _wrapSourceForViewChange(componentHolder, dataDisplayHelper.getMemberDataJsonDataSource(componentHolder,"member"));
+            dataDisplaySource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"));
             return new HandsonGridEditor(dataDisplaySource);
     }
 }
 
 /** This method updates the data display source to account for reloading the data display due to 
  * a change in the data view. */
-function _wrapSourceForViewChange(componentHolder, dataDisplaySource) {
+function _wrapSourceForViewChange(dataDisplaySource) {
     let originalDoUpdate = dataDisplaySource.doUpdate;
-    dataDisplaySource.doUpdate = () => {
-        let returnValue = originalDoUpdate();
-        returnValue.reloadDataDisplay = componentHolder.getComponent().isFieldUpdated("dataView");
+    dataDisplaySource.doUpdate = (component) => {
+        let returnValue = originalDoUpdate(component)
+        returnValue.reloadDataDisplay = component.isFieldUpdated("dataView")
         return returnValue;
     }
     return dataDisplaySource;
@@ -95,7 +94,7 @@ const JsonComponentConfig = {
             sourceType: "data",
             suffix: "",
             isActive: true,
-            getDataDisplay: (componentHolder) => getDataViewDisplay(componentHolder)
+            getDataDisplay: (component) => getDataViewDisplay(component)
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")  

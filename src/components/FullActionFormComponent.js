@@ -29,25 +29,23 @@ function onLayoutCodeUpdate(component,layoutCode) {
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay(componentHolder) {
-    let dataDisplaySource = getOutputDataDisplaySource(componentHolder);
+function getFormViewDisplay() {
+    let dataDisplaySource = getOutputDataDisplaySource();
     return new ConfigurableFormEditor(dataDisplaySource);
 }
 
-function getOutputDataDisplaySource(componentHolder) {
+function getOutputDataDisplaySource() {
     return {
 
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
-        doUpdate: () => {
-            let component = componentHolder.getComponent()
+        doUpdate: (component) => {
             let reloadData = false;
             let reloadDataDisplay = component.isFieldUpdated("layoutFunction") || component.isMemberDataUpdated("member");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: () => {       
+        getDisplayData: (component) => {       
             //get the layout function
-            let component = componentHolder.getComponent()
             let layoutFunction = component.getField("layoutFunction");
             if(layoutFunction instanceof Error) {
                 let wrappedData = {};
@@ -84,7 +82,7 @@ function getOutputDataDisplaySource(componentHolder) {
         },
 
         //no data
-        getData: () => { return {"data": null}; }
+        getData: (component) => { return {"data": null}; }
     }
 }
 
@@ -115,7 +113,7 @@ const FullActionFormComponentConfig = {
             name: "form",
             label: "Form",
             isActive: true,
-            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
+            getDataDisplay: () => getFormViewDisplay()
         },
         getAppCodeViewModeEntry("layoutCode",null,"layout","Layout Code",{argList:"commandMessenger,inputData",isActive: true}),
         getFormulaViewModeEntry("member",{name: "input", label:"Input Data Code"}),

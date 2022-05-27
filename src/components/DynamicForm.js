@@ -9,21 +9,21 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
 ////////////////////////////////////////////////////////
 
 
-function getFormViewDisplay(componentHolder) {
-    let dataDisplaySource = getFormCallbacks(componentHolder);
+function getFormViewDisplay() {
+    let dataDisplaySource = getFormCallbacks();
     return new ConfigurableFormEditor(dataDisplaySource);
 }
 
-function getFormCallbacks(componentHolder) { 
+function getFormCallbacks() { 
     var dataDisplaySource = {
-        doUpdate: () => {
+        doUpdate: (component) => {
             //we have no data here, just the form layout
             let reloadData = false;
-            let reloadDataDisplay = componentHolder.getComponent().isMemberDataUpdated("member");
+            let reloadDataDisplay = component.isMemberDataUpdated("member");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member"),
+        getDisplayData: () => dataDisplayHelper.getWrappedMemberData(component,"member"),
 
         getData: () => { return {"data": null}; },
     }
@@ -49,7 +49,7 @@ const DynamicFormConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
+            getDataDisplay: () => getFormViewDisplay()
         },
         getFormulaViewModeEntry("member",{name:"Input Code",label:"Layout Code",argList:""}),
         getPrivateViewModeEntry("member",{name:"Input Private",label:"Layout Private"}),

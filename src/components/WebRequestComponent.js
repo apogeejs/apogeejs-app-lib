@@ -21,19 +21,19 @@ defineHardcodedDataMember(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 ////////////////////////////////////////////////////////
 
 
-function getMetaViewDisplay(componentHolder) {
-    let dataDisplaySource = _getMetaDataSource(componentHolder);
+function getMetaViewDisplay() {
+    let dataDisplaySource = _getMetaDataSource();
     return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
-function getBodyViewDisplay(componentHolder) {
-    let dataDisplaySource = _getBodyDataSource(componentHolder);
+function getBodyViewDisplay() {
+    let dataDisplaySource = _getBodyDataSource();
     return new AceTextEditor(dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
 /** This method returns the form layout.
  * @protected. */
-function getFormLayout(/*component*/) {
+function getFormLayout() {
     return [
         {
             type: "horizontalLayout",
@@ -178,19 +178,17 @@ function getFormLayout(/*component*/) {
 // Private Methods
 //==========================
 
-function _getBodyDataSource(componentHolder) {
+function _getBodyDataSource() {
     return {
-        doUpdate: () => {
+        doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let component = componentHolder.getComponent()
             let reloadData = component.isMemberDataUpdated("member.data");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: () => {
+        getData: (component) => {
             //Here we return just the body (not header), converted to text if needed
-            let component = componentHolder.getComponent()
             let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"member.data");
             if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
                 let bodyAndMeta = wrappedData.data;
@@ -215,19 +213,17 @@ function _getBodyDataSource(componentHolder) {
     }
 }
 
-function _getMetaDataSource(componentHolder) {
+function _getMetaDataSource() {
     return {
-        doUpdate: () => {
+        doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let component = componentHolder.getComponent()
             let reloadData = component.isMemberDataUpdated("member.data");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: () => {
+        getData: (component) => {
             //Here we return just the meta data, as text
-            let component = componentHolder.getComponent()
             let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"member.data");
             if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
                 let bodyAndMeta = wrappedData.data;
@@ -265,7 +261,7 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.meta",
             isActive: false,
-            getDataDisplay: (componentHolder) => getMetaViewDisplay(componentHolder)
+            getDataDisplay: () => getMetaViewDisplay()
     
         },
         {
@@ -275,7 +271,7 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.body",
             isActive: true,
-            getDataDisplay: (componentHolder) => getBodyViewDisplay(componentHolder)
+            getDataDisplay: () => getBodyViewDisplay()
         },
         getConfigViewModeEntry(getFormLayout),
     ],

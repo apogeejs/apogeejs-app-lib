@@ -7,53 +7,47 @@ export {dataDisplayHelper as default}
 const MIME_TYPE_JSON = "application/json"
 const SPACING_FORMAT_STRING = "\t";
 
-// ComponentHolder - A class that holds the current component, accessible with the function getComponent()
-//Currently this is used to the current version of the component can be passed to the data source.
 
 
 /** This function creates the data display data source  for the data of the given member. The
  * member field should be the field name used to access the data source from the associated component. */
-dataDisplayHelper.getMemberDataJsonDataSource = function(componentHolder,memberFieldName,doReadOnly) {
-    return _getMemberDataDataSource(componentHolder,memberFieldName,doReadOnly);
+dataDisplayHelper.getMemberDataJsonDataSource = function(memberFieldName,doReadOnly) {
+    return _getMemberDataDataSource(memberFieldName,doReadOnly);
 }
 
 /** This function creates editor callbacks or member data where the editor takes text format. 
  * This data source sets error valueData (a substitue value) when the user tries to save an improperly 
  * formatted JSON. */
- dataDisplayHelper.getMemberDataTextDataSource = function(componentHolder,memberFieldName,doReadOnly) {
-    return _getMemberDataDataSource(componentHolder,memberFieldName,doReadOnly,{stringify: true});
+ dataDisplayHelper.getMemberDataTextDataSource = function(memberFieldName,doReadOnly) {
+    return _getMemberDataDataSource(memberFieldName,doReadOnly,{stringify: true});
  }
 
  /** This gets a data source for JSON or stringified JSON data from a member. */
-function _getMemberDataDataSource(componentHolder,memberFieldName,doReadOnly,options) {
+function _getMemberDataDataSource(memberFieldName,doReadOnly,options) {
     if(!options) options = {};
     
     return {
 
-        doUpdate: function() {
-            let component = componentHolder.getComponent()
+        doUpdate: function(component) {
             //return value is whether or not the data display needs to be udpated
             let reloadData = component.isMemberDataUpdated(memberFieldName);
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: function() {
-            let component = componentHolder.getComponent()
+        getData: function(component) {
             return dataDisplayHelper.getWrappedMemberData(component,memberFieldName,options);
         },
 
         getEditOk: doReadOnly ? 
-            function () { return false; }  : 
-            function () {
-                let component = componentHolder.getComponent()
+            function (component) { return false; }  : 
+            function (component) {
                 let member = component.getField(memberFieldName);
                 return !member.hasCode();
             },
 
         saveData: doReadOnly ? undefined :
-            function(data) {
-                let component = componentHolder.getComponent()
+            function(data,component) {
                 let app = component.getApp()
 
                 //is the display data is stringified, parse it into a json
@@ -102,32 +96,29 @@ function _getMemberDataDataSource(componentHolder,memberFieldName,doReadOnly,opt
  * set with this value if the function body and supplemental code are empty. 
  * The optionalDefaultDataValue will be used to clear the function and save the data value if the formula and
  * private code are empty strings. */
-dataDisplayHelper.getMemberFunctionBodyDataSource = function(componentHolder,memberFieldName) {
+dataDisplayHelper.getMemberFunctionBodyDataSource = function(memberFieldName) {
 
     return {
 
-        doUpdate: function() {
-            let component = componentHolder.getComponent()
+        doUpdate: function(component) {
             //return value is whether or not the data display needs to be udpated
             let reloadData = component.isMemberFieldUpdated(memberFieldName,"functionBody");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: function() {
-            let component = componentHolder.getComponent()
+        getData: function(component) {
             let functionMember = component.getField(memberFieldName);
             return { 
                 data: functionMember.getFunctionBody()
             }
         },
 
-        getEditOk: function() {
+        getEditOk: function(component) {
             return true;
         },
 
-        saveData: function(text) {
-            let component = componentHolder.getComponent()
+        saveData: function(text,component) {
             let app = component.getApp()
             let functionMember = component.getField(memberFieldName);
 
@@ -145,20 +136,18 @@ dataDisplayHelper.getMemberFunctionBodyDataSource = function(componentHolder,mem
 }
 
 /** This function creates editor callbacks or the member supplemental code. */
-dataDisplayHelper.getMemberSupplementalDataSource = function(componentHolder,memberFieldName) {
+dataDisplayHelper.getMemberSupplementalDataSource = function(memberFieldName) {
 
     return {
 
-        doUpdate: function() {
-            let component = componentHolder.getComponent()
+        doUpdate: function(component) {
             //return value is whether or not the data display needs to be udpated
             let reloadData = component.isMemberFieldUpdated(memberFieldName,"supplementalCode");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
-        getData: function() {
-            let component = componentHolder.getComponent()
+        getData: function(component) {
             let functionMember = component.getField(memberFieldName);
             return {
                 data: functionMember.getSupplementalCode()
@@ -169,8 +158,7 @@ dataDisplayHelper.getMemberSupplementalDataSource = function(componentHolder,mem
             return true;
         },
 
-        saveData: function(text) {
-            let component = componentHolder.getComponent()
+        saveData: function(text,component) {
             let app = component.getApp()
 
             let functionMember = component.getField(memberFieldName);
@@ -191,11 +179,10 @@ dataDisplayHelper.getMemberSupplementalDataSource = function(componentHolder,mem
 
 /** This function creates the data display data source  for the data of the given member. The
  * member field should be the field name used to access the data source from the associated component. */
-dataDisplayHelper.getStandardErrorDataSource = function(componentHolder) {
+dataDisplayHelper.getStandardErrorDataSource = function() {
     
     return {
-        doUpdate: function() {
-            let component = componentHolder.getComponent()
+        doUpdate: function(component) {
             //remove the view if here is an error and error info
             let removeView;
             ////////////////////////////////
@@ -214,8 +201,7 @@ dataDisplayHelper.getStandardErrorDataSource = function(componentHolder) {
             return {reloadData,reloadDataDisplay,removeView};
         },
 
-        getData: function() {
-            let component = componentHolder.getComponent()
+        getData: function(component) {
             ////////////////////////////////
             // NEED TO MOVE THESE FUNCTIONS TO COMPONENT FROM COMPONENT VIEW!
             ////////////////////////////////

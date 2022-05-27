@@ -17,17 +17,16 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay(componentHolder) {
-    let dataDisplaySource = getFormEditorCallbacks(componentHolder);
+function getFormViewDisplay() {
+    let dataDisplaySource = getFormEditorCallbacks();
     return new ConfigurableFormEditor(dataDisplaySource);
 }
 
-function getFormEditorCallbacks(componentHolder) {
+function getFormEditorCallbacks() {
 
     var dataDisplaySource = {};
-    dataDisplaySource.doUpdate = () => {
+    dataDisplaySource.doUpdate = (component) => {
         //update depends on multiplefields
-        let component = componentHolder.getComponent()
         let reloadData = component.isMemberDataUpdated("member.data");
         let reloadDataDisplay = ( (component.isMemberDataUpdated("member.layout")) ||
             (component.isMemberDataUpdated("member.isInputValid")) );
@@ -35,19 +34,18 @@ function getFormEditorCallbacks(componentHolder) {
     },
 
     //return form layout
-    dataDisplaySource.getDisplayData = () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.layout"),
+    dataDisplaySource.getDisplayData = (component) => dataDisplayHelper.getWrappedMemberData(component,"member.layout"),
     
     //return desired form value
-    dataDisplaySource.getData = () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.data");
+    dataDisplaySource.getData = (component) => dataDisplayHelper.getWrappedMemberData(component,"member.data");
     
     //edit ok - always true
-    dataDisplaySource.getEditOk = () => {
+    dataDisplaySource.getEditOk = (component) => {
         return true;
     }
     
     //save data - just form value here
-    dataDisplaySource.saveData = (formValue) => {
-        let component = componentHolder.getComponent()
+    dataDisplaySource.saveData = (formValue,component) => {
         let isInputValidFunctionMember = component.getField("member.isInputValid");
         //validate input
         var isInputValid = isInputValidFunctionMember.getData();
@@ -128,7 +126,7 @@ const FormDataComponentConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
+            getDataDisplay: () => getFormViewDisplay()
         },
         getFormulaViewModeEntry("member.layout",{name:"Layout Code",label:"Layout Code"}),
         getPrivateViewModeEntry("member.layout",{name:"Layout Private",label:"Layout Private"}),

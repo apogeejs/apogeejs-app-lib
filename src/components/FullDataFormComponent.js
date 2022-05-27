@@ -50,26 +50,24 @@ function onValidatorCodeUpdate(component,validatorCode) {
 ////////////////////////////////////////////////////////
 
 
-function getFormViewDisplay(componentHolder) {
-    let dataDisplaySource = getOutputDataDisplaySource(componentHolder);
+function getFormViewDisplay() {
+    let dataDisplaySource = getOutputDataDisplaySource();
     return new ConfigurableFormEditor(dataDisplaySource);
 }
 
-function getOutputDataDisplaySource(componentHolder) {
+function getOutputDataDisplaySource() {
     return {
         //NEED TO FACTOR IN INPUT VALUE!!!
 
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
-        doUpdate: () => {
-            let component = componentHolder.getComponent()
+        doUpdate: (component) => {
             let reloadData = component.isMemberDataUpdated("member.value");
             let reloadDataDisplay = component.isFieldUpdated("layoutFunction") || component.isMemberFieldUpdated("member.input","data");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: () => {       
+        getDisplayData: (component) => {       
             //get the layout function
-            let component = componentHolder.getComponent()
             let layoutFunction = component.getField("layoutFunction");
             if(layoutFunction instanceof Error) {
                 let wrappedData = {};
@@ -103,12 +101,11 @@ function getOutputDataDisplaySource(componentHolder) {
             return wrappedData;
         },
 
-        getData: () => dataDisplayHelper.getWrappedMemberData(componentHolder.getComponent(),"member.value"),
+        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.value"),
 
-        getEditOk: () => true,
+        getEditOk: (component) => true,
 
-        saveData: (formValue) => {
-            let component = componentHolder.getComponent()
+        saveData: (formValue,component) => {
 
             //below this data is valid only for normal state input. That should be ok since this is save.
             let inputData = component.getField("member.input").getData();
@@ -197,7 +194,7 @@ const FullDataFormComponentConfig = {
             sourceType: "data",
             suffix: ".value", 
             isActive: true,
-            getDataDisplay: (componentHolder) => getFormViewDisplay(componentHolder)
+            getDataDisplay: () => getFormViewDisplay()
         },
         getAppCodeViewModeEntry("layoutCode","layoutFunction","layout","Layout Code",{argList:"commandMessenger,inputData",isActive: true}),
         getAppCodeViewModeEntry("validatorCode","validatorFunction","validator","Validator Code",{argList:"formValue,inputData"}),
