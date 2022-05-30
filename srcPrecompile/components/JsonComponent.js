@@ -98,7 +98,14 @@ const JsonComponentConfig = {
             getViewModeElement: (component,showing) => <VanillaViewModeElement
 				component={component}
 				getDataDisplay={() => getDataViewDisplay(component)}
-				showing={showing} />
+				showing={showing} />,
+            getViewStatusElement: (component) => <DataViewStatusElement component={component} />,
+            sizeCommandInfo: {
+                default: 15,
+                min: 2,
+                max: 100,
+                increment: 1
+            }
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")  
@@ -123,6 +130,12 @@ const JsonComponentConfig = {
 export default JsonComponentConfig;
 
 
-
-
+function DataViewStatusElement({component}) {
+    let style = {
+        "fontSize": "smaller",
+        "color": "gray",
+        "marginLeft": "20px"
+    }
+    return <span className="visiui_hideSelection" style={style}>Display Format: {component.getField("dataView")}</span>
+}
 
