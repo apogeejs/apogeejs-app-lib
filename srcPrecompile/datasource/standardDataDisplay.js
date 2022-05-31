@@ -56,10 +56,12 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         sourceType: "data",
         suffix: suffix, //default value comes from member field name 
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
-        getViewModeElement: (component,showing) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
             component={component}
             getDataDisplay={() => getMemberDataTextDisplay(memberFieldName,options)}
-            showing={showing} />,
+            showing={showing}
+            size={size} />,
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 }
@@ -81,10 +83,12 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
         sourceType: "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getViewModeElement: (component,showing) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
             component={component}
             getDataDisplay={() => getFormulaDataDisplay(memberFieldName,options)}
-            showing={showing} />,
+            showing={showing}
+            size={size} />,
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 }
@@ -102,10 +106,12 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
         sourceLayer: "model",
         sourceType: "private code",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getViewModeElement: (component,showing) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
             component={component}
             getDataDisplay={() => getPrivateDataDisplay(memberFieldName,options)}
-            showing={showing} />,
+            showing={showing}
+            size={size} />,
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 } 
@@ -133,10 +139,12 @@ export function getAppCodeViewModeEntry(componentFieldName,componentCompiledFiel
         sourceType: ((options)&&(options.sourceType)) ? options.sourceType : "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getViewModeElement: (component,showing) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
             component={component}
             getDataDisplay={() => getAppCodeDataDisplay(componentFieldName,componentCompiledFieldName,options)}
-            showing={showing} />,
+            showing={showing}
+            size={size} />,
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
 }

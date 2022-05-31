@@ -35,20 +35,15 @@ export default class AceTextEditor extends DataDisplay {
         if(!options) options = {};
 
         this.editorOptions = {};
-        this.showSomeMaxLines = DEFAULT_MAX_LINES;
+        
         if(options.displayMax) {
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX;
-            this.editorOptions.maxLines = MAX_MAX_LINES;
+            this.maxLines = AceTextEditor.SIZE_COMMAND_INFO.max;
         }
         else {
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
-            this.editorOptions.maxLines = this.showSomeMaxLines;
+            this.maxLines = AceTextEditor.SIZE_COMMAND_INFO.default;
         }
-
-        this.editorOptions.minLines = DEFAULT_MIN_LINES;
-
-        //set variables for internal display view sizing
-        this.setUseContainerHeightUi(true)
+        this.editorOptions.maxLines = this.maxLines;
+        this.editorOptions.minLines = AceTextEditor.SIZE_COMMAND_INFO.min;
     }
     
     createEditor() {
@@ -254,88 +249,21 @@ export default class AceTextEditor extends DataDisplay {
     // following API to interact with the display
     //----------------------------
 
-    /** This is called if the show less button is pressed */
-    showLess() {
-        if((this.destroyed)||(!this.editor)) return;
-
-        let newMaxLines;
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
-            //decrease size by 1 line - except if our size is 
-            //larger than the current doc, then shrink it to 
-            //one line smaller than current doc.
-            let docLines = this.editor.getSession().getLength();
-            if(docLines < this.showSomeMaxLines) {
-                this.showSomeMaxLines = docLines;
-            }
-            newMaxLines = this.showSomeMaxLines - 1;
-            if(newMaxLines <  DEFAULT_MIN_LINES) {
-                newMaxLines = DEFAULT_MIN_LINES;
-            }
-        }
-        else {
-            //set lines to the most recent "some" mode size
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
-            newMaxLines = this.showSomeMaxLines;
-        }
-
-        this._setSomeMaxLines(newMaxLines);
-
-    }
-
-    /** This is called if the show more button is pressed */
-    showMore() {
-        if((this.destroyed)||(!this.editor)) return;
-
-        let newMaxLines;
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
-            //just grow size by 1 line
-            newMaxLines = this.showSomeMaxLines + 1;
-            if(newMaxLines >  MAX_MAX_LINES) {
-                newMaxLines = MAX_MAX_LINES;
-            }
-        }
-        else {
-            //put in some mode and keep max lines the same (the UI probably won't allow this command though)
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
-            newMaxLines = MAX_MAX_LINES;
-        }
-
-        this._setSomeMaxLines(newMaxLines);
-    }
-
-    /** This is called if the show max button is pressed */
-    showMax() {
-        if((this.destroyed)||(!this.editor)) return;
-
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
-            //set the max number of lines
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX;
-            this.editorOptions.maxLines = MAX_MAX_LINES;
+    setSize(size) {
+        if(size < AceTextEditor.SIZE_COMMAND_INFO.min) size = AceTextEditor.SIZE_COMMAND_INFO.min
+        else if(size > AceTextEditor.SIZE_COMMAND_INFO.max) size = AceTextEditor.SIZE_COMMAND_INFO.max
+        this.maxLines = size;
+        //update editor
+        this.editorOptions.maxLines = this.maxLines;
+        if(this.editor) {
             this.editor.setOptions(this.editorOptions);
         }
-
     }
 
-    /** This sets the number of lines to display (if the display is this big) */
-    _setSomeMaxLines(maxLines) {
-        //update the lines options
-        this.showSomeMaxLines = maxLines;
-        this.editorOptions.maxLines = this.showSomeMaxLines;
-        this.editor.setOptions(this.editorOptions);
+    getSize() {
+        return this.currentDisplayLinesMax;
     }
 
-    /** This method controlsthe visibility options for the resize buttons. These will only work if 
-     * resize is enabled for this data display. */
-    getHeightAdjustFlags() {
-        let flags = 0;
-        flags |= DATA_DISPLAY_CONSTANTS.RESIZE_SHOW_FLAG;
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX) {
-            flags |= DATA_DISPLAY_CONSTANTS.RESIZE_MODE_MAX_FLAG;
-        }
-
-        //for now we won't disable any buttons - pressing them will just do nothing
-        return flags;
-    }
 }
 
 //options for displaying all or some lines
@@ -343,6 +271,9 @@ AceTextEditor.OPTION_SET_DISPLAY_MAX = { "displayMax":true};
 AceTextEditor.OPTION_SET_DISPLAY_SOME = { "displayMax":false};
 
 //configuration constants
-let MAX_MAX_LINES = 500;
-let DEFAULT_MAX_LINES = 20;
-let DEFAULT_MIN_LINES = 2;
+AceTextEditor.SIZE_COMMAND_INFO = {
+    default: 15,
+    min: 2,
+    max: 100,
+    increment: 1
+}

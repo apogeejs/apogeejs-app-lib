@@ -122,10 +122,12 @@ const JsonPlusComponentConfig = {
             sourceLayer: "model",
             sourceType: "data",
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
+            getViewModeElement: (component,showing,size) => <VanillaViewModeElement
 				component={component}
 				getDataDisplay={getDataDataDisplay}
-				showing={showing} />
+				showing={showing}
+                size={size} />,
+            sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")

@@ -32,9 +32,6 @@ export default class HandsonGridEditor extends DataDisplay {
        //we have to make sure the element is loaded before initailizing for handsontable to work properly
        this.loaded = false;
 
-        //set variables for internal display view sizing
-        this.setUseContainerHeightUi(true)
-
         //we will use a listener to see when the page is resized
         // let app = this.displayContainer.getComponentView().getApp();
         // this.frameWidthListener = () => this.onFrameWidthResize();

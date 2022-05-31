@@ -95,17 +95,13 @@ const JsonComponentConfig = {
             sourceType: "data",
             suffix: "",
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
+            getViewModeElement: (component,showing,size) => <VanillaViewModeElement
 				component={component}
 				getDataDisplay={() => getDataViewDisplay(component)}
-				showing={showing} />,
+				showing={showing} 
+                size={size} />,
             getViewStatusElement: (component) => <DataViewStatusElement component={component} />,
-            sizeCommandInfo: {
-                default: 15,
-                min: 2,
-                max: 100,
-                increment: 1
-            }
+            sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")  

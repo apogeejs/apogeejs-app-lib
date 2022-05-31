@@ -141,7 +141,7 @@ export default class DataDisplay {
         //}
 
         //reshow old data
-        this.dataDisplay.showData();
+        this.showData();
         this.endEditMode();
     }
 
@@ -203,36 +203,17 @@ export default class DataDisplay {
     // following API to interact with the display
     //----------------------------
 
-    /** This function is called to see if the container should provide a view height UI, if the container supports it. */
-    getUseContainerHeightUi() {
-        return this.useContainerHeightUi;
-    }
+    // NOTE: DOCUMENT THE SIZE API. Example of info UI needs below from text editor
+    // SIZE_COMMAND_INFO = {
+    //     default: 15,
+    //     min: 2,
+    //     max: 100,
+    //     increment: 1
+    // }
 
-    /** This sets the variable that determines if the container will provide a height adjustment UI. The default value is false. */
-    setUseContainerHeightUi(useContainerHeightUi) {
-        this.useContainerHeightUi = useContainerHeightUi;
-    }
+    //setSize(size)
 
-    /** This is called if the show less button is pressed, if container height UI is in use */
-    //showLess();
-
-    /** This is called if the show more button is pressed, if container height UI is in use */
-    //showMore();
-
-    /** This is called if the show max button is pressed, if container height UI is in use */
-    //showMax();
-
-    /** This method controlsthe visibility options for the resize buttons. These will only be called if 
-     * resize is enabled for this data display (if container height UI is in use)
-     * Flags:
-     * - DATA_DISPLAY_CONSTANTS.RESIZE_SHOW_FLAG = 1; (if not set this hides all buttons)
-     * - DATA_DISPLAY_CONSTANTS.RESIZE_MODE_MAX_FLAG = 2; (if not set the mode is SOME, if set the mode is MAX)
-     * - DATA_DISPLAY_CONSTANTS.RESIZE_DISABLE_LESS_FLAG = 4; (disables the less button, if it is showing)
-     * - DATA_DISPLAY_CONSTANTS.RESIZE_DISABLE_MORE_FLAG = 8; (disables the more button, if it is showing)
-     * - DATA_DISPLAY_CONSTANTS.RESIZE_DISABLE_MAX_FLAG = 16; (disables the max button, if it is showing)
-     * These flags should be or'ed togethder to give the allowed options.
-    */
-    //getHeightAdjustFlags();
+    //getSize()
 
     //=============================
     // protected, package and private Methods

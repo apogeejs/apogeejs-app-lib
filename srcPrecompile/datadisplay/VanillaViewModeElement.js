@@ -1,6 +1,6 @@
 import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js"
 
-export default function VanillaViewModeElement({component,getDataDisplay,showing}) {
+export default function VanillaViewModeElement({component,getDataDisplay,showing,size}) {
 
     //Store previous "showing" value (maybe in data display too?)
     let wasShowingRef = React.useRef(false)
@@ -19,6 +19,10 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     //set edit mode state
     let [editMode,setEditMode] = React.useState(false)
     dataDisplay.setEditModeState(editMode,setEditMode)
+
+    if((size)&&(dataDisplay.setSize)) {
+        dataDisplay.setSize(size)
+    }
 
     //update if the component changes
     if(dataDisplay.getComponent() != component) { 
