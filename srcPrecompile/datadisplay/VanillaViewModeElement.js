@@ -99,12 +99,12 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
         <div >
             {showMsgBar ? <div>{msgText}</div> : ''}
             {editMode ?
-                <div>
+                <div className="visiui_displayContainer_saveBarContainerClass">
+                    Edit: 
                     <button type="button" onClick={onSave}>Save</button>
-                    <button type="button" onClick={onCancel}>Cancel</button>
+                    <button  type="button" onClick={onCancel}>Cancel</button>
                 </div> : ''}
             {hideDisplay ? '' : <div ref={viewRef} className="visiui_displayContainer_viewContainerClass"/>}
         </div>
     )
 }
-
