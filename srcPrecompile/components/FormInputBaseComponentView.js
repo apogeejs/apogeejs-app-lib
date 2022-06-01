@@ -1,6 +1,7 @@
 
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 import { FormResultFunctionGenerator } from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 
@@ -26,18 +27,15 @@ function _getInputFormDataSource(getFormLayout) {
         },
         getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.formData"),
         getEditOk: () => true,
-        saveData: (formData,component) => _onSubmit(component,formData)
+        saveData: (formData,component,dataDisplay) => _onSubmit(component,formData,dataDisplay)
     }
 }
 
 /** This method saves the form result converted to a function body that handles expression inputs.
  * This is saved to the formula for the member object. */
-function _onSubmit(component, formData) {
+function _onSubmit(component, formData, formEditor) {
     //load the form meta - we have to look it up from the data display (this is a little clumsy)
     let formMeta;
-    //FIX THIS!!!/////////////////////
-    let formEditor = componentHolder.getDataDisplay()
-    //////////////////////////////////
     if(formEditor) {
         formMeta = formEditor.getFormMeta();
     }
@@ -102,6 +100,9 @@ export function getConfigViewModeEntry(getFormLayout,optionalAlternateLabel) {
         name: VIEW_INPUT,
         label: optionalAlternateLabel ? optionalAlternateLabel : "Configuration",
         isActive: true,
-        getDataDisplay: () => _getFormDataDisplay(getFormLayout)
+        getViewModeElement: (component,showing) => <VanillaViewModeElement
+                component={component}
+                getDataDisplay={() => _getFormDataDisplay(getFormLayout)}
+                showing={showing} />
     }
 }

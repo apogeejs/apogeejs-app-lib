@@ -5,15 +5,15 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
  * 
  * @param {type} displayContainer - this is the ui container that will show the display
  * @param {type} dataSource - the dataSource for the editor. It is an object with the following functions:
- *  - {reloadDataDisplay, reloadData} = doUpdate() - Required - This function updates the component instance
+ *  - {reloadDataDisplay, reloadData} = doUpdate(component) - Required - This function updates the component instance
  *      held by the data source and it returns to boolean values, "reloadDataDisplay", which indicates is the data display should 
  *      be reloaded (such as if it is replaced with a new data display or if the UI elements for it have been updated) and
  *      "reloadData" which indicates the data value displayed in the data display should be reloaded.  
- *  - data = getData() - Required - This returns model data that should be displayed. The format of the data depends on the 
+ *  - data = getData(component) - Required - This returns model data that should be displayed. The format of the data depends on the 
  *      data display. If the data is not valid, then the value apogeeutil.INVALID_VALUE should be returned.
- *  - editOk = getEditOk() - Optional - If present, this indicates if the data display edit mode should be used. If it is not present
+ *  - editOk = getEditOk(component) - Optional - If present, this indicates if the data display edit mode should be used. If it is not present
  *      it is assumed to be false.
- *  - closeDialog = saveData(data) - Optional This is used if the data display edit mode is used. It should save the data. The return value
+ *  - closeDialog = saveData(data,component,dataDisplay) - Optional This is used if the data display edit mode is used. It should save the data. The return value
  *      should be true if the edit operation should be concluded. It should return false if there is a save failure such that you want to 
  *      stay in edit mode.
  *  - (other) - Optional - Data displays may define additional functions as needed for their implmentations. Examples where this is done in in the custom
@@ -111,7 +111,7 @@ export default class DataDisplay {
 
             if(this.dataSource.saveData) {
                 try {
-                    saveComplete = this.dataSource.saveData(data,this.component);
+                    saveComplete = this.dataSource.saveData(data,this.component,this);
                 }
                 catch(error) {
                     if(error.stack) console.error(error.stack);

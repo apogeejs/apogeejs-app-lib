@@ -56,7 +56,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
             let newContentElement = dataDisplay.getContent()
             parent.appendChild(newContentElement)
 
-            dataDisplay.onLoad()
+            if(dataDisplay.onLoad) dataDisplay.onLoad()
             dataDisplay.showData()
         }
         else if(reloadData) {
@@ -76,7 +76,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     const viewRef = React.useRef()
     React.useEffect(() => {
         viewRef.current.appendChild(dataDisplay.getContent())
-        dataDisplay.onLoad()
+        if(dataDisplay.onLoad) dataDisplay.onLoad()
 
         //cleanup function
         return () => {
