@@ -1,11 +1,151 @@
 import DataDisplay from "/apogeejs-app-lib/src/datadisplay/DataDisplay.js";
 import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
+
+export default function StandardErrorElement({component, showing}) {
+    //do something better if there is not an error
+    if(component.getState() != apogeeutil.STATE_ERROR) {
+        return <div>NOT AN ERROR!</div>
+    }
+
+    let errorInfoList = component.getErrorInfoList();
+
+    return (
+        <div className="errorDisplay_main">
+            {errorInfoList.map(errorInfo => _getErrorInfoElement(errorInfo))}
+        </div>
+    )
+}
+
+
+function _getErrorInfoElement(errorInfo) {
+    switch(errorInfo.type) {
+        case "multiMember":
+            return <MultiMemberErrorElement errorInfo={errorInfo} />
+
+        case "dependency":
+            return <DependencyErrorElement errorInfo={errorInfo} />
+
+        default:
+            return <GeneralErrorElement errorInfo={errorInfo} />
+    }
+}
+
+function MultiMemberErrorElement({errorInfo}) {
+    return (
+        <>
+            {errorInfo.memberEntries.map( memberData => {
+                return (
+                    <>
+                        <div>memberData.name</div>
+                        {memberData.errorInfoList.map(errorInfo => _getErrorInfoElement(errorInfo))}
+                    </>
+                )
+            })}
+        </>
+    )
+
+}
+
+function DependencyErrorElement({errorInfo}) {
+    if((errorInfo.dependsOnErrorList)&&(errorInfo.dependsOnErrorList.length > 0)) {
+        let msgPrefix = (errorInfo.dependsOnErrorList.length === 1) ? "Error in dependency: " : "Error in dependencies: "
+        let dependencyNameString = errorInfo.dependsOnErrorList.map( dependsOnEntry => dependsOnEntry.name).join(", ") 
+        return (
+            <div>{msgPrefix}{dependencyNameString}</div>
+        )
+    }
+    else {
+        return ''
+    }
+}
+
+function GeneralErrorElement({errorInfo}) {
+    let elements = []
+    if(errorInfo.description) elements.push(<ErrorDescriptionElement description={errorInfo.description} />)
+    if(errorInfo.errors) elements.push(<ErrorCodeErrorsElement codeErrors={errorInfo.errors} />)
+    if(errorInfo.stack) elements.push(<ErrorStackElement stackTrace={errorInfo.stack} />)
+    if(errorInfo.memberTrace) elements.push(<ErrorMemberTraceElement memberTrace={errorInfo.memberTrace} />)
+    if(errorInfo.code) elements.push(<ErrorCodeElement code={errorInfo.code} />)
+
+    if(elements.length > 0) {
+        return <>{elements}</>
+    }
+    else {
+        return ''
+    }
+}
+
+function ErrorDescriptionElement({description}) {
+    return (
+        <div className="errorDisplay_descriptionSectionDiv">{description}</div>
+    )
+}
+
+function ErrorCodeErrorsElement({codeErrors}) {
+    return (
+        <div>IMPLEMENT CODE ERRORS ELEMENT!</div>
+    )
+}
+
+function ErrorStackElement({stackTrace}) {
+    return (
+        <div className="errorDisplay_sectionDiv">
+            <div className="errorDisplay_sectionHeadingDiv1">Stack Trace</div>
+            <pre className="errorDisplay_stackTraceDiv">{stackTrace}</pre>
+        </div>
+    )
+}
+
+function ErrorMemberTraceElement({memberTrace}) {
+    return (
+        <div>IMPLEMENT MEMBER TRACE ELEMENT!</div>
+    )
+}
+
+function ErrorCodeElement({code}) {
+    return (
+        <div className="errorDisplay_sectionDiv">
+            <div className="errorDisplay_sectionHeadingDiv1">Code</div>
+            <CodeElement code={code} />
+        </div>
+    )
+}
+
+function CodeElement({code}) {
+
+    //split code into lines, each will be numbered
+    let lineArray = code.split("\n");
+
+    //-------------------
+    //this is a clumsy way of adjusting the number line gutter for longer code
+    //but I am not sure how I should do this.
+    //if the code is longer then 10000 then they have to deal with the line numbers going outside the gutter for now.
+    if((lineArray.length > 99)&&(lineArray.length < 1000)) {
+        container.classList.add("errorDisplay_codeSection errorDisplay_longCode");
+    }
+    else if(lineArray.length > 1000) {
+        container.classList.add("errorDisplay_codeSection errorDisplay_veryLongCode");
+    }
+    else {
+        className = "errorDisplay_codeSection"
+    }
+    //-------------------
+
+    return (
+        <pre className={className}>
+            {lineArray.map(line => <code>{line}\n</code>)}
+        </pre>
+    );
+}
+    
+
+
 /** Standard Error display.
  * 
  * @param {type} dataSource - {doUpdate,getData,getEditOk,setData}; format for data is text
  */
-export default class StandardErrorDisplay extends DataDisplay {
+export /*default*/ class StandardErrorDisplay extends DataDisplay {
     
     constructor(dataSource) {
         super(dataSource);
@@ -42,36 +182,52 @@ export default class StandardErrorDisplay extends DataDisplay {
 // Error Info Elements
 //===================================
 
-function _processList(errorInfoDiv,errorInfoList) {
-    errorInfoList.forEach(errorInfo => {
-        switch(errorInfo.type) {
-            case "esprimaParseError":
-                _addEsprimseParseError(errorInfoDiv,errorInfo);
-                break;
 
-            case "javascriptParseError":
-                _addJavascriptParseError(errorInfoDiv,errorInfo);
-                break;
+// function _processList(errorInfoDiv,errorInfoList) {
+//     errorInfoList.forEach(errorInfo => {
+//         switch(errorInfo.type) {
+//             case "esprimaParseError":
+//                 _addEsprimseParseError(errorInfoDiv,errorInfo);
+//                 break;
 
-            case "runtimeError":
-                _addRuntimeError(errorInfoDiv,errorInfo);
-                break;
+//             case "javascriptParseError":
+//                 _addJavascriptParseError(errorInfoDiv,errorInfo);
+//                 break;
 
-            case "multiMember":
-                _addMultiMemberError(errorInfoDiv,errorInfo);
-                break;
+//             case "runtimeError":
+//                 _addRuntimeError(errorInfoDiv,errorInfo);
+//                 break;
 
-            case "dependency":
-                _addDependencyError(errorInfoDiv,errorInfo);
-                break;
+//             case "multiMember":
+//                 _addMultiMemberError(errorInfoDiv,errorInfo);
+//                 break;
+
+//             case "dependency":
+//                 _addDependencyError(errorInfoDiv,errorInfo);
+//                 break;
             
 
-            default:
-                //for now we will print other errors too
-                _addOtherError(errorInfoDiv,errorInfo);
-        }
-    });
+//             default:
+//                 //for now we will print other errors too
+//                 _addOtherError(errorInfoDiv,errorInfo);
+//         }
+//     });
+// }
+
+function _getErrorInfoElements(errorInfo) {
+    let elements = []
+    if(errorInfo.description) elements.push(_getDescriptionElement(errorInfo.description))
+    if(errorInfo.errors) elements.push(_getErrorsElement(errorInfo.errors))
+    if(errorInfo.stack) elements.push(_getStackElement(errorInfo.stack))
+    if(errorInfo.memberTrace) elements.push(_getMemberTraceElement(errorInfo.memberTrace))
+    if(errorInfo.code) elements.push(_getCodeElement(errorInfo.code))
+
+    return elements
 }
+
+
+
+
 
 function _addEsprimseParseError(errorInfoDiv,errorInfo) {
     if(errorInfo.description) _addMainDescription(errorInfoDiv,errorInfo.description);
