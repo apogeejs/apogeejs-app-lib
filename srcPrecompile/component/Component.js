@@ -58,18 +58,6 @@ export default class Component extends FieldObject {
     // Public Instance Methods
     //==============================
 
-    /////////////////////////////
-    // TEMPORARY
-    getStatus() {
-        return "normal"
-    }
-
-    getStatusMessage() {
-        return ""
-    }
-
-    //////////////////////////////
-
     //--------------------------
     // Accessors and convencience functions
     //--------------------------
@@ -122,6 +110,29 @@ export default class Component extends FieldObject {
     /** This method returns the stsate of the main member. */
     getState() {
         return this.getField("member").getState()
+    }
+
+    getStateMessage() {
+        let stateStruct = this.getField("errorInfo")
+
+        if((stateStruct)&&(stateStruct.msg)) return stateStruct.msg
+        else return ""
+    }
+
+
+    beforeLock() {
+        let state = this.getState()
+        if(state == apogeeutil.STATE_ERROR) {
+            this.setField("errorInfo",this._createErrorInfo())
+        }
+        else {
+            this.clearField("errorInfo")
+        }
+    }
+
+    /** TEMPIORARY - this is making the error info list ib the fly. Later we should make and cache it, I think. */
+    getErrorInfo() {
+        return this.getField("errorInfo")
     }
 
     /** This method returns the name of the component. To see if the value has been updated, check 
@@ -191,10 +202,7 @@ export default class Component extends FieldObject {
         return this.isMemberFieldUpdated("member","state");
     }
 
-    /** TEMPIORARY - this is making the error info list ib the fly. Later we should make and cache it, I think. */
-    getErrorInfoList() {
-        return this._constructErrorInfo()
-    }
+    
 
     /** This gets the map of members in this component. The key is the member ID and
      * the value is the stored name for the component. */
@@ -639,73 +647,63 @@ export default class Component extends FieldObject {
     
     /** This constructs the error info for the component. It should be called when 
      * the component is in the error state. */
-     _constructErrorInfo() {
-        let errorInfoList;
-        let bannerMessage;
+     _createErrorInfo() {
+        let errorInfo
 
-        let memberFieldMap = this.getMemberFieldMap();
-        let memberDataList = [];
-        let memberCount = 0;
+        let memberFieldMap = this.getMemberFieldMap()
+        let memberDataList = []
+        let memberCount = 0
         //get the error info for the member(s) for their component
         for(let id in memberFieldMap) {
-            let lookupName = memberFieldMap[id];
-            let member = this.getField(lookupName);
-            memberCount++;
-            let memberError = member.getError();
+            let lookupName = memberFieldMap[id]
+            let member = this.getField(lookupName)
+            memberCount++
+            let memberError = member.getError()
             if(memberError) {
-                let memberData = {};
-                let saveError;
-                memberData.name = member.getName();
+                let memberData = {}
+                let saveError
+                memberData.type = memberError.type
+                memberData.name = member.getName()
+                memberData.memberID = member.getId()
                 if(memberError.isDependsOnError) {
                     //for a dependency error, we remove mention of depends on error that are internal
                     //to the component, keeping only depends on errors from external member
-                    let {hasError, msg, errorInfoList} = this._processDependencyError(memberError, memberFieldMap);
-                    saveError = hasError;
-                    memberData.msg = msg;
-                    if(errorInfoList) memberData.errorInfoList = errorInfoList;
+                    let {hasError, msg, errorInfoList} = this._processDependencyError(memberError, memberFieldMap)
+                    saveError = hasError
+                    memberData.msg = msg
+                    if(errorInfoList) memberData.errorInfoList = errorInfoList
                 }
                 else {
-                    memberData.msg = memberError.message ? memberError.message : memberError.toString();
-                    if(memberError.errorInfoList) memberData.errorInfoList = memberError.errorInfoList;
-                    saveError = true;
+                    memberData.msg = memberError.message ? memberError.message : memberError.toString()
+                    if(memberError.errorInfoList) memberData.errorInfoList = memberError.errorInfoList
+                    saveError = true
                 }
                 
-                if(saveError) memberDataList.push(memberData);
+                if(saveError) memberDataList.push(memberData)
             }   
         }
 
         if(memberDataList.length > 0) {
             if(memberCount == 1) {
-                //single member component
-                let memberData = memberDataList[0];
-                bannerMessage = memberData.msg;
-                errorInfoList = memberData.errorInfoList ? memberData.errorInfoList : [];
+                //single member error
+                errorInfo = memberDataList[0]
             }
             else {
-                //compond component (multi member)
-                bannerMessage = memberDataList.map( memberData => memberData.name + ": " + memberData.msg).join("; ");
-                let multiMemberErrorInfo = {};
-                multiMemberErrorInfo.type = "multiMember";
-                multiMemberErrorInfo.memberEntries = [];
-                //collect existing error info lists
-                memberDataList.forEach( memberData => {
-                    if((memberData.errorInfoList)&&(memberData.errorInfoList.length > 0)) {
-                        multiMemberErrorInfo.memberEntries.push({
-                            name: memberData.name,
-                            errorInfoList: memberData.errorInfoList
-                        })
-                    }
-                })
-                if(multiMemberErrorInfo.memberEntries.length > 0) errorInfoList = [multiMemberErrorInfo]
-                else this.errorInfoList = [];
+                errorInfo = {
+                    type: "multiMember",
+                    msg: memberDataList.map(memberData =>  memberData.name + ": " + memberData.msg).join("\n"),
+                    memberErrorList: memberDataList
+                }
             }
         }
         else {
-            bannerMessage = "Unknown Error";
+            errorInfo = {
+                type: "unknownError",
+                msg: "Unknown Error"
+            }
         }
 
-        //bannerMessage not currently used here
-        return errorInfoList;
+        return errorInfo
     }
 
     /** For dependency errors, we will get rid of an error reference where the dependency is on another
@@ -717,21 +715,20 @@ export default class Component extends FieldObject {
             let dependencyErrorInfo = memberError.errorInfoList.find(entry => entry.type == "dependency");
             if(dependencyErrorInfo) {
                 //dependency error info - keep any member reference that is not an internal member
-                let newDependsOnErrorList = dependencyErrorInfo.dependsOnErrorList.filter( dependsOnEntry => (memberFieldMap[dependsOnEntry.id] === undefined) );
+                errorInfoList = dependencyErrorInfo.dependsOnErrorList.filter( dependsOnEntry => (memberFieldMap[dependsOnEntry.id] === undefined) );
                 // let newErrorInfo = {
                 //     type: "dependency",
                 //     dependsOnErrorList: newDependsOnErrorList
                 // }
-                if(newDependsOnErrorList.length > 0) {
+                if(errorInfoList.length > 0) {
                     hasError = true;
                     //update message to give depends on members in error
-                    let msgPrefix = (newDependsOnErrorList.length === 1) ? "Error in dependency: " : "Error in dependencies: ";
-                    msg = msgPrefix + newDependsOnErrorList.map(dependsOnEntry => dependsOnEntry.name).join(", ")
+                    let msgPrefix = (errorInfoList.length === 1) ? "Error in dependency: " : "Error in dependencies: ";
+                    msg = msgPrefix + errorInfoList.map(dependsOnEntry => dependsOnEntry.name).join(", ")
                 }
             }
         }
         //we do not keep the error info list. All data is shown in the message.
-        errorInfoList = [];
         return {hasError, msg, errorInfoList};
     }
 }

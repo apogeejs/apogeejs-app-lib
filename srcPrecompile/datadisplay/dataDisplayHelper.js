@@ -259,7 +259,7 @@ dataDisplayHelper.getWrappedMemberData = function(component,memberFieldName,opti
                     wrappedData.data = apogeeutil.INVALID_VALUE;
                 }
                 wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR;
-                wrappedData.message = "Error in value: " + member.getErrorMsg();
+                wrappedData.message = "Error: " + member.getErrorMsg();
                 break;
 
             case apogeeutil.STATE_PENDING:

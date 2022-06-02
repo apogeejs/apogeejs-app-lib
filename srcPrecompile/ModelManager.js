@@ -1,6 +1,7 @@
 import { Model, doAction } from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 import componentInfo from "/apogeejs-app-lib/src/componentConfig.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
 /** This class manages the user interface for a model object. */
 export default class ModelManager extends FieldObject {
@@ -39,11 +40,11 @@ export default class ModelManager extends FieldObject {
 
     /////////////////////////////
     // TEMPORARY
-    getStatus() {
-        return "normal"
+    getState() {
+        return apogeeutil.STATE_NORMAL
     }
 
-    getStatusMessage() {
+    getStateMessage() {
         return ""
     }
 

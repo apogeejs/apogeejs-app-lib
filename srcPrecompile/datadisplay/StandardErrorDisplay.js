@@ -5,39 +5,49 @@ import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 export default function StandardErrorElement({component, showing}) {
     //do something better if there is not an error
     if(component.getState() != apogeeutil.STATE_ERROR) {
-        return <div>NOT AN ERROR!</div>
+        return <div>No error</div>
     }
-
-    let errorInfoList = component.getErrorInfoList();
 
     return (
         <div className="errorDisplay_main">
-            {errorInfoList.map(errorInfo => _getErrorInfoElement(errorInfo))}
+            {_getErrorInfoElement(component.getErrorInfo())}
         </div>
     )
 }
 
 
 function _getErrorInfoElement(errorInfo) {
-    switch(errorInfo.type) {
-        case "multiMember":
-            return <MultiMemberErrorElement errorInfo={errorInfo} />
+    if(!errorInfo) {
+        //we should not be showing error display in this case
+        return <EmptyExtendedErrorElement />
+    }
 
-        case "dependency":
-            return <DependencyErrorElement errorInfo={errorInfo} />
-
-        default:
-            return <GeneralErrorElement errorInfo={errorInfo} />
+    if(errorInfo.type == "multiMember") {
+        return <MultiMemberErrorElement errorInfo={errorInfo} />
+    }
+    else if((errorInfo.errorInfoList)&&(errorInfo.errorInfoList.length > 0)) {
+        return <>
+            {errorInfo.errorInfoList.map(errorInfo => <GeneralErrorElement errorInfo={errorInfo} />)}
+        </>
+    }
+    else {
+        //we should not be showing error display in this case
+        return <EmptyExtendedErrorElement />
     }
 }
 
 function MultiMemberErrorElement({errorInfo}) {
+    if((!errorInfo.memberErrorList)||(errorInfo.memberErrorList.length == 0)) {
+        //we should not show error display in this case
+        return <EmptyExtendedErrorElement />
+    }
+
     return (
         <>
-            {errorInfo.memberEntries.map( memberData => {
+            {errorInfo.memberErrorList.map( memberData => {
                 return (
                     <>
-                        <div>memberData.name</div>
+                        <div className="errorDisplay_sectionHeadingDiv2">{memberData.name}</div>
                         {memberData.errorInfoList.map(errorInfo => _getErrorInfoElement(errorInfo))}
                     </>
                 )
@@ -45,19 +55,6 @@ function MultiMemberErrorElement({errorInfo}) {
         </>
     )
 
-}
-
-function DependencyErrorElement({errorInfo}) {
-    if((errorInfo.dependsOnErrorList)&&(errorInfo.dependsOnErrorList.length > 0)) {
-        let msgPrefix = (errorInfo.dependsOnErrorList.length === 1) ? "Error in dependency: " : "Error in dependencies: "
-        let dependencyNameString = errorInfo.dependsOnErrorList.map( dependsOnEntry => dependsOnEntry.name).join(", ") 
-        return (
-            <div>{msgPrefix}{dependencyNameString}</div>
-        )
-    }
-    else {
-        return ''
-    }
 }
 
 function GeneralErrorElement({errorInfo}) {
@@ -69,22 +66,53 @@ function GeneralErrorElement({errorInfo}) {
     if(errorInfo.code) elements.push(<ErrorCodeElement code={errorInfo.code} />)
 
     if(elements.length > 0) {
-        return <>{elements}</>
+        return <div className="errorDisplay_sectionDiv">{elements}</div>
     }
     else {
+        //We would like this not to happen
         return ''
     }
 }
 
+function EmptyExtendedErrorElement() {
+    return (
+        <div className="errorDisplay_sectionDiv">
+            <div className="errorDisplay_sectionHeadingDiv3">No extended error info available</div>
+        </div>
+    )
+}
+
 function ErrorDescriptionElement({description}) {
     return (
-        <div className="errorDisplay_descriptionSectionDiv">{description}</div>
+        <div className="errorDisplay_sectionDiv">
+            <div className="errorDisplay_descriptionSectionDiv">{description}</div>
+        </div>
     )
 }
 
 function ErrorCodeErrorsElement({codeErrors}) {
     return (
-        <div>IMPLEMENT CODE ERRORS ELEMENT!</div>
+        <div className="errorDisplay_sectionDiv">
+            {codeErrors.map(codeError => {
+                return (
+                    <>
+                        {codeError.description ? <div key="description" className="errorDisplay_sectionHeadingDiv2">{codeError.description}</div> : ''}
+                        {codeError.lineNumber ? <div key="lineNumber" className="errorDispaly_sectionLabelLineDiv">
+                                <span className="errorDisplay_sectionLineLabelSpan">Line Number: </span>
+                                <span className="errorDisplay_sectionLineTextSpan">{codeError.lineNumber}</span>
+                            </div> : ''}
+                        {codeError.column ? <div key="column" className="errorDispaly_sectionLabelLineDiv">
+                                <span className="errorDisplay_sectionLineLabelSpan">Column: </span>
+                                <span className="errorDisplay_sectionLineTextSpan">{codeError.column}</span>
+                            </div> : ''}
+                        {codeError.index ? <div key="index" className="errorDispaly_sectionLabelLineDiv">
+                                <span className="errorDisplay_sectionLineLabelSpan">Index: </span>
+                                <span className="errorDisplay_sectionLineTextSpan">{codeError.index}</span>
+                            </div> : ''}
+                    </>
+                )
+            })}
+        </div>
     )
 }
 
@@ -98,8 +126,22 @@ function ErrorStackElement({stackTrace}) {
 }
 
 function ErrorMemberTraceElement({memberTrace}) {
+    if(!Array.isArray(memberTrace)) {
+        return ''
+    }
+
     return (
-        <div>IMPLEMENT MEMBER TRACE ELEMENT!</div>
+        <div className="errorDisplay_sectionDiv">
+            <div className="errorDisplay_sectionHeadingDiv1">Member Code</div>
+            {memberTrace.map(memberEntry => {
+                return (
+                    <>
+                        {memberEntry.name ? <div key="description" className="errorDisplay_sectionHeadingDiv2">{memberEntry.name}</div> : ''}
+                        {memberEntry.code ? <CodeElement code={memberEntry.code} /> : ''}
+                    </>
+                )
+            })}
+        </div>
     )
 }
 
@@ -117,15 +159,16 @@ function CodeElement({code}) {
     //split code into lines, each will be numbered
     let lineArray = code.split("\n");
 
+    let className
     //-------------------
     //this is a clumsy way of adjusting the number line gutter for longer code
     //but I am not sure how I should do this.
     //if the code is longer then 10000 then they have to deal with the line numbers going outside the gutter for now.
     if((lineArray.length > 99)&&(lineArray.length < 1000)) {
-        container.classList.add("errorDisplay_codeSection errorDisplay_longCode");
+        className = "errorDisplay_codeSection errorDisplay_longCode"
     }
     else if(lineArray.length > 1000) {
-        container.classList.add("errorDisplay_codeSection errorDisplay_veryLongCode");
+        className = "errorDisplay_codeSection errorDisplay_veryLongCode"
     }
     else {
         className = "errorDisplay_codeSection"
@@ -134,7 +177,7 @@ function CodeElement({code}) {
 
     return (
         <pre className={className}>
-            {lineArray.map(line => <code>{line}\n</code>)}
+            {lineArray.map(line => <code>{line + '\n'}</code>)}
         </pre>
     );
 }

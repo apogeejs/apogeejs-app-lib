@@ -1,5 +1,6 @@
 
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
 /** This class manages links and other reference entries, loading the references and
  * creating the UI tree elements for display of the references.
@@ -50,8 +51,8 @@ export default class ReferenceManager extends FieldObject {
     }
 
     /** FIX THIS */
-    getStatus() {
-        return "normal"
+    getState() {
+        return apogeeutil.STATE_NORMAL
     }
 
     //====================================

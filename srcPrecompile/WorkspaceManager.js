@@ -1,6 +1,7 @@
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 
 import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
+import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 import ReferenceManager from "/apogeejs-app-lib/src/references/ReferenceManager.js";
@@ -59,11 +60,11 @@ export default class WorkspaceManager extends FieldObject {
 
     /////////////////////////////
     // TEMPORARY
-    getStatus() {
-        return "normal"
+    getState() {
+        return apogeeutil.STATE_NORMAL
     }
 
-    getStatusMessage() {
+    getStateMessage() {
         return ""
     }
 

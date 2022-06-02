@@ -60,148 +60,156 @@ export default class CommandManager {
         }
         this.commandInProgress = true;
 
-        //get a mutable workspace manager instance
-        let oldWorkspaceManager = this.app.getWorkspaceManager();
-        let newWorkspaceManager;
-        if(oldWorkspaceManager) {
-            newWorkspaceManager = oldWorkspaceManager.getMutableWorkspaceManager();
-        }
-        else if(command.type == "openWorkspace") {
-            //only command to run with no active workspace
-            //instantiate a new empty workspace manager
-            newWorkspaceManager = this.app.createWorkspaceManager();
-        }
-        else {
-            //no workspace to run command on
-            this.commandInProgress = false;
-            console.log("No workspace for command: " + command.type);
-            return;
-        }
+        try {
 
-        var commandObject = CommandManager.getCommandObject(command.type);
-        let undoCommand;
-        let description;
-
-        let undoError = false;
-        let undoErrorMsg;
-        let commandError = false;
-        let commandErrrorMsg;
-
-        if(commandObject) {
-            //create the undo command - handle this error separately from command error
-            try {
-                //create undo command before doing command (since it may depend on current state)
-                if((!suppressFromHistory)&&(commandObject.createUndoCommand)) {   
-                    undoCommand = commandObject.createUndoCommand(newWorkspaceManager,command);  
-                }
-
+            //get a mutable workspace manager instance
+            let oldWorkspaceManager = this.app.getWorkspaceManager();
+            let newWorkspaceManager;
+            if(oldWorkspaceManager) {
+                newWorkspaceManager = oldWorkspaceManager.getMutableWorkspaceManager();
             }
-            catch(error) {
-                if(error.stack) console.error(error.stack);
-
-                undoError = true;
-                undoErrorMsg = error.toString();
-            }
-
-            //execute the command
-            try {
-                //read the desrition (this needs to be improved)
-                description = commandObject.commandInfo.type;
-
-                //execute the command
-                //makeUndo,exeComRetVal are temporary!!!
-                let makeUndo = ((!suppressFromHistory)||(!undoCommand));
-                let exeComRetVal = commandObject.executeCommand(newWorkspaceManager,command,makeUndo);
-
-                ///////////////////////////////////////////
-                //temporary - execute command return logic
-                if((exeComRetVal)&&(!undoCommand)) {
-                    undoCommand = exeComRetVal;
-                }
-            }
-            catch(error) {
-                if(error.stack) console.error(error.stack);
-
-                commandError = true;
-                commandErrrorMsg = error.toString();
-            }
-        }
-        else {
-            commandError = true;
-            commandErrrorMsg = "Command type not found: " + command.type;
-        }
-
-        //--------------------------
-        // Accept or reject update
-        //--------------------------
-
-        //if the command succceeded, update the workspace manager instance
-        let commandDone;
-        if(!commandError) {
-            //success - commit accept change - set (or clear) the workspace
-            if(newWorkspaceManager.getIsClosed()) {
-                this.app.clearWorkspaceManager();
-                newWorkspaceManager.getRunContextLink().setStateValid(false);
+            else if(command.type == "openWorkspace") {
+                //only command to run with no active workspace
+                //instantiate a new empty workspace manager
+                newWorkspaceManager = this.app.createWorkspaceManager();
             }
             else {
-                this.app.setWorkspaceManager(newWorkspaceManager);
-                newWorkspaceManager.getRunContextLink().setStateValid(true);
+                //no workspace to run command on
+                this.commandInProgress = false;
+                console.log("No workspace for command: " + command.type);
+                return;
             }
 
-            //add to history if the command was done and there is an undo command
-            if(undoCommand) {   
-                this.commandHistory.addToHistory(undoCommand,command,description);
-            }
+            var commandObject = CommandManager.getCommandObject(command.type);
+            let undoCommand;
+            let description;
 
-            //fire events!!
-            let changeMap = newWorkspaceManager.getChangeMap();
-            let changeList = this._changeMapToChangeList(changeMap);
+            let undoError = false;
+            let undoErrorMsg;
+            let commandError = false;
+            let commandErrrorMsg;
 
-            newWorkspaceManager.lockAll();
+            if(commandObject) {
+                //create the undo command - handle this error separately from command error
+                try {
+                    //create undo command before doing command (since it may depend on current state)
+                    if((!suppressFromHistory)&&(commandObject.createUndoCommand)) {   
+                        undoCommand = commandObject.createUndoCommand(newWorkspaceManager,command);  
+                    }
 
-            this._publishEvents(changeList);
+                }
+                catch(error) {
+                    if(error.stack) console.error(error.stack);
 
-            if(undoError) {
-                //process an error on creating the history - clear the current history
-                this.commandHistory.clearHistory();
-                apogeeUserAlert("The command was succesful but there was an error in the history. Undo is not available. Error: " + undoErrorMsg);
-            }
-
-            commandDone = true;
-        }
-        else {
-            //mark run context as invalid
-            newWorkspaceManager.getRunContextLink().setStateValid(false);
-
-            //We want to update the state of any event listeners back to the state
-            //before the failed calculation. For example, any failed code updates shoul
-            //be cleared.
-            try {
-                if(oldWorkspaceManager) {
-                    let changeMapAll = oldWorkspaceManager.getChangeMapAll();
-                    let changeListAll = this._changeMapToChangeList(changeMapAll);
-
-                    this._publishEvents(changeListAll);
+                    undoError = true;
+                    undoErrorMsg = error.toString();
                 }
 
-                //failure - keep the old workspace 
-                apogeeUserAlert("Command failed: " + commandErrrorMsg);
+                //execute the command
+                try {
+                    //read the desrition (this needs to be improved)
+                    description = commandObject.commandInfo.type;
+
+                    //execute the command
+                    //makeUndo,exeComRetVal are temporary!!!
+                    let makeUndo = ((!suppressFromHistory)||(!undoCommand));
+                    let exeComRetVal = commandObject.executeCommand(newWorkspaceManager,command,makeUndo);
+
+                    ///////////////////////////////////////////
+                    //temporary - execute command return logic
+                    if((exeComRetVal)&&(!undoCommand)) {
+                        undoCommand = exeComRetVal;
+                    }
+                }
+                catch(error) {
+                    if(error.stack) console.error(error.stack);
+
+                    commandError = true;
+                    commandErrrorMsg = error.toString();
+                }
             }
-            catch(error) {
-                //failure - and we couldn't clean up the UI! 
-                //hopefully this won't happen
-                let FAILED_COMMAND_AND_UI_ECOVERY_MSG = "Command failed and internal changes were undone. " +
-                    "HOWEVER, the display improper values becuase of a failed UI update! " +
-                    "(1) If the error is limited to pages, you can close all pages and it should be cleared when they reopen. " +
-                    "(2) You can try saving. The problems shoudl be cleared when the workspae is reopened.";
-                    apogeeUserAlert(FAILED_COMMAND_AND_UI_ECOVERY_MSG);
+            else {
+                commandError = true;
+                commandErrrorMsg = "Command type not found: " + command.type;
             }
 
-            commandDone = false;
+            //--------------------------
+            // Accept or reject update
+            //--------------------------
+
+            //if the command succceeded, update the workspace manager instance
+            let commandDone;
+            if(!commandError) {
+                //success - commit accept change - set (or clear) the workspace
+                if(newWorkspaceManager.getIsClosed()) {
+                    this.app.clearWorkspaceManager();
+                    newWorkspaceManager.getRunContextLink().setStateValid(false);
+                }
+                else {
+                    this.app.setWorkspaceManager(newWorkspaceManager);
+                    newWorkspaceManager.getRunContextLink().setStateValid(true);
+                }
+
+                //add to history if the command was done and there is an undo command
+                if(undoCommand) {   
+                    this.commandHistory.addToHistory(undoCommand,command,description);
+                }
+
+                //fire events!!
+                let changeMap = newWorkspaceManager.getChangeMap();
+                let changeList = this._changeMapToChangeList(changeMap);
+
+                newWorkspaceManager.lockAll();
+
+                this._publishEvents(changeList);
+
+                if(undoError) {
+                    //process an error on creating the history - clear the current history
+                    this.commandHistory.clearHistory();
+                    apogeeUserAlert("The command was succesful but there was an error in the history. Undo is not available. Error: " + undoErrorMsg);
+                }
+
+                commandDone = true;
+            }
+            else {
+                //mark run context as invalid
+                newWorkspaceManager.getRunContextLink().setStateValid(false);
+
+                //We want to update the state of any event listeners back to the state
+                //before the failed calculation. For example, any failed code updates shoul
+                //be cleared.
+                try {
+                    if(oldWorkspaceManager) {
+                        let changeMapAll = oldWorkspaceManager.getChangeMapAll();
+                        let changeListAll = this._changeMapToChangeList(changeMapAll);
+
+                        this._publishEvents(changeListAll);
+                    }
+
+                    //failure - keep the old workspace 
+                    apogeeUserAlert("Command failed: " + commandErrrorMsg);
+                }
+                catch(error) {
+                    //failure - and we couldn't clean up the UI! 
+                    //hopefully this won't happen
+                    let FAILED_COMMAND_AND_UI_ECOVERY_MSG = "Command failed and internal changes were undone. " +
+                        "HOWEVER, the display improper values becuase of a failed UI update! " +
+                        "(1) If the error is limited to pages, you can close all pages and it should be cleared when they reopen. " +
+                        "(2) You can try saving. The problems shoudl be cleared when the workspae is reopened.";
+                        apogeeUserAlert(FAILED_COMMAND_AND_UI_ECOVERY_MSG);
+                }
+
+                commandDone = false;
+            }
+
+            this.commandInProgress = false;
+            return commandDone;
         }
-
-        this.commandInProgress = false;
-        return commandDone;
+        catch(error) {
+            apogeeUserAlert("Unkonwn failure in command");
+            this.commandInProgress = false;
+            return false;
+        }
     }
 
     /** This method returns true if a command is in process.  */
