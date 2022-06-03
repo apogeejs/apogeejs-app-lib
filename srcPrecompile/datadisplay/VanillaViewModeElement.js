@@ -27,19 +27,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     //update if the component changes
     if(dataDisplay.getComponent() != component) { 
         dataDisplay.setComponent(component)
-        let {reloadData,reloadDataDisplay,removeView} = dataDisplay.doUpdate();
-
-        //NEED TO PUT THIS BACK IN
-        //set the remove view flag
-        // let removeViewBool = removeView ? true : false; //account for no removeView returned
-        // if(removeViewBool != this.isViewRemoved) {
-        //     this.isViewRemoved = removeViewBool;
-        //     this._updateViewState();
-        // }
-        // else if(this.isViewRemoved) {
-        //     //if we are still removed, skip further procsseing
-        //     return;
-        // }
+        let {reloadData,reloadDataDisplay} = dataDisplay.doUpdate();
 
         if(reloadDataDisplay) {
             //this will also reload data
@@ -90,6 +78,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     //render the display
     const msgText = dataDisplay.getMessage()
     const showMsgBar = dataDisplay.getMessageType() != DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+    let msgBarStyle = getMessageBarStyle(dataDisplay.getMessageType())
     const hideDisplay = dataDisplay.getHideDisplay()
 
     const onSave = () => dataDisplay.save()
@@ -97,7 +86,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
 
     return (
         <div >
-            {showMsgBar ? <div>{msgText}</div> : ''}
+            {showMsgBar ? <div className={msgBarStyle} >{msgText}</div> : ''}
             {editMode ?
                 <div className="visiui_displayContainer_saveBarContainerClass">
                     Edit: 
@@ -107,4 +96,22 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
             {hideDisplay ? '' : <div ref={viewRef} className="visiui_displayContainer_viewContainerClass"/>}
         </div>
     )
+}
+
+function getMessageBarStyle(messageType) {
+
+    switch(messageType) {
+        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR:
+            return "visiui_displayContainer_messageContainerClass visiui_displayContainer_messageError"
+
+        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_WARNING:
+            return "visiui_displayContainer_messageContainerClass visiui_displayContainer_messageWarning"
+
+        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO:
+            return "visiui_displayContainer_messageContainerClass visiui_displayContainer_messageInfo"
+
+        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE:
+        default:
+            return "visiui_displayContainer_messageContainerClass"
+    }
 }

@@ -233,50 +233,54 @@ dataDisplayHelper.getWrappedMemberData = function(component,memberFieldName,opti
     let member = component.getField(memberFieldName);
     let wrappedData = {};
     if(member.getState() != apogeeutil.STATE_NORMAL) {
+
+        wrappedData.data = apogeeutil.INVALID_VALUE;
+        wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO;
+        wrappedData.message = "Data Unavailable";
         
-        switch(member.getState()) {
-            case apogeeutil.STATE_ERROR: 
-                //check if there is valueData on the error object, in which case we may be able to include it.
-                let error = member.getError();
-                if((error)&&(error.valueData)) {
-                    //there is a substitute value
-                    //only process json, which is what we expect this to hold
-                    if(error.valueData.nominalType == MIME_TYPE_JSON) {
-                        if(options.stringify) {
-                            if(error.valueData.stringified) {
-                                wrappedData.data = error.valueData.value;
-                            }
-                            else {
-                                wrappedData.data = _stringifyJsonData(error.valueData.value);
-                            }
-                        }
-                        else {
-                            wrappedData.data = error.valueData.value;
-                        }
-                    }
-                }
-                else {
-                    wrappedData.data = apogeeutil.INVALID_VALUE;
-                }
-                wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR;
-                wrappedData.message = "Error: " + member.getErrorMsg();
-                break;
+        // switch(member.getState()) {
+        //     case apogeeutil.STATE_ERROR: 
+        //         //check if there is valueData on the error object, in which case we may be able to include it.
+        //         let error = member.getError();
+        //         if((error)&&(error.valueData)) {
+        //             //there is a substitute value
+        //             //only process json, which is what we expect this to hold
+        //             if(error.valueData.nominalType == MIME_TYPE_JSON) {
+        //                 if(options.stringify) {
+        //                     if(error.valueData.stringified) {
+        //                         wrappedData.data = error.valueData.value;
+        //                     }
+        //                     else {
+        //                         wrappedData.data = _stringifyJsonData(error.valueData.value);
+        //                     }
+        //                 }
+        //                 else {
+        //                     wrappedData.data = error.valueData.value;
+        //                 }
+        //             }
+        //         }
+        //         else {
+        //             wrappedData.data = apogeeutil.INVALID_VALUE;
+        //         }
+        //         wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR;
+        //         wrappedData.message = "Error: " + member.getErrorMsg();
+        //         break;
 
-            case apogeeutil.STATE_PENDING:
-                wrappedData.data = apogeeutil.INVALID_VALUE;
-                wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO;
-                wrappedData.message = "Value pending!";
-                break;
+        //     case apogeeutil.STATE_PENDING:
+        //         wrappedData.data = apogeeutil.INVALID_VALUE;
+        //         wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO;
+        //         wrappedData.message = "Value pending!";
+        //         break;
 
-            case apogeeutil.STATE_INVALID:
-                wrappedData.data = apogeeutil.INVALID_VALUE;
-                wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO;
-                wrappedData.message = "Value invalid!";
-                break;
+        //     case apogeeutil.STATE_INVALID:
+        //         wrappedData.data = apogeeutil.INVALID_VALUE;
+        //         wrappedData.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO;
+        //         wrappedData.message = "Value invalid!";
+        //         break;
 
-            default:
-                throw new Error("Unknown display data value state!")
-        }
+        //     default:
+        //         throw new Error("Unknown display data value state!")
+        // }
 
         wrappedData.hideDisplay = (wrappedData.data === apogeeutil.INVALID_VALUE);
     }
