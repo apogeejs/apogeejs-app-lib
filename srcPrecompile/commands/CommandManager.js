@@ -206,6 +206,7 @@ export default class CommandManager {
             return commandDone;
         }
         catch(error) {
+            if(error.stack) console.error(error.stack)
             apogeeUserAlert("Unkonwn failure in command");
             this.commandInProgress = false;
             return false;

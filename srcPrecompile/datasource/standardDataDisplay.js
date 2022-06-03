@@ -1,6 +1,6 @@
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
-import StandardErrorElement from "/apogeejs-app-lib/src/datadisplay/StandardErrorDisplay.js";
+import {StandardErrorElement,isErrorElementRemoved} from "/apogeejs-app-lib/src/datadisplay/StandardErrorDisplay.js";
 import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
@@ -14,7 +14,8 @@ export function getErrorViewModeEntry() {
         isActive: false,
         isTransient: true,
         isErrorView: true,
-        getViewModeElement: (component,showing) => <StandardErrorElement component={component} showing={showing} />
+        getViewModeElement: (component,showing) => <StandardErrorElement component={component} showing={showing} />,
+        isViewRemoved: isErrorElementRemoved
     }
 }
 

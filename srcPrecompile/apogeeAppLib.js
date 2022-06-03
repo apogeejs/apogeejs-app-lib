@@ -18,7 +18,7 @@ export {default as DATA_DISPLAY_CONSTANTS} from "/apogeejs-app-lib/src/datadispl
 export {default as ErrorDisplay} from "/apogeejs-app-lib/src/datadisplay/ErrorDisplay.js";
 export {default as HandsonGridEditor} from "/apogeejs-app-lib/src/datadisplay/HandsonGridEditor.js";
 export {default as HtmlJsDataDisplay} from "/apogeejs-app-lib/src/datadisplay/HtmlJsDataDisplay.js";
-export {default as StandardErrorDisplay} from "/apogeejs-app-lib/src/datadisplay/StandardErrorDisplay.js";
+export {StandardErrorElement,isErrorElementRemoved} from "/apogeejs-app-lib/src/datadisplay/StandardErrorDisplay.js";
 
 export {default as ace} from "/apogeejs-releases/releases/ext/ace/v1.4.12/ace.es.js";
 

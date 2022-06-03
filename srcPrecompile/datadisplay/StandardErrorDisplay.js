@@ -2,7 +2,34 @@ import DataDisplay from "/apogeejs-app-lib/src/datadisplay/DataDisplay.js";
 import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 
-export default function StandardErrorElement({component, showing}) {
+/** This function determines if there is (not) extended error information to display. */
+export function isErrorElementRemoved(component) {
+    if(component.getState() == apogeeutil.STATE_ERROR) {
+        let extendedErrorInfoPresent = false;
+        const errorInfo = component.getErrorInfo()
+        if(errorInfo) {
+            //check for detail in error info
+            if(errorInfo.multiMember) {
+                extendedErrorInfoPresent = ((errorInfo.memberErrorList) &&
+                    (errorInfo.memberErrorList.some(memberErrorInfo => isExtendedInfoInMemberErrorInfo(memberErrorInfo))))
+            }
+            else {
+                extendedErrorInfoPresent = isExtendedInfoInMemberErrorInfo(errorInfo)
+            }
+        }
+        return !extendedErrorInfoPresent
+    }
+    else {
+        //no error info present
+        return true
+    }
+}
+
+function isExtendedInfoInMemberErrorInfo(memberErrorInfo) {
+    return ((memberErrorInfo.errorInfoList)&&(memberErrorInfo.errorInfoList.length > 0))
+} 
+
+export function StandardErrorElement({component, showing}) {
     //do something better if there is not an error
     if(component.getState() != apogeeutil.STATE_ERROR) {
         return <div>No error</div>
@@ -22,7 +49,7 @@ function _getErrorInfoElement(errorInfo) {
         return <EmptyExtendedErrorElement />
     }
 
-    if(errorInfo.type == "multiMember") {
+    if(errorInfo.multiMember) {
         return <MultiMemberErrorElement errorInfo={errorInfo} />
     }
     else if((errorInfo.errorInfoList)&&(errorInfo.errorInfoList.length > 0)) {
@@ -45,12 +72,18 @@ function MultiMemberErrorElement({errorInfo}) {
     return (
         <>
             {errorInfo.memberErrorList.map( memberData => {
-                return (
-                    <>
-                        <div className="errorDisplay_sectionHeadingDiv2">{memberData.name}</div>
-                        {memberData.errorInfoList.map(errorInfo => _getErrorInfoElement(errorInfo))}
-                    </>
-                )
+                if(memberData.errorInfoList) {
+                    return (
+                        <>
+                            <div className="errorDisplay_sectionHeadingDiv2">{memberData.name}</div>
+                            {memberData.errorInfoList.map(errorInfo => _getErrorInfoElement(errorInfo))}
+                        </>
+                    )
+                }
+                else {
+                    //no info for this member (if all are empty we should not display error data)
+                    ''
+                }
             })}
         </>
     )

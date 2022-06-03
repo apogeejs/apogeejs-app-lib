@@ -107,16 +107,22 @@ export default class Component extends FieldObject {
         return this.getField("member").getId();
     }
 
-    /** This method returns the stsate of the main member. */
+    /** This method returns the state of the main member (which is also inherited from child members) */
     getState() {
         return this.getField("member").getState()
     }
 
+    /** This gets an error message, if we are in the error state. */
     getStateMessage() {
         let stateStruct = this.getField("errorInfo")
 
         if((stateStruct)&&(stateStruct.msg)) return stateStruct.msg
         else return ""
+    }
+
+    /** This method gets additional detail information on the error if we are in the error state. */
+    getErrorInfo() {
+        return this.getField("errorInfo")
     }
 
 
@@ -129,12 +135,7 @@ export default class Component extends FieldObject {
             this.clearField("errorInfo")
         }
     }
-
-    /** TEMPIORARY - this is making the error info list ib the fly. Later we should make and cache it, I think. */
-    getErrorInfo() {
-        return this.getField("errorInfo")
-    }
-
+    
     /** This method returns the name of the component. To see if the value has been updated, check 
      * the component field name "member" and the member field name "name".
      */
@@ -662,16 +663,15 @@ export default class Component extends FieldObject {
             if(memberError) {
                 let memberData = {}
                 let saveError
-                memberData.type = memberError.type
                 memberData.name = member.getName()
                 memberData.memberID = member.getId()
                 if(memberError.isDependsOnError) {
                     //for a dependency error, we remove mention of depends on error that are internal
                     //to the component, keeping only depends on errors from external member
-                    let {hasError, msg, errorInfoList} = this._processDependencyError(memberError, memberFieldMap)
+                    let {hasError, msg, dependencyList} = this._processDependencyError(memberError, memberFieldMap)
                     saveError = hasError
                     memberData.msg = msg
-                    if(errorInfoList) memberData.errorInfoList = errorInfoList
+                    if(dependencyList) memberData.dependencyList = dependencyList
                 }
                 else {
                     memberData.msg = memberError.message ? memberError.message : memberError.toString()
@@ -690,7 +690,7 @@ export default class Component extends FieldObject {
             }
             else {
                 errorInfo = {
-                    type: "multiMember",
+                    multiMember: true,
                     msg: memberDataList.map(memberData =>  memberData.name + ": " + memberData.msg).join("\n"),
                     memberErrorList: memberDataList
                 }
@@ -709,27 +709,27 @@ export default class Component extends FieldObject {
     /** For dependency errors, we will get rid of an error reference where the dependency is on another
      * member that is in this same component. We want our error display to only show external errors */
     _processDependencyError(memberError, memberFieldMap) {
-        let msg, errorInfoList;
-        let hasError = false;
+        let msg, dependencyList
+        let hasError = false
         if(memberError.errorInfoList){
             let dependencyErrorInfo = memberError.errorInfoList.find(entry => entry.type == "dependency");
             if(dependencyErrorInfo) {
                 //dependency error info - keep any member reference that is not an internal member
-                errorInfoList = dependencyErrorInfo.dependsOnErrorList.filter( dependsOnEntry => (memberFieldMap[dependsOnEntry.id] === undefined) );
+                dependencyList = dependencyErrorInfo.dependsOnErrorList.filter( dependsOnEntry => (memberFieldMap[dependsOnEntry.id] === undefined) );
                 // let newErrorInfo = {
                 //     type: "dependency",
                 //     dependsOnErrorList: newDependsOnErrorList
                 // }
-                if(errorInfoList.length > 0) {
+                if(dependencyList.length > 0) {
                     hasError = true;
                     //update message to give depends on members in error
-                    let msgPrefix = (errorInfoList.length === 1) ? "Error in dependency: " : "Error in dependencies: ";
-                    msg = msgPrefix + errorInfoList.map(dependsOnEntry => dependsOnEntry.name).join(", ")
+                    let msgPrefix = (dependencyList.length === 1) ? "Error in dependency: " : "Error in dependencies: ";
+                    msg = msgPrefix + dependencyList.map(dependsOnEntry => dependsOnEntry.name).join(", ")
                 }
             }
         }
         //we do not keep the error info list. All data is shown in the message.
-        return {hasError, msg, errorInfoList};
+        return {hasError, msg, dependencyList};
     }
 }
 
