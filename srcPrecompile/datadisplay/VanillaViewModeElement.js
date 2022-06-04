@@ -80,6 +80,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     const showMsgBar = dataDisplay.getMessageType() != DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
     let msgBarStyle = getMessageBarStyle(dataDisplay.getMessageType())
     const hideDisplay = dataDisplay.getHideDisplay()
+    const styleData = hideDisplay ? {display: "none"} : {}
 
     const onSave = () => dataDisplay.save()
     const onCancel = () => dataDisplay.cancel()
@@ -93,7 +94,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
                     <button type="button" onClick={onSave}>Save</button>
                     <button  type="button" onClick={onCancel}>Cancel</button>
                 </div> : ''}
-            {hideDisplay ? '' : <div ref={viewRef} className="visiui_displayContainer_viewContainerClass"/>}
+            {<div ref={viewRef} className="visiui_displayContainer_viewContainerClass" style={styleData}/>}
         </div>
     )
 }
