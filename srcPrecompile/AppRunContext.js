@@ -28,18 +28,37 @@ export default class AppRunContext {
             
         return null;
     }
+    //also add this.inProcessModel = null to the constructor
 
-    futureExecuteAction(modelId,actionData) {
+    setInProcessModel(model) {
+        this.inProcessModel = model
+    }
+
+    // do we need these? -----
+    acceptInProcessModel() {
+        this.inProcessModel = null
+    }
+
+    clearInProcessModel() {
+        this.inProcessModel = null
+    }
+    //----------------------------
+
+    getCurrentModel() {
+        return this.inProcessModel ? this.inProcessModel : this.getConfirmedModel()
+    }
+
+    futureExecuteAction(actionData) {
         //if this context instance is not active, ignore command
-        if(!this.getIsActive()) return;
+        if(!this.getIsActive()) return
 
         //create a command to run this action
-        let modelActionCommand = {};
-        modelActionCommand.type = "futureModelActionCommand";
-        modelActionCommand.modelId = modelId;
-        modelActionCommand.action = actionData;
+        let modelActionCommand = {}
+        modelActionCommand.type = "futureModelActionCommand"
+        modelActionCommand.modelId = this.getCurrentModel().getId()
+        modelActionCommand.action = actionData
 
-        this.app.executeCommand(modelActionCommand);
+        this.app.executeCommand(modelActionCommand)
     }
 
 
