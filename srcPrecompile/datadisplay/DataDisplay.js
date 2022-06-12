@@ -24,7 +24,6 @@ export default class DataDisplay {
         this.component = null
         this.dataSource = dataSource ? dataSource : {};
         this.editOk = false;
-        this.displayValid = true; //default this to true, so simple displays don't need to use it
 
         this.setEditMode = undefined
         this.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
@@ -222,16 +221,9 @@ export default class DataDisplay {
     //=============================
     // protected, package and private Methods
     //=============================
-
-    /** This method should be called when the underlying display is loaded, indicating if it is 
-     * valid or if it should not be used. */
-    setDisplayValid(displayValid) {
-        this.displayValid = displayValid;
-    }
 	
     /** This method udpates the data in the data display, reading it from the underlying data source. */
     updateData() {
-        if(!this.displayValid) return;
 
         //get edit ok
         if(this.dataSource.getEditOk) {
