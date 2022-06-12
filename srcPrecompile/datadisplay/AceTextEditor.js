@@ -82,7 +82,10 @@ export default class AceTextEditor extends DataDisplay {
         }
         
         if(this.cachedDisplayData) {
-            this.setData(this.cachedDisplayData);
+            //this.setData(this.cachedDisplayData);
+            //NEW TEST
+            this.updateData(this.cachedDisplayData)
+            this.showDisplay()
         }
         
         //enter edit mode on change to the data
@@ -114,7 +117,48 @@ export default class AceTextEditor extends DataDisplay {
         return this.inputData; 
     }
     
-    setData(text) {
+    // setData(text) {
+    //     if(this.destroyed) return;
+
+    //     this.inputData = text;
+    //     this.cachedDisplayData = text;
+    //     this.dataError = false;
+
+    //     //The data source should give a text value "" if the data in invalid rather than sending
+    //     //in a json, but we will do this check anyway.
+    //     if(text == apogeeutil.INVALID_VALUE) {
+    //         //clear the display
+    //         this.cachedDisplayData = "";
+    //         //the dispaly shoudl be hidden, but do it again anyway
+
+    //         this.setHideDisplay(true);
+    //         this.dataError = true;
+    //     }
+    //     else if(!apogeeutil.isString(text)) {
+    //         this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in editor: value is not text")
+    //         this.setHideDisplay(true);
+    //         //clear the display
+    //         this.cachedDisplayData = "";
+    //         this.dataError = true;
+    //     }
+        
+    //     //place ineditor, if it is present
+    //     if(this.editor) {
+    //         this.editor.getSession().setValue(this.cachedDisplayData);
+
+    //         //set the edit mode and background color
+    //         if(this.editOk) {
+    //             this.editorDiv.style.backgroundColor = "";
+    //             this.editor.setReadOnly(false);
+    //         }
+    //         else {
+    //             this.editorDiv.style.backgroundColor = DATA_DISPLAY_CONSTANTS.NO_EDIT_BACKGROUND_COLOR;
+    //             this.editor.setReadOnly(true);
+    //         }
+    //     }
+    // }
+
+    internalUpdateData(text) {
         if(this.destroyed) return;
 
         this.inputData = text;
@@ -138,6 +182,10 @@ export default class AceTextEditor extends DataDisplay {
             this.cachedDisplayData = "";
             this.dataError = true;
         }
+    }
+
+    showDisplay() {
+        if(this.destroyed) return;
         
         //place ineditor, if it is present
         if(this.editor) {

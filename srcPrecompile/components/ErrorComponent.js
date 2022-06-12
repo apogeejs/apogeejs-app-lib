@@ -34,10 +34,7 @@ const ErrorComponentConfig = {
             name: "ComponentError",
             label: "Component Error",
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
-                component={component}
-                getDataDisplay={() => new ErrorDisplay(false)}
-                showing={showing} />
+            getViewModeElement: (component,showing) => <div style={{"color":"red", "font-weight":"bold"}}>ERROR - Component not loaded!</div>
         }
     ],
     iconResPath: "/icons3/errorCellIcon.png"

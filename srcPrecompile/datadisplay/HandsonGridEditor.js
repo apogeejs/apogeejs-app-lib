@@ -61,7 +61,7 @@ export default class HandsonGridEditor extends DataDisplay {
         return this.inputData;
     }
     
-    setData(json) {
+    internalUpdateData(json) {
 
         if((this.inputData === json)&&(this.editOk)) return;
 
@@ -84,7 +84,9 @@ export default class HandsonGridEditor extends DataDisplay {
             this.cachedDisplayData = [[]];
             this.dataError = true;
         }
+    }
 
+    showDisplay() {
         if(this.loaded) {
             this.displayData();
         }
@@ -175,67 +177,76 @@ export default class HandsonGridEditor extends DataDisplay {
     // following API to interact with the display
     //----------------------------
 
-    /** This is called if the show less button is pressed */
-    showLess() {
-        if((this.destroyed)||(!this.gridControl)) return;
-
-        let newPixelHeight;
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
-            //decrease up to the min size
-            newPixelHeight = this.savedPixelHeight - DELTA_PIXEL_HEIGHT;
-            if(newPixelHeight < MIN_PIXEL_HEIGHT) newPixelHeight = MIN_PIXEL_HEIGHT;   
-        }
-        else {
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
-            newPixelHeight = this.cachedSomeModePixelHeight;
-        }
-
-        this.cachedSomeModePixelHeight = newPixelHeight;
-        this.updateHeight(newPixelHeight);
+    setSize(size) {
+        this.cachedSomeModePixelHeight = size;
+        this.updateHeight(size);
     }
 
-    /** This is called if the show more button is pressed */
-    showMore() {
-        if((this.destroyed)||(!this.gridControl)) return;
-
-        let newPixelHeight;
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
-            ///decrease up to the min size
-            newPixelHeight = this.savedPixelHeight + DELTA_PIXEL_HEIGHT;
-            if(newPixelHeight > MAX_PIXEL_HEIGHT) newPixelHeight = MAX_PIXEL_HEIGHT;
-        }
-        else {
-            //put in some mode and keep max lines the same (the UI probably won't allow this command though)
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
-            newPixelHeight = MAX_PIXEL_HEIGHT;
-        }
-
-        this.cachedSomeModePixelHeight = newPixelHeight;
-        this.updateHeight(newPixelHeight);
+    getSize() {
+        return this.cachedSomeModePixelHeight
     }
 
-    /** This is called if the show max button is pressed */
-    showMax() {
-        if((this.destroyed)||(!this.gridControl)) return;
+    // /** This is called if the show less button is pressed */
+    // showLess() {
+    //     if((this.destroyed)||(!this.gridControl)) return;
 
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
-            this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX;
-            this.updateHeight(MAX_PIXEL_HEIGHT);
-        }
-    }
+    //     let newPixelHeight;
+    //     if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
+    //         //decrease up to the min size
+    //         newPixelHeight = this.savedPixelHeight - DELTA_PIXEL_HEIGHT;
+    //         if(newPixelHeight < MIN_PIXEL_HEIGHT) newPixelHeight = MIN_PIXEL_HEIGHT;   
+    //     }
+    //     else {
+    //         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
+    //         newPixelHeight = this.cachedSomeModePixelHeight;
+    //     }
 
-    /** This method controlsthe visibility options for the resize buttons. These will only work if 
-     * resize is enabled for this data display. */
-    getHeightAdjustFlags() {
-        let flags = 0;
-        flags |= DATA_DISPLAY_CONSTANTS.RESIZE_SHOW_FLAG;
-        if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX) {
-            flags |= DATA_DISPLAY_CONSTANTS.RESIZE_MODE_MAX_FLAG;
-        }
+    //     this.cachedSomeModePixelHeight = newPixelHeight;
+    //     this.updateHeight(newPixelHeight);
+    // }
 
-        //for now we won't disable any buttons - pressing them will just do nothing
-        return flags;
-    }
+    // /** This is called if the show more button is pressed */
+    // showMore() {
+    //     if((this.destroyed)||(!this.gridControl)) return;
+
+    //     let newPixelHeight;
+    //     if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
+    //         ///decrease up to the min size
+    //         newPixelHeight = this.savedPixelHeight + DELTA_PIXEL_HEIGHT;
+    //         if(newPixelHeight > MAX_PIXEL_HEIGHT) newPixelHeight = MAX_PIXEL_HEIGHT;
+    //     }
+    //     else {
+    //         //put in some mode and keep max lines the same (the UI probably won't allow this command though)
+    //         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
+    //         newPixelHeight = MAX_PIXEL_HEIGHT;
+    //     }
+
+    //     this.cachedSomeModePixelHeight = newPixelHeight;
+    //     this.updateHeight(newPixelHeight);
+    // }
+
+    // /** This is called if the show max button is pressed */
+    // showMax() {
+    //     if((this.destroyed)||(!this.gridControl)) return;
+
+    //     if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME) {
+    //         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX;
+    //         this.updateHeight(MAX_PIXEL_HEIGHT);
+    //     }
+    // }
+
+    // /** This method controlsthe visibility options for the resize buttons. These will only work if 
+    //  * resize is enabled for this data display. */
+    // getHeightAdjustFlags() {
+    //     let flags = 0;
+    //     flags |= DATA_DISPLAY_CONSTANTS.RESIZE_SHOW_FLAG;
+    //     if(this.resizeHeightMode == DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_MAX) {
+    //         flags |= DATA_DISPLAY_CONSTANTS.RESIZE_MODE_MAX_FLAG;
+    //     }
+
+    //     //for now we won't disable any buttons - pressing them will just do nothing
+    //     return flags;
+    // }
 
 //==============================
 // Private Methods

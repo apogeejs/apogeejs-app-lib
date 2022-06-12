@@ -2,10 +2,8 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 
 export default function VanillaViewModeElement({component,getDataDisplay,showing,size}) {
 
-    //Store previous "showing" value (maybe in data display too?)
-    let wasShowingRef = React.useRef(false)
-    const madeVisible = (showing != wasShowingRef.current)
-    wasShowingRef.current = showing
+    //this is just for debugging
+    let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
 
     //Get the mutable object for the vanilla javascript display
     let vanillaRef = React.useRef(null)
@@ -13,16 +11,30 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     if(!dataDisplay) {
         dataDisplay = getDataDisplay(component)
         dataDisplay.setComponent(component)
+
+        //NEW CODE TEST
+        dataDisplay.updateData()
+
         vanillaRef.current = dataDisplay     
     }
 
-    //set edit mode state
-    let [editMode,setEditMode] = React.useState(false)
-    dataDisplay.setEditModeState(editMode,setEditMode)
+    //manage adding and removing the vanilla display element
+    const viewRef = React.useRef()
 
-    if((size)&&(dataDisplay.setSize)) {
-        dataDisplay.setSize(size)
-    }
+    //edit state, for external edit bar
+    let [editMode,setEditMode] = React.useState(false)
+
+    let [showDataVersion,setShowDataVersion] = React.useState(0)
+    let [reloadDataDisplayVersion,setReloadDataDisplayVersion] = React.useState(0)
+    let activeShowDataVersion = showDataVersion
+    let activeReloadDataDisplayVersion = reloadDataDisplayVersion
+    
+    //-----------------
+    // Manage the data display wrapper
+    //-----------------
+
+    //set edit mode state
+    dataDisplay.setEditModeState(editMode,setEditMode)
 
     //update if the component changes
     if(dataDisplay.getComponent() != component) { 
@@ -30,52 +42,37 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
         let {reloadData,reloadDataDisplay} = dataDisplay.doUpdate();
 
         if(reloadDataDisplay) {
-            //this will also reload data
-            let oldContentElement = dataDisplay.getContent()
-            let parent = oldContentElement.parent
-            parent.removeChild(oldContentElement)
-
-            if(dataDisplay.onUnload) dataDisplay.onUnload()
-            if(dataDisplay.destroy) dataDisplay.destroy()
-
+            //NEED TO HANDLE EDIT MODE!!!
+            //create a new data display
             dataDisplay = getDataDisplay(component)
+            dataDisplay.setComponent(component) //WHY ISNT THIS IN THE AOBVE FUNCTION?
+            vanillaRef.current = dataDisplay
+
+            //set edit mode state
             dataDisplay.setEditModeState(editMode,setEditMode)
 
-            let newContentElement = dataDisplay.getContent()
-            parent.appendChild(newContentElement)
+            //NEW CODE TEST
+            dataDisplay.updateData()
 
-            if(dataDisplay.onLoad) dataDisplay.onLoad()
-            dataDisplay.showData()
+            activeShowDataVersion = showDataVersion + 1
+            setShowDataVersion(activeShowDataVersion) //make this repeat after a certain value?
+            activeReloadDataDisplayVersion = reloadDataDisplayVersion + 1
+            setReloadDataDisplayVersion(activeReloadDataDisplayVersion) //make this repeat after a certain value?
+            
         }
         else if(reloadData) {
             //only update data in display if we are not in edit mode
             if(!dataDisplay.isInEditMode()) {
-                dataDisplay.showData()
+
+                //NEW CODE TEST
+                dataDisplay.updateData()
+
+                activeShowDataVersion = showDataVersion + 1
+                setShowDataVersion(activeShowDataVersion)
             }
         }
     }
-    else if(madeVisible) {
-        //I think we need to do this because of react internal logic - refresh display if we are made visible 
-        //(other wise it seems changes made while not visible are not kept)
-        dataDisplay.showData()
-    }
 
-    //manage adding and removing the vanilla display element
-    const viewRef = React.useRef()
-    React.useEffect(() => {
-        viewRef.current.appendChild(dataDisplay.getContent())
-        if(dataDisplay.onLoad) dataDisplay.onLoad()
-
-        //cleanup function
-        return () => {
-            //figure out how this should work - load unload
-            if(dataDisplay.onUnload) dataDisplay.onUnload()
-            if(dataDisplay.destroy) dataDisplay.destroy()
-        }
-
-    },[])
-    
-    //render the display
     const msgText = dataDisplay.getMessage()
     const showMsgBar = dataDisplay.getMessageType() != DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
     let msgBarStyle = getMessageBarStyle(dataDisplay.getMessageType())
@@ -84,6 +81,42 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
 
     const onSave = () => dataDisplay.save()
     const onCancel = () => dataDisplay.cancel()
+
+    console.log(`render: identifier: ${identifier} hideDisplay: ${hideDisplay} msgText: ${msgText} instance#: ${component.instanceNumber}`)
+
+    //---------------
+    //manage the vanilla display element
+    //---------------
+
+    //add/remove data display content
+    React.useEffect(() => {
+        //set the new data display
+        viewRef.current.appendChild(dataDisplay.getContent())
+        if(dataDisplay.onLoad) dataDisplay.onLoad()
+
+        //cleanup old data display
+        return () => {
+            viewRef.current.removeChild(dataDisplay.getContent())
+            if(dataDisplay.onUnload) dataDisplay.onUnload()
+            if(dataDisplay.destroy) dataDisplay.destroy()
+        }
+
+    },[activeReloadDataDisplayVersion])
+
+    //update data display content
+    React.useEffect(() => {
+        console.log(`render: identifier: ${identifier} hideDisplay: ${hideDisplay} msgText: ${msgText} instance#: ${component.instanceNumber}`)
+        dataDisplay.showDisplay()
+    },[activeShowDataVersion,showing,hideDisplay])
+
+    //udpate display size
+    React.useEffect(() => {
+        if(dataDisplay.setSize) dataDisplay.setSize(size)
+    },[size])
+
+    //---------------
+    // Render react element
+    //---------------
 
     return (
         <div >

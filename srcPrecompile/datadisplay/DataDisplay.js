@@ -168,6 +168,10 @@ export default class DataDisplay {
     
     //this sets the data into the editor display. REQUIRED if edit mode or save is used
     //setData(data) {}
+
+    //TESTING
+    //internalUpdateData
+    //showDisplay
     
     //this method is called on loading the display. OPTIONAL
     //onLoad() {}
@@ -226,7 +230,7 @@ export default class DataDisplay {
     }
 	
     /** This method udpates the data in the data display, reading it from the underlying data source. */
-    showData() {
+    updateData() {
         if(!this.displayValid) return;
 
         //get edit ok
@@ -239,7 +243,7 @@ export default class DataDisplay {
 
         //update the display data
         let dataResult = this.dataSource.getData(this.component)
-        this.hideDisplay = (this.hideDisplay === true) 
+        this.hideDisplay = (this.dataSource.hideDisplay === true) 
         if(dataResult.messageType) {
             this.messageType = dataResult.messageType
             this.message = dataResult.message
@@ -248,8 +252,10 @@ export default class DataDisplay {
             this.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
             this.message = ""
         }
-        this.setData(dataResult.data)
+        this.internalUpdateData(dataResult.data)
     }
+
+    //showDisplay
 
     /** @protected */
     endEditMode() {

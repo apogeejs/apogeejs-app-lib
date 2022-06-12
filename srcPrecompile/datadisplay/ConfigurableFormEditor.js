@@ -16,7 +16,7 @@ export default class ConfigurableFormEditor extends DataDisplay {
      *  }
      */
     constructor(dataSource) {
-        super(dataSource);
+        super(dataSource)
 
         //TEMP - to raise the z index
         // let domElement = this.displayContainer.getDisplayElement();
@@ -25,23 +25,26 @@ export default class ConfigurableFormEditor extends DataDisplay {
         // }
         
         //construct the display
-        this.panel = new ConfigurablePanel();
+        this.panel = new ConfigurablePanel()
 
         //get data and handle invalid display
         if(this.dataSource.getDisplayData) {
-            let dataResult = this.dataSource.getDisplayData();
+            let dataResult = this.dataSource.getDisplayData()
             if(dataResult.hideDisplay) {
                 //display invalid! hide display and show message
-                this.setHideDisplay(dataResult.hideDisplay);
-                this.setMessage(dataResult.messageType,dataResult.message);
-                this.setDisplayValid(false);
+                this.setHideDisplay(dataResult.hideDisplay)
+                this.setMessage(dataResult.messageType,dataResult.message)
+                this.formCreated = false
             }
             else {
                 //display display valid
-                this.panel.configureForm(dataResult.data);
-                this.panel.addOnInput( formValue => this.onFormInput(formValue));
-                this.setDisplayValid(true);
+                this.panel.configureForm(dataResult.data)
+                this.panel.addOnInput( formValue => this.onFormInput(formValue))
+                this.formCreated = false
             }
+        }
+        else {
+            this.formCreated = false
         }
     }
 
@@ -68,16 +71,20 @@ export default class ConfigurableFormEditor extends DataDisplay {
     }
     
     /** This is passed the data form the data callback, which should be the extended data  - including layout + value */
-    setData(data) {
+    internalUpdateData(data) {
         //we need a better error case
         if(data == apogeeutil.INVALID_VALUE) {
             data = {};
         }
 
         this.changeReferenceFormValue = data;
+    }
 
-        //input data is the layout and the value
-        this.panel.setValue(data);
+    showDisplay() {
+        if(this.formCreated) {
+            //input data is the layout and the value
+            this.panel.setValue(data);
+        }
     }
 
     onFormInput(formValue) {
