@@ -8,11 +8,12 @@ import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,ge
 function onJsxCodeUpdate(component,jsxFunctionBody) {
     try {
         const functionBody = transformFunctionBody(jsxFunctionBody);
+        let functionMember = component.getField("member.jsx")
 
         let actionData = {
             action: "updateCode",
-            memberId: component.getField("member.jsx").getId(),
-            argList: ["props"],
+            memberId: functionMember.getId(),
+            argList: functionMember.getField("argList"),
             functionBody: functionBody,
             supplementalCode: ""
         }
@@ -41,10 +42,20 @@ function onJsxCodeUpdate(component,jsxFunctionBody) {
 ////////////////////////////////////////////////////////
 
 function getOutputElement(component) {
-    let elementMember = component.getField("member.jsx");
-    if(elementMember.getState() == apogeeutil.STATE_NORMAL) {
-        const elementFunction = elementMember.getData();
-        return elementFunction()
+    let elementMember = component.getField("member.jsx")
+    let propsMember = component.getField("member.props")
+    if((elementMember.getState() == apogeeutil.STATE_NORMAL)&&(propsMember.getState() == apogeeutil.STATE_NORMAL)) {
+        const elementFunction = elementMember.getData()
+        const props = propsMember.getData()
+        const argList = elementMember.getField("argList")
+        let argsArray
+        if(Array.isArray(argList)) {
+            argsArray = argList.map(prop => props[prop]);
+        } 
+        else {
+            argsArray = []
+        }
+        return elementFunction.apply(null,argsArray)
     }
     else {
         //return <div>Error in JSX code</div>
@@ -87,7 +98,8 @@ const ReactDisplayCellConfig = {
     defaultComponentJson: {
         type: "apogeeapp.ReactDisplayCell",
         fields: {
-            jsxCode: ""
+            jsxCode: "",
+            propList: []
         }
     },
     fieldFunctions: {
@@ -109,7 +121,21 @@ const ReactDisplayCellConfig = {
         getFormulaViewModeEntry("member.props","inputProperties","Input Properties"),
         getPrivateViewModeEntry("member.props","inputPrivate","Input Private"),
     ],
-    iconResPath: "/icons3/genericCellIcon.png"
+    iconResPath: "/icons3/genericCellIcon.png",
+    propertyDialogEntries: [
+        {
+            member: "jsx",
+            propertyKey: "argList",
+            dialogElement: {
+                "type":"textField",
+                "label":"Property List: ",
+                "size": 80,
+                "key":"propListString"
+            },
+            propertyToForm: argListValue => argListValue.toString(),
+            formToProperty: propListString => apogeeutil.parseStringArray(propListString)
+        },
+    ]
 }
 export default ReactDisplayCellConfig;
 
