@@ -20,8 +20,8 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
  *      components to pass non-model data (like the HTML or the UI generator code) into the data display.
  */ 
 export default class DataDisplay {
-    constructor(dataSource) {
-        this.component = null
+    constructor(component,dataSource) {
+        this.component = component
         this.dataSource = dataSource ? dataSource : {};
         this.editOk = false;
 

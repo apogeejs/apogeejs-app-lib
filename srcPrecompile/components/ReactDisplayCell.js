@@ -8,7 +8,7 @@ import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,ge
 function onJsxCodeUpdate(component,jsxFunctionBody) {
     try {
         const functionBody = transformFunctionBody(jsxFunctionBody);
-        let functionMember = component.getField("member.jsx")
+        let functionMember = component.getField("member.Element")
 
         let actionData = {
             action: "updateCode",
@@ -42,12 +42,23 @@ function onJsxCodeUpdate(component,jsxFunctionBody) {
 ////////////////////////////////////////////////////////
 
 function getOutputElement(component) {
-    let elementMember = component.getField("member.jsx")
+    let elementMember = component.getField("member.Element")
     let propsMember = component.getField("member.props")
     if((elementMember.getState() == apogeeutil.STATE_NORMAL)&&(propsMember.getState() == apogeeutil.STATE_NORMAL)) {
         const elementFunction = elementMember.getData()
-        const props = propsMember.getData()
+        let props = propsMember.getData()
         const argList = elementMember.getField("argList")
+
+        /////////////////////////////////
+        // TEST
+        if(argList.includes("instanceNumber")) {
+            let oldProps = props
+            props = {}
+            Object.assign(props,oldProps)
+            props.instanceNumber = component.getInstanceNumber()
+        }
+        ///////////////////////////////////
+
         let argsArray
         if(Array.isArray(argList)) {
             argsArray = argList.map(prop => props[prop]);
@@ -77,8 +88,8 @@ const ReactDisplayCellConfig = {
         "type": "apogee.Folder",
         "childrenNotWriteable": true,
         "children": {
-            "jsx": {
-                "name": "jsx",
+            "Element": {
+                "name": "Element",
                 "type": "apogee.FunctionMember",
                 "fields": {
                     "argList": [],
@@ -117,14 +128,14 @@ const ReactDisplayCellConfig = {
             getViewModeElement: (component,showing,size) => getOutputElement(component),
         },
         getAppCodeViewModeEntry("jsxCode",null,"jsxCode","JSX Code",{sourceType: "code", argList:"props", isActive: true /*,textDisplayMode: "ace/mode/js"*/}),
-        getFormulaViewModeEntry("member.jsx",{name: "convertedCode", label:"Converted Code"}),
+        getFormulaViewModeEntry("member.Element",{name: "convertedCode", label:"Converted Code"}),
         getFormulaViewModeEntry("member.props","inputProperties","Input Properties"),
         getPrivateViewModeEntry("member.props","inputPrivate","Input Private"),
     ],
     iconResPath: "/icons3/genericCellIcon.png",
     propertyDialogEntries: [
         {
-            member: "jsx",
+            member: "Element",
             propertyKey: "argList",
             dialogElement: {
                 "type":"textField",

@@ -5,9 +5,9 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 import { FormResultFunctionGenerator } from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 
-function _getFormDataDisplay(getFormLayout) {
+function _getFormDataDisplay(component,getFormLayout) {
     let dataDisplaySource = _getInputFormDataSource(getFormLayout);
-    return new ConfigurableFormEditor(dataDisplaySource);
+    return new ConfigurableFormEditor(component,dataDisplaySource);
 }
 
 /** This is the data source for the input form data display */
@@ -102,7 +102,7 @@ export function getConfigViewModeEntry(getFormLayout,optionalAlternateLabel) {
         isActive: true,
         getViewModeElement: (component,showing) => <VanillaViewModeElement
                 component={component}
-                getDataDisplay={() => _getFormDataDisplay(getFormLayout)}
+                getDataDisplay={component => _getFormDataDisplay(component,getFormLayout)}
                 showing={showing} />
     }
 }

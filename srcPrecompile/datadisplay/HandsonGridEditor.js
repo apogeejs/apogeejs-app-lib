@@ -7,8 +7,8 @@ import Handsontable from "/apogeejs-releases/releases/ext/handsontable/v6.2.2/ha
 /** This is a grid editor using hands on table*/
 export default class HandsonGridEditor extends DataDisplay {
     
-    constructor(dataSource) {
-        super(dataSource);
+    constructor(component,dataSource) {
+        super(component,dataSource);
 
         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
         this.savedPixelHeight = DEFAULT_PIXEL_HEIGHT;

@@ -10,9 +10,9 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 ////////////////////////////////////////////////////////
 
 
-function getFormViewDisplay() {
+function getFormViewDisplay(component) {
     let dataDisplaySource = getFormCallbacks();
-    return new ConfigurableFormEditor(dataDisplaySource);
+    return new ConfigurableFormEditor(component,dataDisplaySource);
 }
 
 function getFormCallbacks() { 
@@ -24,9 +24,9 @@ function getFormCallbacks() {
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: () => dataDisplayHelper.getWrappedMemberData(component,"member"),
+        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member"),
 
-        getData: () => { return {"data": null}; },
+        getData: (component,) => { return {"data": null}; },
     }
 
     return dataDisplaySource;

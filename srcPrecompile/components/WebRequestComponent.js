@@ -22,14 +22,14 @@ defineHardcodedDataMember(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 ////////////////////////////////////////////////////////
 
 
-function getMetaViewDisplay() {
+function getMetaViewDisplay(component) {
     let dataDisplaySource = _getMetaDataSource();
-    return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+    return new AceTextEditor(component,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
-function getBodyViewDisplay() {
+function getBodyViewDisplay(component) {
     let dataDisplaySource = _getBodyDataSource();
-    return new AceTextEditor(dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+    return new AceTextEditor(component,dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
 /** This method returns the form layout.

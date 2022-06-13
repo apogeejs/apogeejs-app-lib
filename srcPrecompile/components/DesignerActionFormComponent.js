@@ -27,9 +27,9 @@ else return [];
     return ConfigurablePanel.getFormDesignerLayout(flags);
 }
 
-function getFormViewDataDisplay() {
+function getFormViewDataDisplay(component) {
     let dataDisplaySource = _getOutputFormDataSource(component);
-    return new ConfigurableFormEditor(dataDisplaySource);
+    return new ConfigurableFormEditor(component,dataDisplaySource);
 }
 
 function _getOutputFormDataSource() {

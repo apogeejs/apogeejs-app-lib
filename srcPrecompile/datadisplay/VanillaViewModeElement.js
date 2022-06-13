@@ -10,7 +10,6 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     let dataDisplay = vanillaRef.current
     if(!dataDisplay) {
         dataDisplay = getDataDisplay(component)
-        dataDisplay.setComponent(component)
 
         //NEW CODE TEST
         dataDisplay.updateData()
@@ -45,7 +44,6 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
             //NEED TO HANDLE EDIT MODE!!!
             //create a new data display
             dataDisplay = getDataDisplay(component)
-            dataDisplay.setComponent(component) //WHY ISNT THIS IN THE AOBVE FUNCTION?
             vanillaRef.current = dataDisplay
 
             //set edit mode state

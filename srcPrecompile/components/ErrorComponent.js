@@ -1,8 +1,5 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
-import ErrorDisplay from "/apogeejs-app-lib/src/datadisplay/ErrorDisplay.js";
-import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
-
 
 /** This component represents a error member object. */
 class ErrorComponent extends Component {

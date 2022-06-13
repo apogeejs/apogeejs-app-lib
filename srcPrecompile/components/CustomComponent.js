@@ -85,11 +85,11 @@ function onUiCodeUpdate(component,uiGeneratorBody) {
 // }
 
 
-function getOutputDataDisplay() {
+function getOutputDataDisplay(component) {
     //TODO: Oops - If the value of this field changes I do not handle it properly, I don't think
     //displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
     var dataDisplaySource = getOutputDataDisplaySource();
-    return new HtmlJsDataDisplay(dataDisplaySource);
+    return new HtmlJsDataDisplay(component,dataDisplaySource);
 }
 
 function getOutputDataDisplaySource() {

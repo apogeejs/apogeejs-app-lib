@@ -20,15 +20,15 @@ function getDataViewDisplay(component) {
         case COLORIZED_DATA_VEW:
         default:
             dataDisplaySource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataTextDataSource("member"));
-            return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+            return new AceTextEditor(component,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
             
         case TEXT_DATA_VEW:
             dataDisplaySource =_wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"));
-            return new AceTextEditor(dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
+            return new AceTextEditor(component,dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
             
         case GRID_DATA_VEW:
             dataDisplaySource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"));
-            return new HandsonGridEditor(dataDisplaySource);
+            return new HandsonGridEditor(component,dataDisplaySource);
     }
 }
 
@@ -97,7 +97,7 @@ const JsonComponentConfig = {
             isActive: true,
             getViewModeElement: (component,showing,size) => <VanillaViewModeElement
 				component={component}
-				getDataDisplay={() => getDataViewDisplay(component)}
+				getDataDisplay={component => getDataViewDisplay(component)}
 				showing={showing} 
                 size={size} />,
             getViewStatusElement: (component) => <DataViewStatusElement component={component} />,

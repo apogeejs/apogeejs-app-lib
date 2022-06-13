@@ -88,10 +88,10 @@ function onUiCodeUpdate(component,uiGeneratorBody) {
 //     super.onDelete();
 // }
 
-function getOutputDataDisplay() {
+function getOutputDataDisplay(component) {
     //displayContainer.setDestroyViewOnInactive(component.getField("destroyOnInactive"));
     var dataDisplaySource = getOutputDataDisplaySource();
-    return new HtmlJsDataDisplay(dataDisplaySource);
+    return new HtmlJsDataDisplay(component,dataDisplaySource);
 }
 
 function getOutputDataDisplaySource() {

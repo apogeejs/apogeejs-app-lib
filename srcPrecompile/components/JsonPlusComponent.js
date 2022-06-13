@@ -18,9 +18,9 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 ////////////////////////////////////////////////////////
 
 
-function getDataDataDisplay() {
+function getDataDataDisplay(component) {
     let dataDisplaySource = getDataSource();
-    return new AceTextEditor(dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+    return new AceTextEditor(component,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
 }
 
 
@@ -50,6 +50,7 @@ function getDataSource() {
 
                 wrappedData.data = textData;
             }
+            return wrappedData
         }
     }
 }

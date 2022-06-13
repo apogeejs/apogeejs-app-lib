@@ -18,9 +18,9 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay() {
+function getFormViewDisplay(component) {
     let dataDisplaySource = getFormEditorCallbacks();
-    return new ConfigurableFormEditor(dataDisplaySource);
+    return new ConfigurableFormEditor(component,dataDisplaySource);
 }
 
 function getFormEditorCallbacks() {

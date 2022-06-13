@@ -11,8 +11,8 @@ import ace from "/apogeejs-releases/releases/ext/ace/v1.4.12/ace.es.js";
  */
 export default class AceTextEditor extends DataDisplay {
     
-    constructor(dataSource,aceMode,options) {
-        super(dataSource);
+    constructor(component,dataSource,aceMode,options) {
+        super(component,dataSource);
 
         this.destroyed = false;
 

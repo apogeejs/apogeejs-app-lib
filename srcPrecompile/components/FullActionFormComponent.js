@@ -30,9 +30,9 @@ function onLayoutCodeUpdate(component,layoutCode) {
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay() {
+function getFormViewDisplay(component) {
     let dataDisplaySource = getOutputDataDisplaySource();
-    return new ConfigurableFormEditor(dataDisplaySource);
+    return new ConfigurableFormEditor(component,dataDisplaySource);
 }
 
 function getOutputDataDisplaySource() {
