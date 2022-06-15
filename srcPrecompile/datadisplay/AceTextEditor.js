@@ -191,6 +191,17 @@ export default class AceTextEditor extends DataDisplay {
         if(this.editor) {
             this.editor.getSession().setValue(this.cachedDisplayData);
 
+            //send the size command info===========
+            let sizeCommandData = {
+                previous: this.maxLines,
+                constentSize: this.editor.getSession().getLength(),
+                min: AceTextEditor.SIZE_COMMAND_INFO.min,
+                max: AceTextEditor.SIZE_COMMAND_INFO.max,
+                increment: AceTextEditor.SIZE_COMMAND_INFO.increment
+            }
+            if(this._setSizeCommandData) this._setSizeCommandData(sizeCommandData)
+            //======================================
+
             //set the edit mode and background color
             if(this.editOk) {
                 this.editorDiv.style.backgroundColor = "";

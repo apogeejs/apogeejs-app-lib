@@ -1,6 +1,4 @@
-import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js"
-
-export default function VanillaViewModeElement({component,getDataDisplay,showing,size}) {
+export default function VanillaViewModeElement({component,getDataDisplay,showing,setEditModeData,setMsgData,size,setSizeCommandData}) {
 
     //this is just for debugging
     let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
@@ -10,6 +8,9 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     let dataDisplay = vanillaRef.current
     if(!dataDisplay) {
         dataDisplay = getDataDisplay(component)
+        dataDisplay.setEditModeState(setEditModeData)
+        dataDisplay.setMsgState(setMsgData)
+        dataDisplay.setSizeCommandCallback(setSizeCommandData)
 
         //NEW CODE TEST
         dataDisplay.updateData()
@@ -20,9 +21,6 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     //manage adding and removing the vanilla display element
     const viewRef = React.useRef()
 
-    //edit state, for external edit bar
-    let [editMode,setEditMode] = React.useState(false)
-
     let [showDataVersion,setShowDataVersion] = React.useState(0)
     let [reloadDataDisplayVersion,setReloadDataDisplayVersion] = React.useState(0)
     let activeShowDataVersion = showDataVersion
@@ -32,22 +30,22 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
     // Manage the data display wrapper
     //-----------------
 
-    //set edit mode state
-    dataDisplay.setEditModeState(editMode,setEditMode)
-
     //update if the component changes
     if(dataDisplay.getComponent() != component) { 
         dataDisplay.setComponent(component)
+        dataDisplay.setEditModeState(setEditModeData)
+        dataDisplay.setMsgState(setMsgData)
+
         let {reloadData,reloadDataDisplay} = dataDisplay.doUpdate();
 
         if(reloadDataDisplay) {
             //NEED TO HANDLE EDIT MODE!!!
             //create a new data display
             dataDisplay = getDataDisplay(component)
-            vanillaRef.current = dataDisplay
+            dataDisplay.setEditModeState(setEditModeData)
+            dataDisplay.setMsgState(setMsgData)
 
-            //set edit mode state
-            dataDisplay.setEditModeState(editMode,setEditMode)
+            vanillaRef.current = dataDisplay
 
             //NEW CODE TEST
             dataDisplay.updateData()
@@ -71,16 +69,8 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
         }
     }
 
-    const msgText = dataDisplay.getMessage()
-    const showMsgBar = dataDisplay.getMessageType() != DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-    let msgBarStyle = getMessageBarStyle(dataDisplay.getMessageType())
     const hideDisplay = dataDisplay.getHideDisplay()
     const styleData = hideDisplay ? {display: "none"} : {}
-
-    const onSave = () => dataDisplay.save()
-    const onCancel = () => dataDisplay.cancel()
-
-    console.log(`render: identifier: ${identifier} hideDisplay: ${hideDisplay} msgText: ${msgText} instance#: ${component.instanceNumber}`)
 
     //---------------
     //manage the vanilla display element
@@ -103,13 +93,12 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
 
     //update data display content
     React.useEffect(() => {
-        console.log(`render: identifier: ${identifier} hideDisplay: ${hideDisplay} msgText: ${msgText} instance#: ${component.instanceNumber}`)
         dataDisplay.showDisplay()
     },[activeShowDataVersion,showing,hideDisplay])
 
     //udpate display size
     React.useEffect(() => {
-        if(dataDisplay.setSize) dataDisplay.setSize(size)
+        if((dataDisplay.setSize)&&(size !== null)) dataDisplay.setSize(size)
     },[size])
 
     //---------------
@@ -118,32 +107,7 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
 
     return (
         <div >
-            {showMsgBar ? <div className={msgBarStyle} >{msgText}</div> : ''}
-            {editMode ?
-                <div className="visiui_displayContainer_saveBarContainerClass">
-                    Edit: 
-                    <button type="button" onClick={onSave}>Save</button>
-                    <button  type="button" onClick={onCancel}>Cancel</button>
-                </div> : ''}
             {<div ref={viewRef} className="visiui_displayContainer_viewContainerClass" style={styleData}/>}
         </div>
     )
-}
-
-function getMessageBarStyle(messageType) {
-
-    switch(messageType) {
-        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR:
-            return "visiui_displayContainer_messageContainerClass visiui_displayContainer_messageError"
-
-        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_WARNING:
-            return "visiui_displayContainer_messageContainerClass visiui_displayContainer_messageWarning"
-
-        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO:
-            return "visiui_displayContainer_messageContainerClass visiui_displayContainer_messageInfo"
-
-        case DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE:
-        default:
-            return "visiui_displayContainer_messageContainerClass"
-    }
 }

@@ -22,12 +22,16 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 export default class DataDisplay {
     constructor(component,dataSource) {
         this.component = component
-        this.dataSource = dataSource ? dataSource : {};
-        this.editOk = false;
+        this.dataSource = dataSource ? dataSource : {}
+        this.editOk = false
 
-        this.setEditMode = undefined
-        this.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-        this.message = null
+        this.inEditMode = false
+        this._setEditModeData = undefined
+        this.mesasgeType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE 
+        this.message = ""
+        this._setMsgData = undefined
+        this._setSizeCommandData = null
+
         this.hideDisplay = false
 
         //defaults for container sizing logic
@@ -43,26 +47,37 @@ export default class DataDisplay {
     }
 
     /** This is used to pass is and clear the setEditMode function */
-    setEditModeState(editMode,setEditMode) {
-        this.editMode = editMode
-        this.setEditMode = setEditMode
+    setEditModeState(setEditModeData) {
+        this._setEditModeData = setEditModeData
+    }
+
+    setMsgState(setMsgData) {
+        this._setMsgData = setMsgData
+    }
+
+    setSizeCommandCallback(setSizeCommandData) {
+        this._setSizeCommandData = setSizeCommandData
     }
 
     isInEditMode() {
-        return this.editMode
-    }
-
-    getMessageType() {
-        return this.messageType
-    }
-
-    getMessage() {
-        return this.message
+        return this.inEditMode
     }
 
     setMessage(messageType,message) {
-        this.messageType = messageType ? messageType : DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE 
-        this.message = message
+        if(!messageType) {
+            messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+            message = ""
+        }
+        
+        if((this.messageType != messageType)||(this.message != message)) {
+            this.messageType = messageType
+            this.message = message
+            let msgData = {
+                type: messageType,
+                msg: message
+            }
+            if(this._setMsgData) this._setMsgData(msgData)
+        }
     }
 
     setHideDisplay(hideDisplay) {
@@ -132,15 +147,7 @@ export default class DataDisplay {
 
     /** For edit mode, this is used to cancel editing. */
     cancel() {
-        //reset the original data
-        //var cancelComplete = this.displayContainer.onCancel();
-        //
-        //if(cancelComplete) {
-        //    this.endEditMode();
-        //}
-
-        //reshow old data
-        this.showData();
+        this.showDisplay();
         this.endEditMode();
     }
 
@@ -236,14 +243,8 @@ export default class DataDisplay {
         //update the display data
         let dataResult = this.dataSource.getData(this.component)
         this.hideDisplay = (this.dataSource.hideDisplay === true) 
-        if(dataResult.messageType) {
-            this.messageType = dataResult.messageType
-            this.message = dataResult.message
-        }
-        else {
-            this.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-            this.message = ""
-        }
+
+        this.setMessage(dataResult.messageType,dataResult.message)
         this.internalUpdateData(dataResult.data)
     }
 
@@ -251,16 +252,20 @@ export default class DataDisplay {
 
     /** @protected */
     endEditMode() {
-        //this.displayContainer.endEditMode();
-        if(this.setEditMode) this.setEditMode(false)
+        if((this.inEditMode)&&(this._setEditModeData)) {
+            this.inEditMode = false
+            this._setEditModeData(null)
+        }
     }
     
     /** @protected */
     startEditMode() {
-        //var onSave = () => this.save();
-        //var onCancel = () => this.cancel();
-        //this.displayContainer.startEditMode(onSave,onCancel);
-        if(this.setEditMode) this.setEditMode(true)
+        if((!this.inEditMode)&&(this._setEditModeData)) {
+            this.inEditMode = true
+            const save = () => this.save()
+            const cancel =  () => this.cancel()
+            this._setEditModeData({save, cancel})
+        }
     }
 
     /** @protected */

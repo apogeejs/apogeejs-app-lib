@@ -14,7 +14,8 @@ export function getErrorViewModeEntry() {
         isActive: false,
         isTransient: true,
         isErrorView: true,
-        getViewModeElement: (component,showing) => <StandardErrorElement component={component} showing={showing} />,
+        getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => 
+            <StandardErrorElement component={component} showing={showing} />,
         isViewRemoved: isErrorElementRemoved
     }
 }
@@ -54,11 +55,14 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         sourceType: "data",
         suffix: suffix, //default value comes from member field name 
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
-        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
             component={component}
             getDataDisplay={component => getMemberDataTextDisplay(component,memberFieldName,options)}
+            setEditModeData={setEditModeData}
+            setMsgData={setMsgData}
             showing={showing}
-            size={size} />,
+            size={size}
+            setSizeCommandData={setSizeCommandData} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
@@ -81,11 +85,14 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
         sourceType: "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
             component={component}
             getDataDisplay={component => getFormulaDataDisplay(component,memberFieldName,options)}
             showing={showing}
-            size={size} />,
+            setEditModeData={setEditModeData}
+            setMsgData={setMsgData}
+            size={size}
+            setSizeCommandData={setSizeCommandData} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
@@ -104,11 +111,14 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
         sourceLayer: "model",
         sourceType: "private code",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
             component={component}
             getDataDisplay={component => getPrivateDataDisplay(component,memberFieldName,options)}
             showing={showing}
-            size={size} />,
+            setEditModeData={setEditModeData}
+            setMsgData={setMsgData}
+            size={size}
+            setSizeCommandData={setSizeCommandData} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
@@ -137,11 +147,14 @@ export function getAppCodeViewModeEntry(componentFieldName,componentCompiledFiel
         sourceType: ((options)&&(options.sourceType)) ? options.sourceType : "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getViewModeElement: (component,showing,size) => <VanillaViewModeElement
+        getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
             component={component}
             getDataDisplay={component => getAppCodeDataDisplay(component,componentFieldName,componentCompiledFieldName,options)}
             showing={showing}
-            size={size} />,
+            setEditModeData={setEditModeData}
+            setMsgData={setMsgData}
+            size={size}
+            setSizeCommandData={setSizeCommandData} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         childPath: ((options)&&(options.childPath)) ? options.childPath : "."
     }
