@@ -56,19 +56,9 @@ export default class Apogee {
         if(__globals__.apogeeplatform) {
             this.moduleManager = apogeeplatform.getModuleManagerInstance(this);
         }
-
-        //subscribe to app events
-        this.subscribeToAppEvents()
         
         //initialize application
         this._initApp();
-    }
-
-    /** This subscribes to all events needed by this class. On close, all listeners will be removed. This will 
-     * be called to add back the need app events. */
-    subscribeToAppEvents() {
-        //subscribe to events
-        this.addListener("workspaceDirty",() => this._setWorkspaceIsDirty());
     }
 
     //======================================

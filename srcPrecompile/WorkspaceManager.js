@@ -28,17 +28,13 @@ export default class WorkspaceManager extends FieldObject {
             let referenceManager = new ReferenceManager(this.app);
             this.setField("referenceManager",referenceManager);
 
-            //this is not a field like above because when we do not require a command to change it
-            this.isDirty = false;
+            //don't set dirty immediately - there is no info in an empty workspace
+            this.setField("isDirty",false)
 
             //temporary
             this.created = true;
         }
         else {
-            //this is not a field like above because when we do not require a command to change it
-            this.fileMetadata = instanceToCopy.fileMetadata;
-            this.isDirty = instanceToCopy.isDirty;
-
             //temporary
             this.created = false;
         }
@@ -213,15 +209,15 @@ export default class WorkspaceManager extends FieldObject {
     }
 
     getIsDirty() {
-        return this.isDirty;
+        return this.getField("isDirty")
     }
     
     setIsDirty() {
-        this.isDirty = true;
+        this.setField("isDirty",true)
     }
     
     clearIsDirty() {
-        this.isDirty = false;
+        this.setField("isDirty",false)
     }
 
     getIsClosed() {
@@ -249,12 +245,12 @@ export default class WorkspaceManager extends FieldObject {
 
     /** This retrieves the file metadata used to save the file. */
     getFileMetadata() {
-        return this.fileMetadata;
+        return this.getField("fileMetadata")
     }
 
     /** This method should be used to update the file metadata for the workspace, such as after the file is saved. */
     setFileMetadata(fileMetadata) {
-        this.fileMetadata = fileMetadata;
+        this.setField("fileMetadata",fileMetadata)
     }
 
     //====================================
@@ -311,7 +307,7 @@ export default class WorkspaceManager extends FieldObject {
         }
 
         //store the file metadata
-        this.fileMetadata = fileMetadata;
+        this.setFileMetadata(fileMetadata)
 
         //set the view state
         if(json.viewState !== undefined) {

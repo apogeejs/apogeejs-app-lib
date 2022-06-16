@@ -17,3 +17,4 @@ import "/apogeejs-app-lib/src/commands/updatecomponentfield.js";
 import "/apogeejs-app-lib/src/commands/updatecomponentproperties.js";
 import "/apogeejs-app-lib/src/commands/updatelink.js";
 import "/apogeejs-app-lib/src/commands/updateworkspace.js";
+import "/apogeejs-app-lib/src/commands/updateworkspacefiledata.js";

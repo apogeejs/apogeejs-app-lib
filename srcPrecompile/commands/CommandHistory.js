@@ -34,9 +34,6 @@ export default class CommandHistory {
         command.desc = description;
         
         this._saveCommand(command);
-
-        //set workspace dirty whenever a command is added to history (description as argument thrown in gratuitiously, for now)
-        this.eventManager.dispatchEvent("workspaceDirty",command.desc);
     }
     
     /** This method clears the undo/redo history. */
@@ -106,10 +103,6 @@ export default class CommandHistory {
             if(!commandSuccess) {
                 this._commandUndoneFailed();
             }
-            else {
-                //flag workspace as dirty
-                this.eventManager.dispatchEvent("workspaceDirty",command.desc);
-            }
         }
         else {
             //the ui should not let us get here
@@ -124,10 +117,6 @@ export default class CommandHistory {
             let commandSuccess = this.commandManager.executeCommand(command.redoCmd,true);
             if(!commandSuccess) {
                 this._commandRedoneFailed();
-            }
-            else {
-                //flag workspace as dirty
-                this.eventManager.dispatchEvent("workspaceDirty",command.desc);
             }
         }
         else {
