@@ -87,7 +87,7 @@ export default class Apogee {
     /** This is an optional user interface object that may be set in the application. It is intended for
      * saving and loading any applicable UI state. */
     getUserInterfaceObject() {
-        return userInterfaceObject
+        return this.userInterfaceObject
     }
 
     getRunContext() {

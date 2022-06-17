@@ -229,12 +229,6 @@ export default class WorkspaceManager extends FieldObject {
     // asynch run context methods
     //====================================
 
-    /** This runs a command asynchronously */
-    runFutureCommand(commandData) {
-        //run command asynchronously
-        setTimeout(() => this.app.executeCommand(commandData),0);
-    }
-
     getRunContextLink() {
         return this.runContextLink;
     }
@@ -277,7 +271,7 @@ export default class WorkspaceManager extends FieldObject {
 
         json.code = this.getModelManager().toJson(optionalSavedRootFolder);
 
-        let userInterfaceObject = app.getUserInterfaceObject()
+        let userInterfaceObject = this.app.getUserInterfaceObject()
         if((userInterfaceObject)&&(userInterfaceObject.getViewStateJson)) {
             let viewState = userInterfaceObject.getViewStateJson()
             if(viewState) json.viewState = viewState
@@ -313,7 +307,7 @@ export default class WorkspaceManager extends FieldObject {
         //prepare the view state for loading, if applicable
         let setViewState
         if(json.viewState) {
-            let userInterfaceObject = app.getUserInterfaceObject()
+            let userInterfaceObject = this.app.getUserInterfaceObject()
             if((userInterfaceObject)&&(userInterfaceObject.setViewStateJson)) {
                 setViewState = () => userInterfaceObject.setViewStateJson(json.viewState)
             }
@@ -331,10 +325,11 @@ export default class WorkspaceManager extends FieldObject {
                 let loadModelCommand = {}
                 loadModelCommand.type = "loadModelManager"
                 loadModelCommand.json = json.code
-                this.runFutureCommand(loadModelCommand)
+                this.app.executeCommand(loadModelCommand)
 
-                //set the view state after initial load
-                if(setViewState) setViewState()
+                //set the view state after initial load completes
+                //we probably don't need the setTimeout here
+                if(setViewState) setTimeout(setViewState,0)
             }
 
             referenceLoadPromise.then(onReferencesLoaded)
@@ -344,8 +339,9 @@ export default class WorkspaceManager extends FieldObject {
             let modelManager = this.getModelManager()
             modelManager.load(this,json.code)
 
-            //set the view state after initial load
-            if(setViewState) setViewState()
+            //set the view state after initial load completes
+            //we need to wait for the command updates to complete. We should probably get a better way.
+            if(setViewState) setTimeout(setViewState,0)
         }
     }
 
