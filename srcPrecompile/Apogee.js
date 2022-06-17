@@ -19,7 +19,8 @@ let apogeeInstance = null;
  * @private */
 export default class Apogee {
 
-    constructor() {
+    /** userInterfaceObject - optional, allows saving UI state. */
+    constructor(userInterfaceObject) {
 
         //mixin initialization
         this.eventManagerMixinInit();
@@ -56,6 +57,10 @@ export default class Apogee {
         if(__globals__.apogeeplatform) {
             this.moduleManager = apogeeplatform.getModuleManagerInstance(this);
         }
+
+        //register a user interface object, if passed
+        //this is to save and restore any desired ui state
+        this.userInterfaceObject = userInterfaceObject
         
         //initialize application
         this._initApp();
@@ -77,6 +82,12 @@ export default class Apogee {
     /** This method returns the active WorkspaceManager object. */
     getWorkspaceManager() {
         return this.workspaceManager;
+    }
+
+    /** This is an optional user interface object that may be set in the application. It is intended for
+     * saving and loading any applicable UI state. */
+    getUserInterfaceObject() {
+        return userInterfaceObject
     }
 
     getRunContext() {

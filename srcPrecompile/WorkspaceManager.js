@@ -277,9 +277,10 @@ export default class WorkspaceManager extends FieldObject {
 
         json.code = this.getModelManager().toJson(optionalSavedRootFolder);
 
-        if(this.viewStateCallback) {
-            this.cachedViewState = this.viewStateCallback();
-            if(this.cachedViewState) json.viewState = this.cachedViewState;
+        let userInterfaceObject = app.getUserInterfaceObject()
+        if((userInterfaceObject)&&(userInterfaceObject.getViewStateJson)) {
+            let viewState = userInterfaceObject.getViewStateJson()
+            if(viewState) json.viewState = viewState
         }
 
         return json;
@@ -297,44 +298,54 @@ export default class WorkspaceManager extends FieldObject {
         //check file format
         if(json) {
             if(json.version != WorkspaceManager.FILE_VERSION) {
-                let msg = "Version mismatch. Expected version " + WorkspaceManager.FILE_VERSION + ", Found version " + json.version;
-                throw new Error(msg);
+                let msg = "Version mismatch. Expected version " + WorkspaceManager.FILE_VERSION + ", Found version " + json.version
+                throw new Error(msg)
             }
         }
         else {
             //create aan empty json to load
-            json = {};
+            json = {}
         }
 
         //store the file metadata
         this.setFileMetadata(fileMetadata)
 
-        //set the view state
-        if(json.viewState !== undefined) {
-            this.cachedViewState = json.viewState;
+        //prepare the view state for loading, if applicable
+        let setViewState
+        if(json.viewState) {
+            let userInterfaceObject = app.getUserInterfaceObject()
+            if((userInterfaceObject)&&(userInterfaceObject.setViewStateJson)) {
+                setViewState = () => userInterfaceObject.setViewStateJson(json.viewState)
+            }
         }
 
         //check for references. If we have references we must load these before loading the model
         if(json.references) {
             //if there are references, load these before loading the model.
             //this is asynchronous so we must load the model in a future command
-            let referenceManager = this.getReferenceManager();
-            let referenceLoadPromise = referenceManager.load(this,json.references);
+            let referenceManager = this.getReferenceManager()
+            let referenceLoadPromise = referenceManager.load(this,json.references)
 
             let onReferencesLoaded = () => {
                 //load references regardless of success or failure in loading references
-                let loadModelCommand = {};
-                loadModelCommand.type = "loadModelManager";
-                loadModelCommand.json = json.code;
-                this.runFutureCommand(loadModelCommand);
+                let loadModelCommand = {}
+                loadModelCommand.type = "loadModelManager"
+                loadModelCommand.json = json.code
+                this.runFutureCommand(loadModelCommand)
+
+                //set the view state after initial load
+                if(setViewState) setViewState()
             }
 
-            referenceLoadPromise.then(onReferencesLoaded);
+            referenceLoadPromise.then(onReferencesLoaded)
         }
         else {
             //if there are not references we can load the model directly.
-            let modelManager = this.getModelManager();
-            modelManager.load(this,json.code);
+            let modelManager = this.getModelManager()
+            modelManager.load(this,json.code)
+
+            //set the view state after initial load
+            if(setViewState) setViewState()
         }
     }
 
