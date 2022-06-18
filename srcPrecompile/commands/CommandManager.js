@@ -244,6 +244,8 @@ export default class CommandManager {
                 this.app.dispatchEvent(changeEntry.eventName,changeEntry.target);
             } 
         })
+
+        this.app.dispatchEvent("update_completed",null)
     }
 
     //=========================================
