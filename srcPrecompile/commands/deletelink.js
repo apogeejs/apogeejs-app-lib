@@ -34,13 +34,7 @@ deletelink.createUndoCommand = function(workspaceManager,commandData) {
 
 deletelink.executeCommand = function(workspaceManager,commandData) {
     var referenceManager = workspaceManager.getMutableReferenceManager();
-    
-    //lookup entry
-    let referenceEntry = referenceManager.getRefEntryById(commandData.id);
-    if(!referenceEntry) throw new Error("Reference entry not found. refEntryId: " + refEntryId);
-
-    referenceEntry.removeEntry();
-    referenceManager.unregisterRefEntry(referenceEntry);
+    referenceManager.removeEntry(workspaceManager,commandData.id)
 }
 
 deletelink.commandInfo = {

@@ -22,12 +22,15 @@ let addlink = {};
 //addlink.createUndoCommand = function(workspaceManager,commandData);
 
 addlink.executeCommand = function(workspaceManager,commandData,makeUndo) {
-    let referenceManager = workspaceManager.getMutableReferenceManager();
-    //this creates the entry but does not load it
-    let referenceEntry = referenceManager.createEntry(commandData.entryType,commandData.data);
-    //this loads the entry - it will cause an asynchronouse command on completion
-    referenceEntry.loadEntry(workspaceManager);
+    //check if this entry already exists
+    let referenceManager = workspaceManager.getReferenceManager()
+    let referenceEntry = getExistingReferenceEntry(entryType,entryData)
+    //return, with no undo comand
+    if(!referenceEntry) return
 
+    //we need to create the link
+    referenceManager = workspaceManager.getMutableReferenceManager();
+    referenceManager.createEntry(workspaceManager,commandData.entryType,commandData.data);
     
     /////////////////////////////////////
     // temporary execute command return value logic

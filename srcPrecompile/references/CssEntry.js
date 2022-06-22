@@ -8,11 +8,15 @@ import {getLinkLoader} from "/apogeejs-app-lib/src/references/LinkLoader.js";
  */
 export default class CssEntry extends ReferenceEntry {
 
+    constructor(referenceData,instanceToCopy,specialCaseIdValue) {
+        super(CssEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+    }
+
     getEntryType() {
         return CssEntry.REFERENCE_TYPE
     }
 
-    getDisplayName() {
+    getName() {
         let data = this.getData();
         if(data) return data.name
         else return ReferenceEntry.NO_NAME_AVAILABLE;
@@ -51,5 +55,8 @@ export default class CssEntry extends ReferenceEntry {
     }
 }
 
-CssEntry.REFERENCE_TYPE = "css link";
+CssEntry.REFERENCE_TYPE = "css link"
+CssEntry.FIELD_OBJECT_TYPE = "refCss"
+CssEntry.LIST_DISPLAY_NAME = "CSS Links"
+CssEntry.ENTRY_ICON_PATH = "/icons3/cssLinkIcon.png"
 

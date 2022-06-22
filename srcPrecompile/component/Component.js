@@ -58,6 +58,66 @@ export default class Component extends FieldObject {
     // Public Instance Methods
     //==============================
 
+    
+    //-------------------------------
+    // Workspace object interface
+    //-------------------------------
+    getChildren(workspaceManager) {
+        if(this.componentConfig.isParentOfChildEntries) {
+            let modelManager = workspaceManager.getModelManager()
+            let parentMember = this.getParentFolderForChildren()
+            let childComponents = []
+            let childIdMap = parentMember.getChildIdMap()
+            for(let childKey in childIdMap) {
+                let childMemberId = childIdMap[childKey]
+                let childComponentId = modelManager.getComponentIdByMemberId(childMemberId)
+                if(childComponentId) {
+                    let childComponent = modelManager.getComponentByComponentId(childComponentId)
+                    childComponents.push(childComponent)
+                }
+            }
+            return childComponents
+        }
+        else {
+            return []
+        }
+    }
+
+    /** This method returns the state of the main member (which is also inherited from child members) */
+    getState() {
+        return this.getField("member").getState()
+    }
+
+    /** This gets an error message, if we are in the error state. */
+    getStateMessage() {
+        let stateStruct = this.getField("errorInfo")
+
+        if((stateStruct)&&(stateStruct.msg)) return stateStruct.msg
+        else return ""
+    }
+
+    //getName - see below
+
+     /** This method returns the icon url for the component. */
+     getIconUrl() {
+        if(this.componentConfig.ICON_URL) {
+            return this.componentConfig.ICON_URL;
+        }
+        else {
+            var resPath = this.componentConfig.iconResPath;
+            if(!resPath) {
+                if(this.componentConfig.isParentOfChildEntries) {
+                    resPath = ComponentView.DEFAULT_PAGE_ICON;
+                }
+                else {
+                    resPath = ComponentView.DEFAULT_CELL_ICON;
+                }
+            }
+            //cell/page icons are in the app domain/repo
+            return uiutil.getResourcePath(resPath,"app");
+        }
+    }
+
     //--------------------------
     // Accessors and convencience functions
     //--------------------------
@@ -107,18 +167,6 @@ export default class Component extends FieldObject {
         return this.getField("member").getId();
     }
 
-    /** This method returns the state of the main member (which is also inherited from child members) */
-    getState() {
-        return this.getField("member").getState()
-    }
-
-    /** This gets an error message, if we are in the error state. */
-    getStateMessage() {
-        let stateStruct = this.getField("errorInfo")
-
-        if((stateStruct)&&(stateStruct.msg)) return stateStruct.msg
-        else return ""
-    }
 
     /** This method gets additional detail information on the error if we are in the error state. */
     getErrorInfo() {
@@ -164,26 +212,6 @@ export default class Component extends FieldObject {
         }
         else {
             return standardDisplayName;
-        }
-    }
-
-    /** This method returns the icon url for the component. */
-    getIconUrl() {
-        if(this.componentConfig.ICON_URL) {
-            return this.componentConfig.ICON_URL;
-        }
-        else {
-            var resPath = this.componentConfig.iconResPath;
-            if(!resPath) {
-                if(this.componentConfig.isParentOfChildEntries) {
-                    resPath = ComponentView.DEFAULT_PAGE_ICON;
-                }
-                else {
-                    resPath = ComponentView.DEFAULT_CELL_ICON;
-                }
-            }
-            //cell/page icons are in the app domain/repo
-            return uiutil.getResourcePath(resPath,"app");
         }
     }
 

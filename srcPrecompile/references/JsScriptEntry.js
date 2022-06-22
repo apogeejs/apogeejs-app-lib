@@ -8,11 +8,15 @@ import {getLinkLoader} from "/apogeejs-app-lib/src/references/LinkLoader.js";
  */
 export default class JsScriptEntry extends ReferenceEntry {
 
+    constructor(referenceData,instanceToCopy,specialCaseIdValue) {
+        super(JsScriptEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+    }
+
     getEntryType() {
         return JsScriptEntry.REFERENCE_TYPE
     }
 
-    getDisplayName() {
+    getName() {
         let data = this.getData();
         if(data) return data.name
         else return ReferenceEntry.NO_NAME_AVAILABLE;
@@ -50,6 +54,9 @@ export default class JsScriptEntry extends ReferenceEntry {
     }
 }
 
-JsScriptEntry.REFERENCE_TYPE = "js link";
+JsScriptEntry.REFERENCE_TYPE = "js link"
+JsScriptEntry.FIELD_OBJECT_TYPE = "refJs"
+JsScriptEntry.LIST_DISPLAY_NAME = "JS Scripts"
+JsScriptEntry.ENTRY_ICON_PATH = "/icons3/jsLinkIcon.png"
 
 

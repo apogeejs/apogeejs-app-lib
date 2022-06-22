@@ -6,8 +6,8 @@ export default class ReferenceEntry extends FieldObject {
     
     /** The reference data is a json entry with the referenceType, url and optionally nickname.
      * If this is a copy, the reference data wil be ignored and can be set to null. */
-    constructor(referenceData,instanceToCopy,specialCaseIdValue) {
-        super("referenceEntry",instanceToCopy,specialCaseIdValue);
+    constructor(fieldObjectType,referenceData,instanceToCopy,specialCaseIdValue) {
+        super(fieldObjectType,instanceToCopy,specialCaseIdValue)
 
         //==============
         //Fields
@@ -35,17 +35,31 @@ export default class ReferenceEntry extends FieldObject {
         this.cachedViewState = null;    
     }
 
-    //---------------------------
-    // references entry interface
-    //---------------------------
+    //-------------------------------
+    // Workspace object interface
+    //-------------------------------
+
+    getChildren() {
+        return []
+    }
 
     getState() {
         return this.getField("state");
     }
 
-    getStateMsg() {
+    getStateMessage() {
         return this.getField("stateMsg");
     }
+
+    getIconUrl() {
+        return apogeeui.uiutil.getResourcePath(this.constructor.ENTRY_ICON_PATH,"app")
+    }
+
+    //getName() see implementation
+
+    //---------------------------
+    // references entry interface
+    //---------------------------
 
     getData() {
         return this.getField("data");
@@ -114,7 +128,7 @@ export default class ReferenceEntry extends FieldObject {
     }
 
     /** This is the display name for the entry. */
-    //getDisplayName();
+    //getName();
 
     /** This method loads the link onto the page. It should call the 
      * appropriate callback on completion. */

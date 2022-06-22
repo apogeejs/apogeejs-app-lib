@@ -7,11 +7,15 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
  */
 export default class WebApogeeModuleEntry extends ReferenceEntry {
 
+    constructor(referenceData,instanceToCopy,specialCaseIdValue) {
+        super(WebApogeeModuleEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+    }
+
     getEntryType() {
         return WebApogeeModuleEntry.REFERENCE_TYPE
     }
     
-    getDisplayName() {
+    getName() {
         return this.getModuleName();
     }
 
@@ -111,4 +115,7 @@ export default class WebApogeeModuleEntry extends ReferenceEntry {
     
 }
 
-WebApogeeModuleEntry.REFERENCE_TYPE = "apogee module";
+WebApogeeModuleEntry.REFERENCE_TYPE = "apogee module"
+WebApogeeModuleEntry.FIELD_OBJECT_TYPE = "refApogeeModule"
+WebApogeeModuleEntry.LIST_DISPLAY_NAME = "Apogee Modules"
+WebApogeeModuleEntry.ENTRY_ICON_PATH = "/icons3/workspaceIcon.png"

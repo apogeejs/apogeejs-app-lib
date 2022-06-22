@@ -38,8 +38,24 @@ export default class ModelManager extends FieldObject {
     // Methods
     //====================================
 
-    /////////////////////////////
-    // TEMPORARY
+    //-------------------------------
+    // Workspace object interface
+    //-------------------------------
+    getChildren(workspaceManager) {
+        let model = this.getField("model")
+        let childComponents = []
+        let childIdMap = model.getChildIdMap()
+        for(let childKey in childIdMap) {
+            let childMemberId = childIdMap[childKey]
+            let childComponentId = this.getComponentIdByMemberId(childMemberId)
+            if(childComponentId) {
+                let childComponent = this.getComponentByComponentId(childComponentId)
+                childComponents.push(childComponent)
+            }
+        }
+        return childComponents
+    }
+
     getState() {
         return apogeeutil.STATE_NORMAL
     }
@@ -543,6 +559,6 @@ ModelManager.EMPTY_MODEL_COMPONENT_JSON = {
     }
 };
 
-let MODEL_FOLDER_LABEL = "Code";
+const MODEL_FOLDER_LABEL = "Code"
 
-let ICON_RES_PATH = "/icons3/folderIcon.png";  
+const ICON_RES_PATH = "/icons3/folderIcon.png"

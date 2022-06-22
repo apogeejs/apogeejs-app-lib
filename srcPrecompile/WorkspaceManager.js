@@ -54,8 +54,13 @@ export default class WorkspaceManager extends FieldObject {
     // Workspace Management
     //====================================
 
-    /////////////////////////////
-    // TEMPORARY
+    //-------------------------------
+    // Workspace object interface
+    //-------------------------------
+    getChildren(workspaceManager) {
+       return [this.getModelManager(),this.getReferenceManager()]
+    }
+    
     getState() {
         return apogeeutil.STATE_NORMAL
     }

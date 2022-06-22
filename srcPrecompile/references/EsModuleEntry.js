@@ -7,11 +7,15 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
  */
 export default class EsModuleEntry extends ReferenceEntry {
 
+    constructor(referenceData,instanceToCopy,specialCaseIdValue) {
+        super(EsModuleEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+    }
+
     getEntryType() {
         return EsModuleEntry.REFERENCE_TYPE
     }
     
-    getDisplayName() {
+    getName() {
         return this.getModuleName();
     }
 
@@ -49,4 +53,7 @@ export default class EsModuleEntry extends ReferenceEntry {
     
 }
 
-EsModuleEntry.REFERENCE_TYPE = "es module";
+EsModuleEntry.REFERENCE_TYPE = "es module"
+EsModuleEntry.FIELD_OBJECT_TYPE = "refEs"
+EsModuleEntry.LIST_DISPLAY_NAME = "Web Modules"
+EsModuleEntry.ENTRY_ICON_PATH = "/icons3/esModuleIcon.png"
