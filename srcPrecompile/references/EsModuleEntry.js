@@ -15,7 +15,7 @@ export default class EsModuleEntry extends ReferenceEntry {
         return EsModuleEntry.REFERENCE_TYPE
     }
     
-    getName() {
+    getDisplayName() {
         return this.getModuleName();
     }
 
@@ -55,5 +55,3 @@ export default class EsModuleEntry extends ReferenceEntry {
 
 EsModuleEntry.REFERENCE_TYPE = "es module"
 EsModuleEntry.FIELD_OBJECT_TYPE = "refEs"
-EsModuleEntry.LIST_DISPLAY_NAME = "Web Modules"
-EsModuleEntry.ENTRY_ICON_PATH = "/icons3/esModuleIcon.png"

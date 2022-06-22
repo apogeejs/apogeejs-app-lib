@@ -52,8 +52,8 @@ export default class ReferenceList extends FieldObject {
     // Workspace object interface
     //-------------------------------
 
-    getChildren(workspaceManager) {
-        return this.getField("referenceEntryArray")
+    getWorkspaceObjectType() {
+        return "ReferenceList"
     }
 
     /** FIX THIS */
@@ -65,17 +65,13 @@ export default class ReferenceList extends FieldObject {
         return ""
     }
 
-    getIconUrl() {
-        return apogeeui.uiutil.getResourcePath(ICON_RES_PATH,"app")
-    }
-
-    getName() {
-        return this.referenceEntryClass.LIST_DISPLAY_NAME
-    }
-
     //====================================
     // Reference Lifecycle Methods
     //====================================
+
+    getEntries() {
+        return this.getField("referenceEntryArray")
+    }
 
     /** This checks if there is an existing reference entry matching the newly requested reference. */
     getExistingReferenceEntry(entryCommandData) {
@@ -258,4 +254,3 @@ export default class ReferenceList extends FieldObject {
 
 }
 
-const ICON_RES_PATH = "/icons3/folderIcon.png"

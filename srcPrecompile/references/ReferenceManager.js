@@ -55,8 +55,8 @@ export default class ReferenceManager extends FieldObject {
     // Workspace object interface
     //-------------------------------
 
-    getChildren(workspaceManager) {
-        return this.getField("referenceListArray")
+    getWorkspaceObjectType() {
+        return "ReferenceManager"
     }
 
     /** FIX THIS */
@@ -66,14 +66,6 @@ export default class ReferenceManager extends FieldObject {
 
     getStateMessage() {
         return ""
-    }
-
-    getIconUrl() {
-        return apogeeui.uiutil.getResourcePath(ICON_RES_PATH,"app")
-    }
-
-    getName() {
-        return TREE_LABEL
     }
 
     //---------------------------
@@ -138,6 +130,10 @@ export default class ReferenceManager extends FieldObject {
     // Reference Lifecycle Methods
     //====================================
 
+    getReferenceLists() {
+        return this.getField("referenceListArray")
+    }
+
     getReferenceList(moduleType) {
         let referenceListArray = this.getField("referenceListArray")
         return referenceListArray.find(referenceList => referenceList.getReferenceType() == moduleType)
@@ -201,7 +197,7 @@ export default class ReferenceManager extends FieldObject {
      * Change type should be the event names, not including the object type: created, updated, deleted*/
     registerRefObjectChange(refObject,changeType) {
 
-        let objectType = refObject.getType()
+        let objectType = refObject.getFieldObjectType()
 
         let inputAction = objectType + "_" + changeType
         let newAction

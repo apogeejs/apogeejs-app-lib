@@ -17,7 +17,7 @@ export default class NpmModuleEntry extends ReferenceEntry {
         return NpmModuleEntry.REFERENCE_TYPE
     }
     
-    getName() {
+    getDisplayName() {
         return this.getModuleName() + "@v" + this.getVersion();
     }
 
@@ -51,6 +51,5 @@ export default class NpmModuleEntry extends ReferenceEntry {
 
 NpmModuleEntry.REFERENCE_TYPE = "npm module"
 NpmModuleEntry.FIELD_OBJECT_TYPE = "refNpm"
-NpmModuleEntry.LIST_DISPLAY_NAME = "NPM Modules"
-NpmModuleEntry.ENTRY_ICON_PATH = "/icons3/npmModuleIcon.png"
+
 

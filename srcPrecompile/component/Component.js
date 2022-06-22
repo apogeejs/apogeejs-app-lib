@@ -62,25 +62,29 @@ export default class Component extends FieldObject {
     //-------------------------------
     // Workspace object interface
     //-------------------------------
-    getChildren(workspaceManager) {
-        if(this.componentConfig.isParentOfChildEntries) {
-            let modelManager = workspaceManager.getModelManager()
-            let parentMember = this.getParentFolderForChildren()
-            let childComponents = []
-            let childIdMap = parentMember.getChildIdMap()
-            for(let childKey in childIdMap) {
-                let childMemberId = childIdMap[childKey]
-                let childComponentId = modelManager.getComponentIdByMemberId(childMemberId)
-                if(childComponentId) {
-                    let childComponent = modelManager.getComponentByComponentId(childComponentId)
-                    childComponents.push(childComponent)
-                }
-            }
-            return childComponents
-        }
-        else {
-            return []
-        }
+    // getChildren(workspaceManager) {
+    //     if(this.componentConfig.isParentOfChildEntries) {
+    //         let modelManager = workspaceManager.getModelManager()
+    //         let parentMember = this.getParentFolderForChildren()
+    //         let childComponents = []
+    //         let childIdMap = parentMember.getChildIdMap()
+    //         for(let childKey in childIdMap) {
+    //             let childMemberId = childIdMap[childKey]
+    //             let childComponentId = modelManager.getComponentIdByMemberId(childMemberId)
+    //             if(childComponentId) {
+    //                 let childComponent = modelManager.getComponentByComponentId(childComponentId)
+    //                 childComponents.push(childComponent)
+    //             }
+    //         }
+    //         return childComponents
+    //     }
+    //     else {
+    //         return []
+    //     }
+    // }
+
+    getWorkspaceObjectType() {
+        return "Component"
     }
 
     /** This method returns the state of the main member (which is also inherited from child members) */
@@ -94,28 +98,6 @@ export default class Component extends FieldObject {
 
         if((stateStruct)&&(stateStruct.msg)) return stateStruct.msg
         else return ""
-    }
-
-    //getName - see below
-
-     /** This method returns the icon url for the component. */
-     getIconUrl() {
-        if(this.componentConfig.ICON_URL) {
-            return this.componentConfig.ICON_URL;
-        }
-        else {
-            var resPath = this.componentConfig.iconResPath;
-            if(!resPath) {
-                if(this.componentConfig.isParentOfChildEntries) {
-                    resPath = ComponentView.DEFAULT_PAGE_ICON;
-                }
-                else {
-                    resPath = ComponentView.DEFAULT_CELL_ICON;
-                }
-            }
-            //cell/page icons are in the app domain/repo
-            return uiutil.getResourcePath(resPath,"app");
-        }
     }
 
     //--------------------------
@@ -231,6 +213,25 @@ export default class Component extends FieldObject {
         return this.isMemberFieldUpdated("member","state");
     }
 
+    /** This method returns the icon url for the component. */
+    getIconUrl() {
+        if(this.componentConfig.ICON_URL) {
+            return this.componentConfig.ICON_URL;
+        }
+        else {
+            var resPath = this.componentConfig.iconResPath;
+            if(!resPath) {
+                if(this.componentConfig.isParentOfChildEntries) {
+                    resPath = ComponentView.DEFAULT_PAGE_ICON;
+                }
+                else {
+                    resPath = ComponentView.DEFAULT_CELL_ICON;
+                }
+            }
+            //cell/page icons are in the app domain/repo
+            return uiutil.getResourcePath(resPath,"app");
+        }
+    }
     
 
     /** This gets the map of members in this component. The key is the member ID and

@@ -16,7 +16,7 @@ export default class CssEntry extends ReferenceEntry {
         return CssEntry.REFERENCE_TYPE
     }
 
-    getName() {
+    getDisplayName() {
         let data = this.getData();
         if(data) return data.name
         else return ReferenceEntry.NO_NAME_AVAILABLE;
@@ -57,6 +57,4 @@ export default class CssEntry extends ReferenceEntry {
 
 CssEntry.REFERENCE_TYPE = "css link"
 CssEntry.FIELD_OBJECT_TYPE = "refCss"
-CssEntry.LIST_DISPLAY_NAME = "CSS Links"
-CssEntry.ENTRY_ICON_PATH = "/icons3/cssLinkIcon.png"
 

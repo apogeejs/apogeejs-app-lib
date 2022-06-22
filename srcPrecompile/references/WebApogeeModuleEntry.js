@@ -15,7 +15,7 @@ export default class WebApogeeModuleEntry extends ReferenceEntry {
         return WebApogeeModuleEntry.REFERENCE_TYPE
     }
     
-    getName() {
+    getDisplayName() {
         return this.getModuleName();
     }
 
@@ -117,5 +117,3 @@ export default class WebApogeeModuleEntry extends ReferenceEntry {
 
 WebApogeeModuleEntry.REFERENCE_TYPE = "apogee module"
 WebApogeeModuleEntry.FIELD_OBJECT_TYPE = "refApogeeModule"
-WebApogeeModuleEntry.LIST_DISPLAY_NAME = "Apogee Modules"
-WebApogeeModuleEntry.ENTRY_ICON_PATH = "/icons3/workspaceIcon.png"

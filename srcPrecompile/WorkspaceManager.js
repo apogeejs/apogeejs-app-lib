@@ -57,8 +57,8 @@ export default class WorkspaceManager extends FieldObject {
     //-------------------------------
     // Workspace object interface
     //-------------------------------
-    getChildren(workspaceManager) {
-       return [this.getModelManager(),this.getReferenceManager()]
+    getWorkspaceObjectType() {
+        return "WorkspaceManager"
     }
     
     getState() {
@@ -69,22 +69,17 @@ export default class WorkspaceManager extends FieldObject {
         return ""
     }
 
-    //This might be weird - the workspace manager uses the model name, the model manager uses the name "code"
-    getName() {
-        let modelManager = this.getModelManager()
-        let model = modelManager.getModel()
-        return model ? model.getName() : WORKSPACE_TEMP_NAME //there should be a model, unless we are waiing for asynch opening
-    }
-
-    getIconUrl() {
-        return uiutil.getResourcePath(ICON_RES_PATH,"app")
-    }
-
     //////////////////////////////
 
     /** This gets the application instance. */
     getApp() {
         return this.app;
+    }
+
+    getName() {
+        let modelManager = this.getModelManager()
+        let model = modelManager.getModel()
+        return model ? model.getName() : WORKSPACE_TEMP_NAME //there should be a model, unless we are waiing for asynch opening
     }
 
     /** This method returns a mutable copy of this instance. If the instance is already mutable
@@ -408,6 +403,4 @@ loadmodelmanager.commandInfo = {
 
 CommandManager.registerCommand(loadmodelmanager);
 
-
-const ICON_RES_PATH = "/icons3/workspaceIcon.png"; 
 const WORKSPACE_TEMP_NAME = "-"

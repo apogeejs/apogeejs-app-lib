@@ -41,19 +41,23 @@ export default class ModelManager extends FieldObject {
     //-------------------------------
     // Workspace object interface
     //-------------------------------
-    getChildren(workspaceManager) {
-        let model = this.getField("model")
-        let childComponents = []
-        let childIdMap = model.getChildIdMap()
-        for(let childKey in childIdMap) {
-            let childMemberId = childIdMap[childKey]
-            let childComponentId = this.getComponentIdByMemberId(childMemberId)
-            if(childComponentId) {
-                let childComponent = this.getComponentByComponentId(childComponentId)
-                childComponents.push(childComponent)
-            }
-        }
-        return childComponents
+    // getChildren(workspaceManager) {
+    //     let model = this.getField("model")
+    //     let childComponents = []
+    //     let childIdMap = model.getChildIdMap()
+    //     for(let childKey in childIdMap) {
+    //         let childMemberId = childIdMap[childKey]
+    //         let childComponentId = this.getComponentIdByMemberId(childMemberId)
+    //         if(childComponentId) {
+    //             let childComponent = this.getComponentByComponentId(childComponentId)
+    //             childComponents.push(childComponent)
+    //         }
+    //     }
+    //     return childComponents
+    // }
+
+    getWorkspaceObjectType() {
+        return "ModelManager"
     }
 
     getState() {
@@ -62,14 +66,6 @@ export default class ModelManager extends FieldObject {
 
     getStateMessage() {
         return ""
-    }
-
-    getIconUrl() {
-        return apogeeui.uiutil.getResourcePath(ICON_RES_PATH,"app")
-    }
-
-    getName() {
-        return MODEL_FOLDER_LABEL
     }
 
     //////////////////////////////
@@ -558,7 +554,3 @@ ModelManager.EMPTY_MODEL_COMPONENT_JSON = {
           }
     }
 };
-
-const MODEL_FOLDER_LABEL = "Code"
-
-const ICON_RES_PATH = "/icons3/folderIcon.png"

@@ -39,8 +39,8 @@ export default class ReferenceEntry extends FieldObject {
     // Workspace object interface
     //-------------------------------
 
-    getChildren() {
-        return []
+    getWorkspaceObjectType() {
+        return "ReferenceEntry"
     }
 
     getState() {
@@ -50,12 +50,6 @@ export default class ReferenceEntry extends FieldObject {
     getStateMessage() {
         return this.getField("stateMsg");
     }
-
-    getIconUrl() {
-        return apogeeui.uiutil.getResourcePath(this.constructor.ENTRY_ICON_PATH,"app")
-    }
-
-    //getName() see implementation
 
     //---------------------------
     // references entry interface

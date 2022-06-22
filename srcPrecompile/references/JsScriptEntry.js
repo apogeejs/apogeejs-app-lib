@@ -16,7 +16,7 @@ export default class JsScriptEntry extends ReferenceEntry {
         return JsScriptEntry.REFERENCE_TYPE
     }
 
-    getName() {
+    getDisplayName() {
         let data = this.getData();
         if(data) return data.name
         else return ReferenceEntry.NO_NAME_AVAILABLE;
@@ -56,7 +56,5 @@ export default class JsScriptEntry extends ReferenceEntry {
 
 JsScriptEntry.REFERENCE_TYPE = "js link"
 JsScriptEntry.FIELD_OBJECT_TYPE = "refJs"
-JsScriptEntry.LIST_DISPLAY_NAME = "JS Scripts"
-JsScriptEntry.ENTRY_ICON_PATH = "/icons3/jsLinkIcon.png"
 
 
