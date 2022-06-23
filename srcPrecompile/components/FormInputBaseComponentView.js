@@ -100,9 +100,13 @@ export function getConfigViewModeEntry(getFormLayout,optionalAlternateLabel) {
         name: VIEW_INPUT,
         label: optionalAlternateLabel ? optionalAlternateLabel : "Configuration",
         isActive: true,
-        getViewModeElement: (component,showing) => <VanillaViewModeElement
-                component={component}
-                getDataDisplay={component => _getFormDataDisplay(component,getFormLayout)}
-                showing={showing} />
+        getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={component => _getFormDataDisplay(component,getFormLayout)}
+                setEditModeData={setEditModeData}
+                setMsgData={setMsgData}
+				showing={showing} 
+                size={size}
+                setSizeCommandData={setSizeCommandData} />
     }
 }

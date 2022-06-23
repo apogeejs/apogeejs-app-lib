@@ -127,10 +127,14 @@ const FormDataComponentConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
-                component={component}
-                getDataDisplay={getFormViewDisplay}
-                showing={showing} />
+            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getFormViewDisplay}
+                setEditModeData={setEditModeData}
+                setMsgData={setMsgData}
+				showing={showing} 
+                size={size}
+                setSizeCommandData={setSizeCommandData} />
         },
         getFormulaViewModeEntry("member.layout",{name:"Layout Code",label:"Layout Code"}),
         getPrivateViewModeEntry("member.layout",{name:"Layout Private",label:"Layout Private"}),

@@ -172,10 +172,14 @@ const CustomComponentConfig = {
             name: "Display", 
             label: "Display", 
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
-                component={component}
-                getDataDisplay={getOutputDataDisplay}
-                showing={showing} />,
+            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getOutputDataDisplay}
+                setEditModeData={setEditModeData}
+                setMsgData={setMsgData}
+				showing={showing} 
+                size={size}
+                setSizeCommandData={setSizeCommandData} />
         },
         getAppCodeViewModeEntry("html",null,"HTML","HTML",{sourceType: "data", textDisplayMode: "ace/mode/html"}),
         getAppCodeViewModeEntry("css",null,"CSS", "CSS",{sourceType: "data", textDisplayMode: "ace/mode/css"}),

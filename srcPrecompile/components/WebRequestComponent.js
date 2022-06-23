@@ -262,10 +262,14 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.meta",
             isActive: false,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
+            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
 				component={component}
 				getDataDisplay={getMetaViewDisplay}
-				showing={showing} />
+                setEditModeData={setEditModeData}
+                setMsgData={setMsgData}
+				showing={showing} 
+                size={size}
+                setSizeCommandData={setSizeCommandData} />
     
         },
         {
@@ -275,10 +279,14 @@ const WebRequestComponentConfig = {
             sourceType: "data",
             suffix: ".data.body",
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
+            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
 				component={component}
-				getDataDisplay={getBodyViewDisplay}
-				showing={showing} />
+				getDataDisplay={getMetaViewDisplay}
+                setEditModeData={setEditModeData}
+                setMsgData={setMsgData}
+				showing={showing} 
+                size={size}
+                setSizeCommandData={setSizeCommandData} />
         },
         getConfigViewModeEntry(getFormLayout),
     ],

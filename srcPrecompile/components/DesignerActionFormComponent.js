@@ -71,10 +71,15 @@ const DesignerActionFormComponentConfig = {
             name: "Form",
             label: "Form", 
             isActive: true,
-            getViewModeElement: (component,showing) => <VanillaViewModeElement
-                component={component}
-                getDataDisplay={getFormViewDataDisplay}
-                showing={showing} />
+            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
+				component={component}
+				getDataDisplay={getFormViewDataDisplay}
+                setEditModeData={setEditModeData}
+                setMsgData={setMsgData}
+				showing={showing} 
+                size={size}
+                setSizeCommandData={setSizeCommandData} />
+
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer")
     ],
