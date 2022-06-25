@@ -6,13 +6,13 @@ import ace from "/apogeejs-releases/releases/ext/ace/v1.4.12/ace.es.js";
 
 /** Editor that uses the Ace text editor.
  * 
- * @param {type} dataSource - {doUpdate,getData,getEditOk,setData}; format for data is text
+ * @param {type} component - component
  * @param {type} aceMode - the display format, such as "ace/mode/json"
  */
 export default class AceTextEditor extends DataDisplay {
     
-    constructor(component,dataSource,aceMode,options) {
-        super(component,dataSource);
+    constructor(componentId,aceMode,options) {
+        super(componentId);
 
         this.destroyed = false;
 
@@ -81,12 +81,12 @@ export default class AceTextEditor extends DataDisplay {
             this.onEditorBlur();
         }
         
-        if(this.cachedDisplayData) {
-            //this.setData(this.cachedDisplayData);
-            //NEW TEST
-            this.updateData(this.cachedDisplayData)
-            this.showDisplay()
-        }
+        // if(this.cachedDisplayData) {
+        //     //this.setData(this.cachedDisplayData);
+        //     //NEW TEST
+        //     this.updateData(this.cachedDisplayData)
+        //     this.showDisplay()
+        // }
         
         //enter edit mode on change to the data
         this.editor.addEventListener("input",() => this.checkStartEditMode());
@@ -168,19 +168,21 @@ export default class AceTextEditor extends DataDisplay {
         //The data source should give a text value "" if the data in invalid rather than sending
         //in a json, but we will do this check anyway.
         if(text == apogeeutil.INVALID_VALUE) {
-            //clear the display
-            this.cachedDisplayData = "";
-            //the dispaly shoudl be hidden, but do it again anyway
+            throw new Error("Implement handle invalid value for input")
+            // //clear the display
+            // this.cachedDisplayData = "";
+            // //the dispaly shoudl be hidden, but do it again anyway
 
-            this.setHideDisplay(true);
-            this.dataError = true;
+            // this.setHideDisplay(true);
+            // this.dataError = true;
         }
         else if(!apogeeutil.isString(text)) {
-            this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in editor: value is not text")
-            this.setHideDisplay(true);
-            //clear the display
-            this.cachedDisplayData = "";
-            this.dataError = true;
+            throw new Error("Implement handle non-text for input")
+            // this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in editor: value is not text")
+            // this.setHideDisplay(true);
+            // //clear the display
+            // this.cachedDisplayData = "";
+            // this.dataError = true;
         }
     }
 
@@ -203,7 +205,7 @@ export default class AceTextEditor extends DataDisplay {
             //======================================
 
             //set the edit mode and background color
-            if(this.editOk) {
+            if(this.getEditOk()) {
                 this.editorDiv.style.backgroundColor = "";
                 this.editor.setReadOnly(false);
             }

@@ -10,26 +10,44 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 // view code
 ////////////////////////////////////////////////////////
 
-function getDataViewDisplay(component) {
-    let dataDisplaySource;
+function getDataViewDisplay(componentId,sourceState) {
+    switch(sourceState.dataView) {
+        case COLORIZED_DATA_VEW:
+        default:
+            return new AceTextEditor(componentId,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+            
+        case TEXT_DATA_VEW:
+            return new AceTextEditor(componentId,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
+            
+        case GRID_DATA_VEW:
+            return new HandsonGridEditor(componentId);
+    }
+}
+
+function getSourceState(component) {
+    let dataSource;
     let dataView = component.getField("dataView");
-    //update the display container state bar
-    //ADD THIS AGAIN
-    //_setDisplayContainerStatus(displayContainer,dataView);
     switch(dataView) {
         case COLORIZED_DATA_VEW:
         default:
-            dataDisplaySource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataTextDataSource("member"));
-            return new AceTextEditor(component,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+            dataSource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataTextDataSource("member"))
+            break
             
         case TEXT_DATA_VEW:
-            dataDisplaySource =_wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"));
-            return new AceTextEditor(component,dataDisplaySource,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
+            dataSource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"))
+            break
             
         case GRID_DATA_VEW:
-            dataDisplaySource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"));
-            return new HandsonGridEditor(component,dataDisplaySource);
+            dataSource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"))
+            break
     }
+
+    let sourceState = dataDisplayHelper.dataSourceToSourceState(component,dataSource)
+
+    //custom fields
+    sourceState.dataView = dataView
+
+    return sourceState
 }
 
 /** This method updates the data display source to account for reloading the data display due to 
@@ -95,15 +113,14 @@ const JsonComponentConfig = {
             sourceType: "data",
             suffix: "",
             isActive: true,
-            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
-				component={component}
-				getDataDisplay={component => getDataViewDisplay(component)}
-                setEditModeData={setEditModeData}
-                setMsgData={setMsgData}
-				showing={showing} 
-                size={size}
-                setSizeCommandData={setSizeCommandData} />,
-            getViewStatusElement: (component) => <DataViewStatusElement component={component} />,
+            getSourceState: getSourceState,
+            getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => <VanillaViewModeElement
+				sourceState={sourceState}
+				getDataDisplay={sourceState => getDataViewDisplay(componentId,sourceState.dataView)}
+                setEditMode={setEditMode}
+				cellShowing={cellShowing} 
+                size={size} />,
+            getViewStatusElement: (sourceState) => <DataViewStatusElement dataView={sourceState.dataView} />,
             sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
         },
         getFormulaViewModeEntry("member"),
@@ -129,12 +146,12 @@ const JsonComponentConfig = {
 export default JsonComponentConfig;
 
 
-function DataViewStatusElement({component}) {
+function DataViewStatusElement({dataView}) {
     let style = {
         "fontSize": "smaller",
         "color": "gray",
         "marginLeft": "20px"
     }
-    return <span className="visiui_hideSelection" style={style}>Display Format: {component.getField("dataView")}</span>
+    return <span className="visiui_hideSelection" style={style}>Display Format: {dataView}</span>
 }
 

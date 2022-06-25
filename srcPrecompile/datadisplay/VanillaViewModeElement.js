@@ -1,80 +1,43 @@
-export default function VanillaViewModeElement({component,getDataDisplay,showing,setEditModeData,setMsgData,size,setSizeCommandData}) {
+export default function VanillaViewModeElement({sourceState,getDataDisplay,cellShowing,setEditMode,size}) {
 
     //this is just for debugging
     let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
 
+    let reloadData = false
+
     //Get the mutable object for the vanilla javascript display
     let vanillaRef = React.useRef(null)
+    let cellShowingRef = React.useRef(false)
+    let wasCellShowing = cellShowingRef.current
+
     let dataDisplay = vanillaRef.current
-    if(!dataDisplay) {
-        dataDisplay = getDataDisplay(component)
-        dataDisplay.setEditModeState(setEditModeData)
-        dataDisplay.setMsgState(setMsgData)
-        dataDisplay.setSizeCommandCallback(setSizeCommandData)
-
-        //NEW CODE TEST
-        dataDisplay.updateData()
-
-        vanillaRef.current = dataDisplay     
+    if((!dataDisplay)||(sourceState.reloadDataDisplay)) {
+        //PRIOBABLY CLEAN UP HOW I DO THIS
+        dataDisplay = getDataDisplay(sourceState)
+        dataDisplay.setSourceState(sourceState)
+        vanillaRef.current = dataDisplay 
+        reloadData = true
+    }
+    else if(sourceState.reloadData)  {
+        dataDisplay.setSourceState(sourceState)
+        reloadData = true
+    }
+    else if((!wasCellShowing)&&(cellShowing)) {
+        //reload the data if the cell is set to showing from not showing
+        reloadData = true
     }
 
-    //manage adding and removing the vanilla display element
-    const viewRef = React.useRef()
+    cellShowingRef.current = cellShowing
 
-    let [showDataVersion,setShowDataVersion] = React.useState(0)
-    let [reloadDataDisplayVersion,setReloadDataDisplayVersion] = React.useState(0)
-    let activeShowDataVersion = showDataVersion
-    let activeReloadDataDisplayVersion = reloadDataDisplayVersion
-    
-    //-----------------
-    // Manage the data display wrapper
-    //-----------------
+    dataDisplay.setEditModeCallback(setEditMode)
 
-    //update if the component changes
-    if(dataDisplay.getComponent() != component) { 
-        dataDisplay.setComponent(component)
-        dataDisplay.setEditModeState(setEditModeData)
-        dataDisplay.setMsgState(setMsgData)
-
-        let {reloadData,reloadDataDisplay} = dataDisplay.doUpdate();
-
-        if(reloadDataDisplay) {
-            //NEED TO HANDLE EDIT MODE!!!
-            //create a new data display
-            dataDisplay = getDataDisplay(component)
-            dataDisplay.setEditModeState(setEditModeData)
-            dataDisplay.setMsgState(setMsgData)
-
-            vanillaRef.current = dataDisplay
-
-            //NEW CODE TEST
-            dataDisplay.updateData()
-
-            activeShowDataVersion = showDataVersion + 1
-            setShowDataVersion(activeShowDataVersion) //make this repeat after a certain value?
-            activeReloadDataDisplayVersion = reloadDataDisplayVersion + 1
-            setReloadDataDisplayVersion(activeReloadDataDisplayVersion) //make this repeat after a certain value?
-            
-        }
-        else if(reloadData) {
-            //only update data in display if we are not in edit mode
-            if(!dataDisplay.isInEditMode()) {
-
-                //NEW CODE TEST
-                dataDisplay.updateData()
-
-                activeShowDataVersion = showDataVersion + 1
-                setShowDataVersion(activeShowDataVersion)
-            }
-        }
-    }
-
-    const hideDisplay = dataDisplay.getHideDisplay()
-    const styleData = hideDisplay ? {display: "none"} : {}
+    //hide/show display element
+    const styleData = sourceState.hideDisplay ? {display: "none"} : {}
 
     //---------------
     //manage the vanilla display element
     //---------------
+    const viewRef = React.useRef()
 
     //add/remove data display content
     React.useEffect(() => {
@@ -89,12 +52,14 @@ export default function VanillaViewModeElement({component,getDataDisplay,showing
             if(dataDisplay.destroy) dataDisplay.destroy()
         }
 
-    },[activeReloadDataDisplayVersion])
+    },[dataDisplay])
 
     //update data display content
     React.useEffect(() => {
-        dataDisplay.showDisplay()
-    },[activeShowDataVersion,showing,hideDisplay])
+        if(reloadData) {
+            dataDisplay.showDisplay()
+        }
+    })
 
     //udpate display size
     React.useEffect(() => {

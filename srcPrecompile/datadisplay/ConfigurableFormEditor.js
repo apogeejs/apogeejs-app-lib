@@ -15,8 +15,8 @@ export default class ConfigurableFormEditor extends DataDisplay {
      *  - getDisplayData - This returns the layout for the configurable form.
      *  }
      */
-    constructor(component,dataSource) {
-        super(component,dataSource)
+    constructor(componentId,sourceState) {
+        super(componentId)
 
         //TEMP - to raise the z index
         // let domElement = this.displayContainer.getDisplayElement();
@@ -28,20 +28,10 @@ export default class ConfigurableFormEditor extends DataDisplay {
         this.panel = new ConfigurablePanel()
 
         //get data and handle invalid display
-        if(this.dataSource.getDisplayData) {
-            let dataResult = this.dataSource.getDisplayData(component)
-            if(dataResult.hideDisplay) {
-                //display invalid! hide display and show message
-                this.setHideDisplay(dataResult.hideDisplay)
-                this.setMessage(dataResult.messageType,dataResult.message)
-                this.formCreated = false
-            }
-            else {
-                //display display valid
-                this.panel.configureForm(dataResult.data)
-                this.panel.addOnInput( formValue => this.onFormInput(formValue))
-                this.formCreated = true
-            }
+        if(sourceState.displayData) {
+            this.panel.configureForm(sourceState.displayData)
+            this.panel.addOnInput( formValue => this.onFormInput(formValue))
+            this.formCreated = true
         }
         else {
             this.formCreated = false

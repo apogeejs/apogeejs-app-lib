@@ -1,6 +1,3 @@
-import DataDisplay from "/apogeejs-app-lib/src/datadisplay/DataDisplay.js";
-import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
-
 
 /** This function determines if there is (not) extended error information to display. */
 export function isErrorElementRemoved(component) {
@@ -29,15 +26,22 @@ function isExtendedInfoInMemberErrorInfo(memberErrorInfo) {
     return ((memberErrorInfo.errorInfoList)&&(memberErrorInfo.errorInfoList.length > 0))
 } 
 
-export function StandardErrorElement({component, showing}) {
+export function getStandardErrorSourceState(component) {
+    return {
+        state: component.getState(),
+        errorInfo: component.getErrorInfo
+    }
+}
+
+export function StandardErrorElement({sourceState, cellShowing}) {
     //do something better if there is not an error
-    if(component.getState() != apogeeutil.STATE_ERROR) {
+    if(sourceState != apogeeutil.STATE_ERROR) {
         return <div>No error</div>
     }
 
     return (
         <div className="errorDisplay_main">
-            {_getErrorInfoElement(component.getErrorInfo())}
+            {_getErrorInfoElement(sourceState.errorInfo)}
         </div>
     )
 }

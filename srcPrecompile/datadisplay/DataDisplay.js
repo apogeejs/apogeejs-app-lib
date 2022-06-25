@@ -20,13 +20,12 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
  *      components to pass non-model data (like the HTML or the UI generator code) into the data display.
  */ 
 export default class DataDisplay {
-    constructor(component,dataSource) {
-        this.component = component
-        this.dataSource = dataSource ? dataSource : {}
-        this.editOk = false
+    constructor(componentId) {
+        this.componentId = componentId
+        this.sourceState = {}
 
         this.inEditMode = false
-        this._setEditModeData = undefined
+        this._setEditMode = undefined
         this.mesasgeType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE 
         this.message = ""
         this._setMsgData = undefined
@@ -38,21 +37,9 @@ export default class DataDisplay {
         this.useContainerHeightUi = false
     }
 
-    setComponent(component) {
-        this.component = component
-    }
-
-    getComponent() {
-        return this.component
-    }
-
     /** This is used to pass is and clear the setEditMode function */
-    setEditModeState(setEditModeData) {
-        this._setEditModeData = setEditModeData
-    }
-
-    setMsgState(setMsgData) {
-        this._setMsgData = setMsgData
+    setEditModeCallback(setEditMode) {
+        this._setEditMode = setEditMode
     }
 
     setSizeCommandCallback(setSizeCommandData) {
@@ -63,42 +50,47 @@ export default class DataDisplay {
         return this.inEditMode
     }
 
-    setMessage(messageType,message) {
-        if(!messageType) {
-            messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-            message = ""
-        }
+    // setMessage(messageType,message) {
+    //     if(!messageType) {
+    //         messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+    //         message = ""
+    //     }
         
-        if((this.messageType != messageType)||(this.message != message)) {
-            this.messageType = messageType
-            this.message = message
-            let msgData = {
-                type: messageType,
-                msg: message
-            }
-            if(this._setMsgData) this._setMsgData(msgData)
-        }
-    }
-
-    setHideDisplay(hideDisplay) {
-        this.hideDisplay = hideDisplay
-    }
+    //     if((this.messageType != messageType)||(this.message != message)) {
+    //         this.messageType = messageType
+    //         this.message = message
+    //         let msgData = {
+    //             type: messageType,
+    //             msg: message
+    //         }
+    //         if(this._setMsgData) this._setMsgData(msgData)
+    //     }
+    // }
 
     getHideDisplay() {
-        return this.hideDisplay
+        return this.sourceState ? this.sourceState.hideDisplay : true
     }
 
-    /** This method returns {reloadDataDisplay, reloadData}, indicating if the data display or the data need to be updated. */
-    doUpdate() {
-        if(this.dataSource) {
-            return this.dataSource.doUpdate(this.component);
+    getSourceData() {
+        return this.sourceState ? this.sourceState.data : null
+    }
+
+    getEditOk() {
+        return this.sourceState ? this.sourceState.editOk : false
+    }
+
+    setSourceState(sourceState) {
+        if(sourceState) this.sourceState = sourceState
+        else this.sourceState = {}
+
+        //temp implementation for early dev!!!
+        if(sourceState.reloadData) {
+            this.internalUpdateData(this.getSourceData())
         }
-        else {
-            return {
-                    reloadData: false,
-                    reloadDataDisplay: false
-                };
-        }
+    }
+
+    getSourceState() {
+        return this.sourceState
     }
     
     /** For edit mode, this is used to save data in the data display editor. */
@@ -123,9 +115,9 @@ export default class DataDisplay {
             //if we fail, we restart edit mode below
             this.endEditMode();
 
-            if(this.dataSource.saveData) {
+            if(this.sourcestate && this.sourceState.saveData) {
                 try {
-                    saveComplete = this.dataSource.saveData(data,this.component,this);
+                    saveComplete = this.sourceState.saveData(data,this.componentId,this);
                 }
                 catch(error) {
                     if(error.stack) console.error(error.stack);
@@ -154,10 +146,6 @@ export default class DataDisplay {
     getDisplayContainer() {
         //return this.displayContainer;
         alert("DOH! getDisplayContainer of DataDisplay")
-    }
-
-    getDataSource() {
-        return this.dataSource;
     }
 
     getComponentView() {
@@ -228,49 +216,28 @@ export default class DataDisplay {
     //=============================
     // protected, package and private Methods
     //=============================
-	
-    /** This method udpates the data in the data display, reading it from the underlying data source. */
-    updateData() {
-
-        //get edit ok
-        if(this.dataSource.getEditOk) {
-            this.editOk = this.dataSource.getEditOk(this.component)
-        }
-        else {
-            this.editOk = false;
-        }
-
-        //update the display data
-        let dataResult = this.dataSource.getData(this.component)
-        this.hideDisplay = (this.dataSource.hideDisplay === true) 
-
-        this.setMessage(dataResult.messageType,dataResult.message)
-        this.internalUpdateData(dataResult.data)
-    }
 
     //showDisplay
 
     /** @protected */
     endEditMode() {
-        if((this.inEditMode)&&(this._setEditModeData)) {
+        if((this.inEditMode)&&(this._setEditMode)) {
             this.inEditMode = false
-            this._setEditModeData(null)
+            this._setEditMode(false)
         }
     }
     
     /** @protected */
     startEditMode() {
-        if((!this.inEditMode)&&(this._setEditModeData)) {
+        if((!this.inEditMode)&&(this._setEditMode)) {
             this.inEditMode = true
-            const save = () => this.save()
-            const cancel =  () => this.cancel()
-            this._setEditModeData({save, cancel})
+            this._setEditMode(true)
         }
     }
 
     /** @protected */
     onTriggerEditMode() {
-        if(this.editOk) {
+        if(this.getEditOk()) {
             this.startEditMode();
         }
     }

@@ -8,6 +8,36 @@ const MIME_TYPE_JSON = "application/json"
 const SPACING_FORMAT_STRING = "\t";
 
 
+/** This generates a standard source state from a standard data source. */
+dataDisplayHelper.dataSourceToSourceState = function(component,dataSource) {
+    let sourceState = {}
+    let {reloadData,reloadDataDisplay} = dataSource.doUpdate(component)
+    sourceState.reloadDataDisplay = reloadDataDisplay
+    sourceState.reloadData = reloadData
+    let dataResult = dataSource.getData(component)
+
+    //we shouldn't have to call this every time!
+    sourceState.data = dataResult.data
+    sourceState.hideDisplay = (dataResult.hideDisplay === true)
+    if(dataResult.messageType) {
+        sourceState.messageType = dataResult.messageType 
+        sourceState.message = dataResult.message
+    }
+    else {
+        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+        sourceState.message = ""
+    }
+    
+    let editOk = dataSource.getEditOk(component)
+    if(editOk) {
+        sourceState.editOk = editOk
+        sourceState.save = data => dataSource.saveData(data,component)
+    }
+
+    return sourceState
+}
+
+
 
 /** This function creates the data display data source  for the data of the given member. The
  * member field should be the field name used to access the data source from the associated component. */

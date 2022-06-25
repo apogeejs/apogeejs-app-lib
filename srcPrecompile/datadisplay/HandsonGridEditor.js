@@ -7,8 +7,8 @@ import Handsontable from "/apogeejs-releases/releases/ext/handsontable/v6.2.2/ha
 /** This is a grid editor using hands on table*/
 export default class HandsonGridEditor extends DataDisplay {
     
-    constructor(component,dataSource) {
-        super(component,dataSource);
+    constructor(componentId) {
+        super(componentId);
 
         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
         this.savedPixelHeight = DEFAULT_PIXEL_HEIGHT;
@@ -63,7 +63,7 @@ export default class HandsonGridEditor extends DataDisplay {
     
     internalUpdateData(json) {
 
-        if((this.inputData === json)&&(this.editOk)) return;
+        if((this.inputData === json)&&(this.getEditOk())) return;
 
         this.inputData = json;
         this.cachedDisplayData = json;
@@ -262,8 +262,8 @@ export default class HandsonGridEditor extends DataDisplay {
 
         var gridOptions = {
             data: initialData,
-            readOnly: !this.editOk,
-            contextMenu: this.editOk,
+            readOnly: !this.getEditOk(),
+            contextMenu: this.getEditOk(),
             rowHeaders: true,
             colHeaders: true,
             width:"100%",
@@ -272,7 +272,7 @@ export default class HandsonGridEditor extends DataDisplay {
 
         this.gridControl = new Handsontable(this.gridDiv,gridOptions); 
 
-        if(this.editOk) {
+        if(this.getEditOk()) {
         //edit callbacks - I am using a delay on the grid edited because the table fires too many updates - one for 
             //each row (soemthing like that I forget) on a big paste
             Handsontable.hooks.add("afterChange",() => this.gridEdited(),this.gridControl);
@@ -333,16 +333,16 @@ export default class HandsonGridEditor extends DataDisplay {
             editData = [[]];
         }
 
-        if((!this.gridControl)||(this.activeEditOk !== this.editOk)) {
+        if((!this.gridControl)||(this.activeEditOk !== this.getEditOk())) {
             this.createNewGrid(editData);
-            this.activeEditOk = this.editOk;
+            this.activeEditOk = this.getEditOk();
         }
         else {
             this.gridControl.loadData(editData);
         }
 
         //set the background color
-        if(this.editOk) {
+        if(this.getEditOk()) {
             this.gridDiv.style.backgroundColor = "";
         }
         else {
