@@ -24,7 +24,7 @@ function getDataViewDisplay(componentId,sourceState) {
     }
 }
 
-function getSourceState(component) {
+function getSourceState(component,oldSourceState) {
     let dataSource;
     let dataView = component.getField("dataView");
     switch(dataView) {
@@ -42,7 +42,7 @@ function getSourceState(component) {
             break
     }
 
-    let sourceState = dataDisplayHelper.dataSourceToSourceState(component,dataSource)
+    let sourceState = dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
 
     //custom fields
     sourceState.dataView = dataView
@@ -114,10 +114,10 @@ const JsonComponentConfig = {
             suffix: "",
             isActive: true,
             getSourceState: getSourceState,
-            getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => <VanillaViewModeElement
+            getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
 				sourceState={sourceState}
 				getDataDisplay={sourceState => getDataViewDisplay(componentId,sourceState.dataView)}
-                setEditMode={setEditMode}
+                setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
             getViewStatusElement: (sourceState) => <DataViewStatusElement dataView={sourceState.dataView} />,

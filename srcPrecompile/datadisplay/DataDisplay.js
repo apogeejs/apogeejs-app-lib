@@ -23,9 +23,9 @@ export default class DataDisplay {
     constructor(componentId) {
         this.componentId = componentId
         this.sourceState = {}
-
         this.inEditMode = false
-        this._setEditMode = undefined
+
+        this._setEditModeData = undefined
         this.mesasgeType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE 
         this.message = ""
         this._setMsgData = undefined
@@ -37,9 +37,9 @@ export default class DataDisplay {
         this.useContainerHeightUi = false
     }
 
-    /** This is used to pass is and clear the setEditMode function */
-    setEditModeCallback(setEditMode) {
-        this._setEditMode = setEditMode
+    /** This is used to pass is and clear the setEditModeData function */
+    setEditModeCallback(setEditModeData) {
+        this._setEditModeData = setEditModeData
     }
 
     setSizeCommandCallback(setSizeCommandData) {
@@ -84,9 +84,7 @@ export default class DataDisplay {
         else this.sourceState = {}
 
         //temp implementation for early dev!!!
-        if(sourceState.reloadData) {
-            this.internalUpdateData(this.getSourceData())
-        }
+        this.internalUpdateData(this.getSourceData())
     }
 
     getSourceState() {
@@ -221,17 +219,17 @@ export default class DataDisplay {
 
     /** @protected */
     endEditMode() {
-        if((this.inEditMode)&&(this._setEditMode)) {
-            this.inEditMode = false
-            this._setEditMode(false)
+        if((this.isInEditMode())&&(this._setEditModeData)) {
+            this.isEditMode = false
+            this._setEditModeData(null)
         }
     }
     
     /** @protected */
     startEditMode() {
-        if((!this.inEditMode)&&(this._setEditMode)) {
-            this.inEditMode = true
-            this._setEditMode(true)
+        if((!this.isInEditMode())&&(this._setEditModeData)) {
+            this.isEditMode = true
+            this._setEditModeData({getData: () => this.getData()})
         }
     }
 

@@ -15,7 +15,7 @@ export function getErrorViewModeEntry() {
         isTransient: true,
         isErrorView: true,
         getSourceState: getStandardErrorSourceState,
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => 
+        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => 
             <StandardErrorElement sourceState={sourceState} cellShowing={cellShowing} />,
         isViewRemoved: isErrorElementRemoved
     }
@@ -54,15 +54,15 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         sourceType: "data",
         suffix: suffix, //default value comes from member field name 
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
-        getSourceState: (component) => {
+        getSourceState: (component,oldSourceState) => {
             let doReadOnly = ((options)&&(options.editorOptions)) ? options.editorOptions.doReadOnly : false;
             let dataSource = dataDisplayHelper.getMemberDataTextDataSource(memberFieldName,doReadOnly)
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource)
+            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
         },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => <VanillaViewModeElement
+        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
 				sourceState={sourceState}
 				getDataDisplay={sourceState => getMemberDataTextDisplay(componentId,options)}
-                setEditMode={setEditMode}
+                setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
@@ -86,14 +86,14 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
         sourceType: "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getSourceState: (component) => {
+        getSourceState: (component,oldSourceState) => {
             let dataSource = dataDisplayHelper.getMemberFunctionBodyDataSource(memberFieldName);
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource)
+            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
         },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => <VanillaViewModeElement
+        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
 				sourceState={sourceState}
 				getDataDisplay={sourceState => getFormulaDataDisplay(componentId,options)}
-                setEditMode={setEditMode}
+                setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
@@ -113,14 +113,14 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
         sourceLayer: "model",
         sourceType: "private code",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getSourceState: (component) => {
+        getSourceState: (component,oldSourceState) => {
             let dataSource = dataDisplayHelper.getMemberSupplementalDataSource(memberFieldName);
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource)
+            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
         },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => <VanillaViewModeElement
+        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
 				sourceState={sourceState}
 				getDataDisplay={sourceState => getPrivateDataDisplay(componentId,options)}
-                setEditMode={setEditMode}
+                setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
@@ -150,14 +150,14 @@ export function getAppCodeViewModeEntry(componentFieldName,componentCompiledFiel
         sourceType: ((options)&&(options.sourceType)) ? options.sourceType : "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getSourceState: (component) => {
+        getSourceState: (component,oldSourceState) => {
             let dataSource = getComponentFieldDisplaySource(componentFieldName,componentCompiledFieldName)
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource)
+            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
         },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditMode,size) => <VanillaViewModeElement
+        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
 				sourceState={sourceState}
 				getDataDisplay={sourceState => getAppCodeDataDisplay(componentId,options)}
-                setEditMode={setEditMode}
+                setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,

@@ -7,25 +7,37 @@ export {dataDisplayHelper as default}
 const MIME_TYPE_JSON = "application/json"
 const SPACING_FORMAT_STRING = "\t";
 
-
 /** This generates a standard source state from a standard data source. */
-dataDisplayHelper.dataSourceToSourceState = function(component,dataSource) {
+dataDisplayHelper.dataSourceToSourceState = function(component,dataSource,oldSourceState) {
     let sourceState = {}
     let {reloadData,reloadDataDisplay} = dataSource.doUpdate(component)
-    sourceState.reloadDataDisplay = reloadDataDisplay
-    sourceState.reloadData = reloadData
-    let dataResult = dataSource.getData(component)
 
-    //we shouldn't have to call this every time!
-    sourceState.data = dataResult.data
-    sourceState.hideDisplay = (dataResult.hideDisplay === true)
-    if(dataResult.messageType) {
-        sourceState.messageType = dataResult.messageType 
-        sourceState.message = dataResult.message
+    //update data display
+    sourceState.dataDislayVersion = (reloadDataDisplay)||(!oldSourceState) ? component.getInstanceNumber() : oldSourceState.dataDisplayVersion
+    
+    //update data
+    sourceState.dataVersion = (reloadData)||(!oldSourceState) ? component.getInstanceNumber() : oldSourceState.dataVersion
+    if((reloadData)||(!oldSourceState)) {
+        sourceState.dataVersion = component.getInstanceNumber()
+
+        let dataResult = dataSource.getData(component)
+        sourceState.data = dataResult.data
+        sourceState.hideDisplay = (dataResult.hideDisplay === true)
+        if(dataResult.messageType) {
+            sourceState.messageType = dataResult.messageType 
+            sourceState.message = dataResult.message
+        }
+        else {
+            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+            sourceState.message = ""
+        }
     }
     else {
-        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-        sourceState.message = ""
+        sourceState.dataVersion = oldSourceState.dataVersion
+        sourceState.data = oldSourceState.data
+        sourceState.hideDisplay = oldSourceState.hideDisplay
+        sourceState.message = oldSourceState.message
+        sourceState.messageType = oldSourceState.messageType
     }
     
     let editOk = dataSource.getEditOk(component)

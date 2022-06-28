@@ -1,24 +1,28 @@
-export default function VanillaViewModeElement({sourceState,getDataDisplay,cellShowing,setEditMode,size}) {
+export default function VanillaViewModeElement({sourceState,getDataDisplay,cellShowing,setEditModeData,size}) {
 
     //this is just for debugging
     let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
 
-    let reloadData = false
-
     //Get the mutable object for the vanilla javascript display
     let vanillaRef = React.useRef(null)
+
+    let sourceStateRef = React.useRef(null)
+    let previousState = sourceStateRef.current
+
     let cellShowingRef = React.useRef(false)
     let wasCellShowing = cellShowingRef.current
 
+    let reloadData = false
+
     let dataDisplay = vanillaRef.current
-    if((!dataDisplay)||(sourceState.reloadDataDisplay)) {
+    if((!dataDisplay)||(previousState && (previousState.displayDataVersion != sourceState.displayDataVersion))) {
         //PRIOBABLY CLEAN UP HOW I DO THIS
         dataDisplay = getDataDisplay(sourceState)
         dataDisplay.setSourceState(sourceState)
         vanillaRef.current = dataDisplay 
         reloadData = true
     }
-    else if(sourceState.reloadData)  {
+    else if(previousState && (previousState.dataVersion != sourceState.dataVersion))  {
         dataDisplay.setSourceState(sourceState)
         reloadData = true
     }
@@ -27,9 +31,10 @@ export default function VanillaViewModeElement({sourceState,getDataDisplay,cellS
         reloadData = true
     }
 
+    sourceStateRef.current = sourceState
     cellShowingRef.current = cellShowing
 
-    dataDisplay.setEditModeCallback(setEditMode)
+    dataDisplay.setEditModeCallback(setEditModeData)
 
     //hide/show display element
     const styleData = sourceState.hideDisplay ? {display: "none"} : {}
