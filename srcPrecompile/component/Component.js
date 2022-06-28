@@ -52,31 +52,6 @@ export default class Component extends FieldObject {
     // Public Instance Methods
     //==============================
 
-    
-    //-------------------------------
-    // Workspace object interface
-    //-------------------------------
-    // getChildren(workspaceManager) {
-    //     if(this.componentConfig.isParentOfChildEntries) {
-    //         let modelManager = workspaceManager.getModelManager()
-    //         let parentMember = this.getParentFolderForChildren()
-    //         let childComponents = []
-    //         let childIdMap = parentMember.getChildIdMap()
-    //         for(let childKey in childIdMap) {
-    //             let childMemberId = childIdMap[childKey]
-    //             let childComponentId = modelManager.getComponentIdByMemberId(childMemberId)
-    //             if(childComponentId) {
-    //                 let childComponent = modelManager.getComponentByComponentId(childComponentId)
-    //                 childComponents.push(childComponent)
-    //             }
-    //         }
-    //         return childComponents
-    //     }
-    //     else {
-    //         return []
-    //     }
-    // }
-
     getWorkspaceObjectType() {
         return "Component"
     }
