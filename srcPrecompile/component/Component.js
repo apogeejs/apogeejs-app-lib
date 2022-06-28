@@ -46,12 +46,6 @@ export default class Component extends FieldObject {
             
             this.setField("memberFieldMap",memberFieldMap);
         }
-
-        //==============
-        //Working variables
-        //==============
-        this.viewStateCallback = null;
-        this.cachedViewState = null;
     }
 
     //==============================
@@ -238,14 +232,6 @@ export default class Component extends FieldObject {
      * the value is the stored name for the component. */
     getMemberFieldMap() {
         return this.getField("memberFieldMap");
-    }
-
-    setViewStateCallback(viewStateCallback) {
-        this.viewStateCallback = viewStateCallback;
-    }
-
-    getCachedViewState() {
-        return this.cachedViewState;
     }
 
     getComponentConfig() {
@@ -442,11 +428,6 @@ export default class Component extends FieldObject {
             this.writeToJson(json,modelManager);
         }
         //////////////////////////////////////////////////////////////////////////
-
-        if(this.viewStateCallback) {
-            this.cachedViewState = this.viewStateCallback();
-            if(this.cachedViewState) json.viewState = this.cachedViewState;
-        }
         
         return json;
     }
@@ -454,11 +435,6 @@ export default class Component extends FieldObject {
     /** This is used to deserialize the component. */
     loadFromJson(json,modelManager) {
         if(!json) json = {};
-        
-        //set the tree state
-        if(json.viewState !== undefined) {
-            this.cachedViewState = json.viewState;
-        }
         
         //allow the component implemnetation to read data from the json
         if(this.loadExtendedData) {

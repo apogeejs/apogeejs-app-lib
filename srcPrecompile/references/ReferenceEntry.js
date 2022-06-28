@@ -26,13 +26,7 @@ export default class ReferenceEntry extends FieldObject {
             //we create in a pending state because the link is not loaded.
             this.setField("state",apogeeutil.STATE_PENDING);
             this.setField("stateMsg",PENDING_STATE_MSG);
-        }
-
-        //==============
-        //Working variables
-        //==============
-        this.viewStateCallback = null;
-        this.cachedViewState = null;    
+        }  
     }
 
     //-------------------------------
@@ -58,15 +52,6 @@ export default class ReferenceEntry extends FieldObject {
     getData() {
         return this.getField("data");
     }
-
-    setViewStateCallback(viewStateCallback) {
-        this.viewStateCallback = viewStateCallback;
-    }
-
-    getCachedViewState() {
-        return this.cachedViewState;
-    }
-
 
     ///////////////////////////////////////////////////////////////////////////
 

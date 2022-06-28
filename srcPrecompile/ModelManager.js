@@ -24,8 +24,6 @@ export default class ModelManager extends FieldObject {
         //==============
         //Working variables
         //==============
-        this.viewStateCallback = null;
-        this.cachedViewState = null;
 
         this.workingChangeMap = {};
 
@@ -37,24 +35,6 @@ export default class ModelManager extends FieldObject {
     //====================================
     // Methods
     //====================================
-
-    //-------------------------------
-    // Workspace object interface
-    //-------------------------------
-    // getChildren(workspaceManager) {
-    //     let model = this.getField("model")
-    //     let childComponents = []
-    //     let childIdMap = model.getChildIdMap()
-    //     for(let childKey in childIdMap) {
-    //         let childMemberId = childIdMap[childKey]
-    //         let childComponentId = this.getComponentIdByMemberId(childMemberId)
-    //         if(childComponentId) {
-    //             let childComponent = this.getComponentByComponentId(childComponentId)
-    //             childComponents.push(childComponent)
-    //         }
-    //     }
-    //     return childComponents
-    // }
 
     getWorkspaceObjectType() {
         return "ModelManager"
@@ -387,14 +367,6 @@ export default class ModelManager extends FieldObject {
     //====================================
     // open and save methods
     //====================================
-    
-    setViewStateCallback(viewStateCallback) {
-        this.viewStateCallback = viewStateCallback;
-    }
-
-    getCachedViewState() {
-        return this.cachedViewState;
-    }
 
      /** This method loads the model data and model components from the json. */
     load(workspaceManager,json) {
@@ -405,11 +377,6 @@ export default class ModelManager extends FieldObject {
         if(json) {
             modelJson = json.model;
             componentsJson = json.components;
-
-            //set the view state
-            if(json.viewState !== undefined) {
-                this.cachedViewState = json.viewState;
-            }
         }
 
         //load defaults if there is not saved model data
@@ -514,12 +481,6 @@ export default class ModelManager extends FieldObject {
             componentsJson[childName] = component.toJson(this);
         }
         json.components = componentsJson;
-
-        //model view state
-        if(this.viewStateCallback) {
-            this.cachedViewState = this.viewStateCallback();
-            if(this.cachedViewState) componentsJson.viewState = this.cachedViewState;
-        }
 
         return json;
     }

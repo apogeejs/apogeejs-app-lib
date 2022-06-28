@@ -1,6 +1,5 @@
 import {FieldObject} from "/apogeejs-base-lib/src/apogeeBaseLib.js";
 
-import {uiutil} from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 import apogeeutil from "/apogeejs-util-lib/src/apogeeUtilLib.js";
 
 import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
@@ -43,9 +42,6 @@ export default class WorkspaceManager extends FieldObject {
         //NOn-field and working variables
         //==============
         this.runContextLink = new ModelRunContextLink(this.app.getRunContext());
-
-        this.viewStateCallback = null;
-        this.cachedViewState = null;
 
         this.isClosed = false;
     }
@@ -250,15 +246,7 @@ export default class WorkspaceManager extends FieldObject {
     //====================================
     // open and save methods
     //====================================
-
-    setViewStateCallback(viewStateCallback) {
-        this.viewStateCallback = viewStateCallback;
-    }
-
-    getCachedViewState() {
-        return this.cachedViewState;
-    }
-
+    
     /** This saves the workspace. It the optionalSavedRootFolder is passed in,
      * it will save a workspace with that as the root folder. */
     toJson(optionalSavedRootFolder) {
