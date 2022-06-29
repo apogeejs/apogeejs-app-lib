@@ -65,8 +65,7 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
-        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
-        childPath: ((options)&&(options.childPath)) ? options.childPath : "."
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
 
@@ -96,8 +95,7 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
-        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
-        childPath: ((options)&&(options.childPath)) ? options.childPath : "."
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
 
@@ -123,8 +121,7 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
-        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
-        childPath: ((options)&&(options.childPath)) ? options.childPath : "."
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 } 
 
@@ -160,8 +157,7 @@ export function getAppCodeViewModeEntry(componentFieldName,componentCompiledFiel
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
-        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
-        childPath: ((options)&&(options.childPath)) ? options.childPath : "."
+        sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
 
