@@ -114,7 +114,7 @@ export default class ReferenceManager extends FieldObject {
         referenceListArray.forEach(referenceList => {
             referenceList.close()
         })
-        this.setField("referenceListArray",[])
+        //this.setField("referenceListArray",[])
     }
 
     /** This returns a list of urls loaded for the given module type. (Note that
@@ -141,8 +141,8 @@ export default class ReferenceManager extends FieldObject {
 
     getMutableReferenceListByType(moduleType) {
         let oldReferenceListArray = this.getField("referenceListArray")
-        let index = oldReferenceListArray.findIndex()
-        if(index <= 0) throw new Error("Reference type not found: " + moduleType)
+        let index = oldReferenceListArray.findIndex(referenceList => referenceList.getReferenceType() == moduleType)
+        if(index < 0) throw new Error("Reference type not found: " + moduleType)
 
         let oldReferenceList = oldReferenceListArray[index]
         if(oldReferenceList.getIsLocked()) {
@@ -233,7 +233,7 @@ export default class ReferenceManager extends FieldObject {
         for(let entryType in json) {
             let referenceList = this.getMutableReferenceListByType(entryType)
             if(referenceList) {
-                let loadPromise = load(workspaceManager,json[entryType])
+                let loadPromise = referenceList.load(workspaceManager,json[entryType])
                 listLoadedPromises.push(loadPromise)
             }
         }
@@ -258,7 +258,7 @@ export default class ReferenceManager extends FieldObject {
         let json = {}
         let refListArray = this.getField("referenceListArray");
         refListArray.forEach(refList => {
-            json[refList.getEntryType()] = refList.toJson()
+            json[refList.getReferenceType()] = refList.toJson()
         })
         return json;
     }

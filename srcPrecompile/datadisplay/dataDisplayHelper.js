@@ -82,10 +82,10 @@ function _getMemberDataDataSource(memberFieldName,doReadOnly,options) {
         },
 
         getEditOk: doReadOnly ? 
-            function (component) { return false; }  : 
+            function (component) { return false }  :
             function (component) {
-                let member = component.getField(memberFieldName);
-                return !member.hasCode();
+                let member = component.getField(memberFieldName)
+                return (!member.hasCode && member.hasCode()) 
             },
 
         saveData: doReadOnly ? undefined :
