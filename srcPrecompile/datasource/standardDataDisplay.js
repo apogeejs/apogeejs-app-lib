@@ -39,8 +39,8 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         suffix = options.suffix
     }
     else {
-        if(memberFieldName.startsWith("member.")) {
-            suffix = memberFieldName.slice("member".length);
+        if(memberFieldName.endsWith(".member")) {
+            suffix = memberFieldName.slice(0,-".member".length);
         }
         else {
             suffix = null;

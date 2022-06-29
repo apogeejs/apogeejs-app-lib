@@ -39,11 +39,11 @@ function _getOutputFormDataSource() {
         doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
             let reloadData = false;
-            let reloadDataDisplay = component.isMemberFieldUpdated("member.data","data");
+            let reloadDataDisplay = component.isMemberFieldUpdated("data.member","data");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.data"),
+        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"data.member"),
 
         getData: (component) => { return {"data": null}; },
 

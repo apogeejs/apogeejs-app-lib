@@ -50,7 +50,7 @@ return __createJsx(props)
 }
 
 function getOutputElement(component) {
-    let elementMember = component.getField("member.jsx");
+    let elementMember = component.getField("jsx.member");
     if(elementMember.getState() == apogeeutil.STATE_NORMAL) {
         return elementMember.getData();
     }

@@ -15,7 +15,7 @@ function _getInputFormDataSource(getFormLayout) {
     return {
         doUpdate: (component) => {
             //data updates should only be triggered by the form itself
-            let reloadData = component.isMemberDataUpdated("member.formData");
+            let reloadData = component.isMemberDataUpdated("formData.member");
             //form layout constant
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
@@ -25,7 +25,7 @@ function _getInputFormDataSource(getFormLayout) {
                 data: getFormLayout(component)
             }
         },
-        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.formData"),
+        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"formData.member"),
         getEditOk: () => true,
         saveData: (formData,component,dataDisplay) => _onSubmit(component,formData,dataDisplay)
     }
@@ -48,7 +48,7 @@ function _onSubmit(component, formData, formEditor) {
     }
 
     //set the form data value
-    var dataMember = component.getField("member.formData");
+    var dataMember = component.getField("memr.formData.member");
 
     var dataCommand = {};
     dataCommand.type = "saveMemberData";
@@ -59,7 +59,7 @@ function _onSubmit(component, formData, formEditor) {
     let functionGenerator = new FormResultFunctionGenerator();
     functionGenerator.setInput(formData,formMeta);
     
-    var resultMember = component.getField("member.formResult");
+    var resultMember = component.getField("formResult.member");
     var resultCommand = {};
 
     if(functionGenerator.getHasExpressions()) {

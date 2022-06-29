@@ -183,14 +183,14 @@ function _getBodyDataSource() {
     return {
         doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("member.data");
+            let reloadData = component.isMemberDataUpdated("data.member");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
         getData: (component) => {
             //Here we return just the body (not header), converted to text if needed
-            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"member.data");
+            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"data.member");
             if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
                 let bodyAndMeta = wrappedData.data;
                 if(!bodyAndMeta) {
@@ -218,14 +218,14 @@ function _getMetaDataSource() {
     return {
         doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("member.data");
+            let reloadData = component.isMemberDataUpdated("data.member");
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
 
         getData: (component) => {
             //Here we return just the meta data, as text
-            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"member.data");
+            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"data.member");
             if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
                 let bodyAndMeta = wrappedData.data;
                 if((!bodyAndMeta)||(!bodyAndMeta.meta)) {

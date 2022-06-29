@@ -66,19 +66,19 @@ function _getOutputFormDataSource() {
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
         doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("member.value");
-            let reloadDataDisplay = component.isMemberFieldUpdated("member.data","data");
+            let reloadData = component.isMemberDataUpdated("value.member");
+            let reloadDataDisplay = component.isMemberFieldUpdated("data.member","data");
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: (component) =>  dataDisplayHelper.getWrappedMemberData(component,"member.data"),
+        getDisplayData: (component) =>  dataDisplayHelper.getWrappedMemberData(component,"data.member"),
 
-        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.value"),
+        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"value.member"),
 
         getEditOk: (component) => true,
 
         saveData: (formValue,component) => {
-            let isValidMember = component.getField("member.isValid");
+            let isValidMember = component.getField("isValid.member");
             let isValidFunction;
             let issueMessage;
             switch(isValidMember.getState()) {
@@ -159,9 +159,9 @@ const DesignerDataFormComponentConfig = {
 
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer"),
-        getFormulaViewModeEntry("member.isValid",{name:"IsValidFunction",label:"IsValid Function",argList:"formValue"}),
-        getPrivateViewModeEntry("member.isValid",{name:"IsValidPrivate",label:"IsValid Private"}),
-        getMemberDataTextViewModeEntry("member.value")
+        getFormulaViewModeEntry("isValid.member",{name:"IsValidFunction",label:"IsValid Function",argList:"formValue"}),
+        getPrivateViewModeEntry("isValid.member",{name:"IsValidPrivate",label:"IsValid Private"}),
+        getMemberDataTextViewModeEntry("value.member")
     ],
     iconResPath: "/icons3/formCellIcon.png",
     propertyDialogEntries: [

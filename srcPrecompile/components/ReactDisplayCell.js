@@ -8,7 +8,7 @@ import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,ge
 function onJsxCodeUpdate(component,jsxFunctionBody) {
     try {
         const functionBody = transformFunctionBody(jsxFunctionBody);
-        let functionMember = component.getField("member.Element")
+        let functionMember = component.getField("Element.member")
 
         let actionData = {
             action: "updateCode",
@@ -42,8 +42,8 @@ function onJsxCodeUpdate(component,jsxFunctionBody) {
 ////////////////////////////////////////////////////////
 
 function getOutputElement(component) {
-    let elementMember = component.getField("member.Element")
-    let propsMember = component.getField("member.props")
+    let elementMember = component.getField("Element.member")
+    let propsMember = component.getField("props.member")
     if((elementMember.getState() == apogeeutil.STATE_NORMAL)&&(propsMember.getState() == apogeeutil.STATE_NORMAL)) {
         const elementFunction = elementMember.getData()
         let props = propsMember.getData()
@@ -128,9 +128,9 @@ const ReactDisplayCellConfig = {
             getViewModeElement: (component,showing,size) => getOutputElement(component),
         },
         getAppCodeViewModeEntry("jsxCode",null,"jsxCode","JSX Code",{sourceType: "code", argList:"props", isActive: true /*,textDisplayMode: "ace/mode/js"*/}),
-        getFormulaViewModeEntry("member.Element",{name: "convertedCode", label:"Converted Code"}),
-        getFormulaViewModeEntry("member.props","inputProperties","Input Properties"),
-        getPrivateViewModeEntry("member.props","inputPrivate","Input Private"),
+        getFormulaViewModeEntry("Element.member",{name: "convertedCode", label:"Converted Code"}),
+        getFormulaViewModeEntry("props.member","inputProperties","Input Properties"),
+        getPrivateViewModeEntry("props.member","inputPrivate","Input Private"),
     ],
     iconResPath: "/icons3/genericCellIcon.png",
     propertyDialogEntries: [

@@ -28,17 +28,17 @@ function getFormEditorCallbacks() {
     var dataDisplaySource = {};
     dataDisplaySource.doUpdate = (component) => {
         //update depends on multiplefields
-        let reloadData = component.isMemberDataUpdated("member.data");
-        let reloadDataDisplay = ( (component.isMemberDataUpdated("member.layout")) ||
-            (component.isMemberDataUpdated("member.isInputValid")) );
+        let reloadData = component.isMemberDataUpdated("data.member");
+        let reloadDataDisplay = ( (component.isMemberDataUpdated("layout.member")) ||
+            (component.isMemberDataUpdated("isInputValid.member")) );
         return {reloadData,reloadDataDisplay};
     },
 
     //return form layout
-    dataDisplaySource.getDisplayData = (component) => dataDisplayHelper.getWrappedMemberData(component,"member.layout"),
+    dataDisplaySource.getDisplayData = (component) => dataDisplayHelper.getWrappedMemberData(component,"layout.member"),
     
     //return desired form value
-    dataDisplaySource.getData = (component) => dataDisplayHelper.getWrappedMemberData(component,"member.data");
+    dataDisplaySource.getData = (component) => dataDisplayHelper.getWrappedMemberData(component,"data.member");
     
     //edit ok - always true
     dataDisplaySource.getEditOk = (component) => {
@@ -47,7 +47,7 @@ function getFormEditorCallbacks() {
     
     //save data - just form value here
     dataDisplaySource.saveData = (formValue,component) => {
-        let isInputValidFunctionMember = component.getField("member.isInputValid");
+        let isInputValidFunctionMember = component.getField("isInputValid.member");
         //validate input
         var isInputValid = isInputValidFunctionMember.getData();
         let validateResult;
@@ -73,9 +73,9 @@ function getFormEditorCallbacks() {
         }
 
         //save the data - send via messenger to the variable named "data" in code, which is the field 
-        //named "member.data", NOT the field named "data"
+        //named "data.member", NOT the field named "data"
         let runContextLink = component.getApp().getWorkspaceManager().getRunContextLink();
-        let layoutMember = component.getField("member.layout");
+        let layoutMember = component.getField("layout.member");
         let messenger = new Messenger(runContextLink,layoutMember.getId());
         messenger.dataUpdate("data",formValue);
         return true;
@@ -136,11 +136,11 @@ const FormDataComponentConfig = {
                 size={size}
                 setSizeCommandData={setSizeCommandData} />
         },
-        getFormulaViewModeEntry("member.layout",{name:"Layout Code",label:"Layout Code"}),
-        getPrivateViewModeEntry("member.layout",{name:"Layout Private",label:"Layout Private"}),
-        getFormulaViewModeEntry("member.isInputValid",{name:"isInputValid(formValue)",label:"isInputValid",argList: "formValue"}),
-        getPrivateViewModeEntry("member.isInputValid",{name:"isInputValid Private",label:"isInputValid Private"}),
-        getMemberDataTextViewModeEntry("member.data",{name: "Form Value",label: "Form Value"})
+        getFormulaViewModeEntry("layout.member",{name:"Layout Code",label:"Layout Code"}),
+        getPrivateViewModeEntry("layout.member",{name:"Layout Private",label:"Layout Private"}),
+        getFormulaViewModeEntry("isInputValid.member",{name:"isInputValid(formValue)",label:"isInputValid",argList: "formValue"}),
+        getPrivateViewModeEntry("isInputValid.member",{name:"isInputValid Private",label:"isInputValid Private"}),
+        getMemberDataTextViewModeEntry("data.member",{name: "Form Value",label: "Form Value"})
     ],
     iconResPath: "/icons3/formCellIcon.png"
 }

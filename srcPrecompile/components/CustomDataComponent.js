@@ -100,14 +100,14 @@ function getOutputDataDisplaySource() {
         //This method reloads the component and checks if there is a DATA update. UI update is checked later.
         doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("member.data");
-            let reloadDataDisplay = component.areAnyFieldsUpdated(["html","uiCode","member.input"]);
+            let reloadData = component.isMemberDataUpdated("data.member");
+            let reloadDataDisplay = component.areAnyFieldsUpdated(["html","uiCode","input.member"]);
             return {reloadData,reloadDataDisplay};
         },
 
-        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.input"),
+        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"input.member"),
 
-        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"member.data"),
+        getData: (component) => dataDisplayHelper.getWrappedMemberData(component,"data.member"),
 
         //edit ok - always true
         getEditOk: (component) => {
@@ -118,7 +118,7 @@ function getOutputDataDisplaySource() {
             //send value to the member whose variable name is "data"
             //the scope reference is the member called "input" 
             let runContextLink = component.getApp().getWorkspaceManager().getRunContextLink();
-            let inputMember = component.getField("member.input");
+            let inputMember = component.getField("input.member");
             let messenger = new Messenger(runContextLink,inputMember.getId());
             messenger.dataUpdate("data",formValue);
             return true;
@@ -138,7 +138,7 @@ function getOutputDataDisplaySource() {
 
         //gets the mebmer used as a refernce for the UI manager passed to the resource functions 
         getScopeMember: (component) => {
-            let inputMember = component.getField("member.input");
+            let inputMember = component.getField("input.member");
             return inputMember;
         }
     }
@@ -218,9 +218,9 @@ const CustomDataComponentConfig = {
         getAppCodeViewModeEntry("html",null,"HTML","HTML",{sourceType: "data", textDisplayMode: "ace/mode/html"}),
         getAppCodeViewModeEntry("css",null,"CSS", "CSS",{sourceType: "data", textDisplayMode: "ace/mode/css"}),
         getAppCodeViewModeEntry("uiCode",null,"uiGenerator()","UI Generator"),
-        getFormulaViewModeEntry("member.input","Input Code","Input Code"),
-        getPrivateViewModeEntry("member.input","Input Private","Input Private"),
-        getMemberDataTextViewModeEntry("member.data",{name: "Data Value",label: "Data Value"})
+        getFormulaViewModeEntry("input.member","Input Code","Input Code"),
+        getPrivateViewModeEntry("input.member","Input Private","Input Private"),
+        getMemberDataTextViewModeEntry("mdata.member",{name: "Data Value",label: "Data Value"})
     ]
 }
 export default CustomDataComponentConfig;

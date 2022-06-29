@@ -40,9 +40,9 @@ export default class Component extends FieldObject {
             //process the members associated with this component
             let memberFieldMap = {};
             let memberJson = this._getDefaultMemberJson();
-            let memberFieldName = "member";
+            let memberPath = ".";
             let isRoot = true;
-            this._processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isRoot,memberFieldMap);
+            this._processMemberAndChildren(modelManager,member,memberJson,memberPath,isRoot,memberFieldMap);
             
             this.setField("memberFieldMap",memberFieldMap);
         }
@@ -79,8 +79,9 @@ export default class Component extends FieldObject {
 
     /** This method returns the base member for this component. To see if this
      * field has been updated, check the "member" field of the component.  
-     * To access other child members for compound components, use the access those fields using
-     * the getField method. The field name is the "member." + the variable name of the field. */
+     * To access other child members for compound components, use the 
+     * the getField method. The field name will have the path to the member append
+     * the name member. Example: child member "a" has member field name "a.member" */
     getMember() {
         return this.getField("member");
     }
@@ -251,12 +252,6 @@ export default class Component extends FieldObject {
     memberUpdated(updatedMember) {
         let memberFieldMap = this.getField("memberFieldMap");
         let fieldName = memberFieldMap[updatedMember.getId()];
-
-        //legacy case of old member registartion
-        if(!fieldName) {
-            fieldName = "member." + updatedMember.getName();
-        }
-
         this.setField(fieldName,updatedMember);
     }
 
@@ -316,7 +311,7 @@ export default class Component extends FieldObject {
             return "member";
         }
         else {
-            return "member." + childPath;
+            return childPath + ".member";
         }
     }
 
@@ -415,13 +410,6 @@ export default class Component extends FieldObject {
         if(this.loadExtendedData) {
             this.loadExtendedData(json,modelManager);
         }
-
-        //////////////////////////////////////////////////////////////////
-        //legacy name kept for legacy support
-        if(this.readPropsFromJson) {
-            this.readPropsFromJson(json);
-        }
-        //////////////////////////////////////////////////////////////////
     }
 
     /** This method loads the children for this component */
@@ -457,13 +445,6 @@ export default class Component extends FieldObject {
                 }
             }
         }
-
-        //////////////////////////////////////////////////////////////////
-        //legacy name - kept for legacy support   
-        if(this.readPropsFromJson) {
-            this.readPropsFromJson(json);
-        }
-        //////////////////////////////////////////////////////////////////
     }
 
     //==============================
@@ -583,16 +564,17 @@ export default class Component extends FieldObject {
     /** This function processes the members associated with this component, using the default json
      * to look up the member instances. This includes registering the each member, saving the member in its
      * associated field, and constructing the member field map.  */
-    _processMemberAndChildren(modelManager,member,memberJson,memberFieldName,isMainMember,memberFieldMap) {
+    _processMemberAndChildren(modelManager,member,memberJson,memberPath,isMainMember,memberFieldMap) {
 
         //register the member with the model manager
-        modelManager.registerMember(member.getId(),this,isMainMember);
+        modelManager.registerMember(member.getId(),this,isMainMember)
 
         //add to the local member field map
-        memberFieldMap[member.getId()] = memberFieldName;
+        let memberFieldName = this.memberPathToMemberField(memberPath)
+        memberFieldMap[member.getId()] = memberFieldName
 
         //save the member in its component field
-        this.setField(memberFieldName,member);
+        this.setField(memberFieldName,member)
         
         //process the children of this member if they are a part of this component
         if((memberJson.children)&&(memberFieldName != this.childParentFolderFieldName)) {
@@ -600,9 +582,9 @@ export default class Component extends FieldObject {
             for(let childName in memberJson.children) {
                 let childMember = member.lookupChild(model,childName);
                 let childMemberJson = memberJson.children[childName];
-                let childMemberFieldName = memberFieldName + "." + childName;
+                let childMemberPath = memberPath == "." ? childName : memberPath + "." + childName
                 let childIsMainMember = false;
-                this._processMemberAndChildren(modelManager,childMember,childMemberJson,childMemberFieldName,childIsMainMember,memberFieldMap);
+                this._processMemberAndChildren(modelManager,childMember,childMemberJson,childMemberPath,childIsMainMember,memberFieldMap);
             }
         }
     }
