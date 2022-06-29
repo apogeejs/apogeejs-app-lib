@@ -2,7 +2,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 
 /** This component represents a error member object. */
-class ErrorComponent extends Component {
+export class ErrorComponent extends Component {
 
     /** This overrides the save method to return the original input. */
     toJson(modelManager) {
@@ -15,9 +15,7 @@ class ErrorComponent extends Component {
     }
 }
 
-
-const ErrorComponentConfig = {
-    componentClass: ErrorComponent,
+export const ErrorComponentConfig = {
 	displayName: "Error Cell",
 	defaultMemberJson: {
 		type: "apogee.ErrorMember"
@@ -36,5 +34,4 @@ const ErrorComponentConfig = {
     ],
     iconResPath: "/icons3/errorCellIcon.png"
 }
-export default ErrorComponentConfig;
 

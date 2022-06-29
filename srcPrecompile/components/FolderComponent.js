@@ -2,7 +2,6 @@
 import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 const FolderComponentConfig = {
-	componentClass: Component,
 	displayName: "Page",
 	defaultMemberJson: {
 		"type": "apogee.Folder"

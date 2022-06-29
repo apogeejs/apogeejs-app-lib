@@ -1,5 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
-
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
@@ -106,7 +104,6 @@ function replaceFunctionsInArray(jsonPlus) {
 //Config
 
 const JsonPlusComponentConfig = {
-	componentClass: Component,
 	displayName: "Extended Data Cell",
 	defaultMemberJson: {
 		type: "apogee.DataMember"

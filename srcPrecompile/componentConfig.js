@@ -9,7 +9,7 @@ import FormDataComponentConfig from "/apogeejs-app-lib/src/components/FormDataCo
 import CustomComponentConfig from "/apogeejs-app-lib/src/components/CustomComponent.js";
 import CustomDataComponentConfig from "/apogeejs-app-lib/src/components/CustomDataComponent.js";
 import WebRequestComponentConfig from "/apogeejs-app-lib/src/components/WebRequestComponent.js";
-import ErrorComponentConfig from "/apogeejs-app-lib/src/components/ErrorComponent.js";
+import {ErrorComponent, ErrorComponentConfig} from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 
 import FullActionFormComponentConfig from "/apogeejs-app-lib/src/components/FullActionFormComponent.js";
 import FullDataFormComponentConfig from "/apogeejs-app-lib/src/components/FullDataFormComponent.js";
@@ -32,8 +32,6 @@ let componentConfigMap = {}
 let components = []
 let childComponents = []
 let parentComponents = []
-
-let ERROR_COMPONENT_CONFIG = ErrorComponentConfig;
 
 //==========================
 // Functions
@@ -85,18 +83,11 @@ componentInfo.getComponentConfig = function(componentType) {
 /** This method returns a component instance of the given component type. */
 componentInfo.createComponentInstance = function(componentType,member,modelManager,specialCaseIdValue) {
     let componentConfig = componentInfo.getComponentConfig(componentType);
-    if(!componentConfig) {
-        if(!ERROR_COMPONENT_CONFIG) {
-            throw new Error("Application error: error component config not found!");
-        }
-        componentConfig = ERROR_COMPONENT_CONFIG;
-    }
-
-    if(!componentConfig.componentClass) {
-        throw new Error("Application error: component class not included in component config!");
+    if((!componentConfig)||(componentConfig == ErrorComponentConfig)) {
+        return new ErrorComponent(member,modelManager,null,ErrorComponentConfig,specialCaseIdValue)
     }
     
-    return new componentConfig.componentClass(member,modelManager,null,componentConfig,specialCaseIdValue);
+    return new Component(member,modelManager,null,componentConfig,specialCaseIdValue)
 }
 
 

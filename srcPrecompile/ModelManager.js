@@ -220,7 +220,7 @@ export default class ModelManager extends FieldObject {
             if(oldComponent.getIsLocked()) {
                 //create an unlocked instance of the component
                 let componentConfig = oldComponent.getComponentConfig();
-                let newComponent = new componentConfig.componentClass(oldComponent.getMember(),this,oldComponent,componentConfig);
+                let newComponent = new oldComponent.constructor(oldComponent.getMember(),this,oldComponent,componentConfig);
 
                 //register this instance
                 this.registerComponent(newComponent);

@@ -1,4 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 
 /** This overrides the get title method of member to return the function declaration. */
@@ -19,7 +18,6 @@ function isDisplayNameUpdated(component) {
 }
 
 const FunctionComponentConfig = {
-    componentClass: Component,
 	displayName: "Function Cell",
 	defaultMemberJson: {
 		"type": "apogee.FunctionMember"

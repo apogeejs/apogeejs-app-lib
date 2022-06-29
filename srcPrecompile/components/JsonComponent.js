@@ -1,5 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
-
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import HandsonGridEditor from "/apogeejs-app-lib/src/datadisplay/HandsonGridEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
@@ -92,7 +90,6 @@ VIEW_DISPLAY_NAMES[GRID_DATA_VEW] = "Grid";
 
 
 const JsonComponentConfig = {
-    componentClass: Component,
     displayName: "Data Cell",
     defaultMemberJson: {
         "type": "apogee.DataMember"

@@ -1,5 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js"
-import Apogee from "/apogeejs-app-lib/src/Apogee.js"
 import {jsxTransform} from "./JsxTransformer.js"
 
 import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js"
@@ -61,7 +59,6 @@ function getOutputElement(component) {
 }
 
 const ReactElementCellConfig = {
-    componentClass: Component,
     displayName: "React Element Cell",
     defaultMemberJson: {
         "type": "apogee.FunctionMember",

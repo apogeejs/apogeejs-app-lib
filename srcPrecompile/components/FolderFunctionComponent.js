@@ -1,5 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
-
 /** This overrides the get display method of componnet to return the function declaration. */
 function getDisplayName(component,standardDisplayName) {
     let member = component.getMember();
@@ -26,7 +24,6 @@ function isDisplayNameUpdated(component) {
 
 
 const FolderFunctionComponentConfig = {
-    componentClass: Component,
 	displayName: "Multi-Cell Function",
 	defaultMemberJson: {
 		"type": "apogee.FolderFunction",

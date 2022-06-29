@@ -56,7 +56,6 @@ function _getOutputFormDataSource() {
 const dataMemberTypeName = "apogee.DesignerActionFormMember";
 defineHardcodedDataMember(dataMemberTypeName,DATA_MEMBER_FUNCTION_BODY);
 const DesignerActionFormComponentConfig = {
-    componentClass: Component,
     displayName: "Action Form Cell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
     defaultComponentJson: {

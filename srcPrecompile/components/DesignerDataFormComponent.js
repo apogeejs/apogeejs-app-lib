@@ -133,7 +133,6 @@ function _getOutputFormDataSource() {
 
 
 const DesignerDataFormComponentConfig = {
-    componentClass: Component,
 	displayName: "Data Form Cell",
 	defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName,ADDITIONAL_CHILD_MEMBER_ARRAY),
     defaultComponentJson: {

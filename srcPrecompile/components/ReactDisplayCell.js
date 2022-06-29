@@ -1,5 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
-import Apogee from "/apogeejs-app-lib/src/Apogee.js";
 import transformFunctionBody from "/apogeejs-admin/dev/babelTransformer/releases/v0.0.0-p.0/jsxTransform.es.js"
 import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 
@@ -82,7 +80,6 @@ function getOutputElement(component) {
 //======================================
 
 const ReactDisplayCellConfig = {
-    componentClass: Component,
     displayName: "React Display Cell",
     defaultMemberJson: {
         "type": "apogee.Folder",

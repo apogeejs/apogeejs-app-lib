@@ -1,4 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedDataMember} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
@@ -246,7 +245,6 @@ function _getMetaDataSource() {
 //===============================
 
 const WebRequestComponentConfig = {
-    componentClass: Component,
     displayName: "Web Request Cell",
     defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
     defaultComponentJson: {

@@ -1,5 +1,3 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
-
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
@@ -88,7 +86,6 @@ function getFormEditorCallbacks() {
 
 
 const FormDataComponentConfig = {
-	componentClass: Component,
 	displayName: "Legacy Data Form Cell (deprecated)",
 	defaultMemberJson: {
 		"type": "apogee.Folder",

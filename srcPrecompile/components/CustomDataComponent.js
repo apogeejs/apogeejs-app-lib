@@ -151,7 +151,6 @@ function getOutputDataDisplaySource() {
 //======================================
 
 const CustomDataComponentConfig = {
-    componentClass: Component,
     displayName: "Custom Data Cell",
     defaultMemberJson: {
         "type": "apogee.Folder",

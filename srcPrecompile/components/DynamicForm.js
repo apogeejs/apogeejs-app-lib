@@ -35,7 +35,6 @@ function getFormCallbacks() {
 //Cnfig
 
 const DynamicFormConfig = {
-	componentClass: Component,
 	displayName: "Legacy Action Form Cell (deprecated)",
 	defaultMemberJson: {
 		"type": "apogee.DataMember"
