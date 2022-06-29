@@ -20,7 +20,7 @@ function onJsxCodeUpdate(component,jsxFunctionBody) {
 
         //Another KLUDGE
         //Lookup the model id from the run context and send a future command
-        let app = Apogee.getInstance();
+        let app = component.getApp()
         let appRunContext = app.getRunContext();
         
         setTimeout(() => {

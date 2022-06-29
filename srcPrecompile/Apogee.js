@@ -5,9 +5,6 @@ import CommandManager from "/apogeejs-app-lib/src/commands/CommandManager.js";
 import WorkspaceManager from "/apogeejs-app-lib/src/WorkspaceManager.js";
 import AppRunContext from "/apogeejs-app-lib/src/AppRunContext.js";
 
-/** @private */
-let apogeeInstance = null;
-
 //======================================
 //class definition
 //======================================
@@ -24,14 +21,6 @@ export default class Apogee {
 
         //mixin initialization
         this.eventManagerMixinInit();
-        
-        //make sure we define this once
-        if(apogeeInstance != null) {
-            throw new Error("Error: There is already an Apogee app instance - the Apogee class is a singleton.");
-        }
-        else {
-            apogeeInstance = this;
-        }
         
         //---------------------------------
         //construct the base app structures
@@ -64,15 +53,6 @@ export default class Apogee {
         
         //initialize application
         this._initApp();
-    }
-
-    //======================================
-    // static singleton methods
-    //======================================
-
-    /** This retrieves an existing instance. It does not create an instance. */
-    static getInstance() {
-        return apogeeInstance;
     }
 
     //==================================
