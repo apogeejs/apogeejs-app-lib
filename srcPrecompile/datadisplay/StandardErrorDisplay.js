@@ -28,20 +28,22 @@ function isExtendedInfoInMemberErrorInfo(memberErrorInfo) {
 
 export function getStandardErrorSourceState(component) {
     return {
-        state: component.getState(),
-        errorInfo: component.getErrorInfo
+        dataState: {
+            status: component.getState(),
+            errorInfo: component.getErrorInfo()
+        }
     }
 }
 
-export function StandardErrorElement({sourceState, cellShowing}) {
+export function StandardErrorElement({dataState}) {
     //do something better if there is not an error
-    if(sourceState != apogeeutil.STATE_ERROR) {
+    if(dataState.status != apogeeutil.STATE_ERROR) {
         return <div>No error</div>
     }
 
     return (
         <div className="errorDisplay_main">
-            {_getErrorInfoElement(sourceState.errorInfo)}
+            {_getErrorInfoElement(dataState.errorInfo)}
         </div>
     )
 }

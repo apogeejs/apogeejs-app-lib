@@ -15,8 +15,8 @@ export function getErrorViewModeEntry() {
         isTransient: true,
         isErrorView: true,
         getSourceState: getStandardErrorSourceState,
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => 
-            <StandardErrorElement sourceState={sourceState} cellShowing={cellShowing} />,
+        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => 
+            <StandardErrorElement dataState={dataState} cellShowing={cellShowing} />,
         isViewRemoved: isErrorElementRemoved
     }
 }
@@ -25,10 +25,10 @@ export function getErrorViewModeEntry() {
 // Member Data View Modes
 //=============================
 
-export function getMemberDataTextDisplay(componentId,options) {
+export function getMemberDataTextDisplay(options) {
     let textDisplayMode = ((options)&&(options.textDisplayMode)) ? options.textDisplayMode : "ace/mode/json";
     let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_SOME;
-    return new AceTextEditor(componentId,textDisplayMode,editorOptions);        
+    return new AceTextEditor(textDisplayMode,editorOptions);        
 }
 
 export function getMemberDataTextViewModeEntry(memberFieldName,options) {
@@ -56,12 +56,15 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
         getSourceState: (component,oldSourceState) => {
             let doReadOnly = ((options)&&(options.editorOptions)) ? options.editorOptions.doReadOnly : false;
-            let dataSource = dataDisplayHelper.getMemberDataTextDataSource(memberFieldName,doReadOnly)
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
+            let member = component.getField(memberFieldName)
+            let editOk = !doReadOnly && !member.hasCode() 
+            return dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
         },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-				sourceState={sourceState}
-				getDataDisplay={sourceState => getMemberDataTextDisplay(componentId,options)}
+        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
+                displayState={displayState}
+                dataState={dataState}
+                hideDisplay={hideDisplay}
+				getDataDisplay={displayState => getMemberDataTextDisplay(options)}
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
@@ -72,9 +75,30 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
 //==============================
 // Member Code View Modes
 //==============================
-export function getFormulaDataDisplay(componentId,options) {
-    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX;
-    return new AceTextEditor(componentId,"ace/mode/javascript",editorOptions);
+export function getFormulaSourceState(component,memberFieldName,oldSourceState) {
+    if( (!oldSourceState) || (component.isMemberFieldUpdated(memberFieldName,"functionBody")) ) {
+        let sourceState = {}
+
+        dataDisplayHelper.loadFunctionBodySourceState(component,memberFieldName,sourceState)
+
+        if( (!oldSourceState) || (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
+            //save depends on the three fields listed above, sicne they are all replaced together
+            sourceState.save =  dataDisplayHelper.getFunctionBodySaveFunction(component,memberFieldName)
+        }
+        else {
+            sourceState.save = oldSourceState.save
+        }
+
+        return sourceState
+    }
+    else {
+        return oldSourceState
+    }
+}
+
+export function getFormulaDataDisplay(options) {
+    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
+    return new AceTextEditor("ace/mode/javascript",editorOptions)
 }
 
 export function getFormulaViewModeEntry(memberFieldName,options) {
@@ -85,13 +109,12 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
         sourceType: "function",
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getSourceState: (component,oldSourceState) => {
-            let dataSource = dataDisplayHelper.getMemberFunctionBodyDataSource(memberFieldName);
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
-        },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-				sourceState={sourceState}
-				getDataDisplay={sourceState => getFormulaDataDisplay(componentId,options)}
+        getSourceState:  (component,oldSourceState) => getFormulaSourceState(component,memberFieldName,oldSourceState),
+        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
+                displayState={displayState}
+                dataState={dataState}
+                hideDisplay={hideDisplay}
+				getDataDisplay={displayState => getFormulaDataDisplay(options)}
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
@@ -99,9 +122,30 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
     }
 }
 
-export function getPrivateDataDisplay(component,options) {
-    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX;
-    return new AceTextEditor(component,dataDisplaySource,"ace/mode/javascript",editorOptions);
+export function getPrivateCodeSourceState(component,memberFieldName,oldSourceState) {
+    if( (!oldSourceState) || (component.isMemberFieldUpdated(memberFieldName,"functionBody")) ) {
+        let sourceState = {}
+
+        dataDisplayHelper.loadPrivateCodeDataState(component,memberFieldName,sourceState)
+        
+        if( (!oldSourceState) || (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
+            //save depends on the three fields listed above, sicne they are all replaced together
+            sourceState.save =  dataDisplayHelper.getPrivateCodeSaveFunction(component,memberFieldName)
+        }
+        else {
+            sourceState.save = oldSourceState.save
+        }
+
+        return sourceState
+    }
+    else {
+        return oldSourceState
+    }
+}
+
+export function getPrivateCodeDataDisplay(options) {
+    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
+    return new AceTextEditor("ace/mode/javascript",editorOptions)
 }
 
 export function getPrivateViewModeEntry(memberFieldName,options) {
@@ -111,13 +155,12 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
         sourceLayer: "model",
         sourceType: "private code",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
-        getSourceState: (component,oldSourceState) => {
-            let dataSource = dataDisplayHelper.getMemberSupplementalDataSource(memberFieldName);
-            return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
-        },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-				sourceState={sourceState}
-				getDataDisplay={sourceState => getPrivateDataDisplay(componentId,options)}
+        getSourceState: (component,oldSourceState) => getPrivateCodeSourceState(component,memberFieldName,oldSourceState),
+        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
+                displayState={displayState}
+                dataState={dataState}
+                hideDisplay={hideDisplay}
+				getDataDisplay={displayState => getPrivateCodeDataDisplay(options)}
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
@@ -129,10 +172,10 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
 // App Code/Text Field
 //=============================================
 
-export function getAppCodeDataDisplay(componentId,options) {
+export function getAppCodeDataDisplay(options) {
     let textDisplayMode = ((options)&&(options.textDisplayMode)) ? options.textDisplayMode : "ace/mode/javascript"
     let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
-    return new AceTextEditor(componentId,textDisplayMode,editorOptions);
+    return new AceTextEditor(textDisplayMode,editorOptions);
 }
 
 /** GEts the data source for a component field that represents code. An optional input is componentCompiledFieldName which 
@@ -151,9 +194,9 @@ export function getAppCodeViewModeEntry(componentFieldName,componentCompiledFiel
             let dataSource = getComponentFieldDisplaySource(componentFieldName,componentCompiledFieldName)
             return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
         },
-        getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
+        getViewModeElement: (sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
 				sourceState={sourceState}
-				getDataDisplay={sourceState => getAppCodeDataDisplay(componentId,options)}
+				getDataDisplay={sourceState => getAppCodeDataDisplay(options)}
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,

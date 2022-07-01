@@ -16,9 +16,8 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 ////////////////////////////////////////////////////////
 
 
-function getDataDataDisplay(component) {
-    let dataDisplaySource = getDataSource();
-    return new AceTextEditor(component,dataDisplaySource,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+function getDataDataDisplay() {
+    return new AceTextEditor("ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME)
 }
 
 
@@ -28,7 +27,7 @@ function getDataSource() {
     return {
         doUpdate: (component) => {
             //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("member");
+            let reloadData = component.isMemberDataUpdated("member")
             let reloadDataDisplay = false;
             return {reloadData,reloadDataDisplay};
         },
@@ -120,14 +119,16 @@ const JsonPlusComponentConfig = {
             sourceLayer: "model",
             sourceType: "data",
             isActive: true,
-            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
-				component={component}
-				getDataDisplay={getDataDataDisplay}
+            getSourceState: (component,oldSourceState) => {
+                let dataSource = getDataSource()
+                return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
+            },
+            getViewModeElement: (sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
+                sourceState={sourceState}
+                getDataDisplay={getDataDataDisplay}
                 setEditModeData={setEditModeData}
-                setMsgData={setMsgData}
-				showing={showing} 
-                size={size}
-                setSizeCommandData={setSizeCommandData} />,
+				cellShowing={cellShowing} 
+                size={size} />,
             sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         },
         getFormulaViewModeEntry("member"),

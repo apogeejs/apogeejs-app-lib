@@ -20,9 +20,8 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
  *      components to pass non-model data (like the HTML or the UI generator code) into the data display.
  */ 
 export default class DataDisplay {
-    constructor(componentId) {
-        this.componentId = componentId
-        this.sourceState = {}
+    constructor() {
+        this.dataState = {}
         this.inEditMode = false
 
         this._setEditModeData = undefined
@@ -67,73 +66,69 @@ export default class DataDisplay {
     //     }
     // }
 
-    getHideDisplay() {
-        return this.sourceState ? this.sourceState.hideDisplay : true
-    }
-
-    getSourceData() {
-        return this.sourceState ? this.sourceState.data : null
-    }
+    // getHideDisplay() {
+    //     return this.dataState ? this.dataState.hideDisplay : true
+    // }
 
     getEditOk() {
-        return this.sourceState ? this.sourceState.editOk : false
+        return this.dataState ? this.dataState.editOk : false
     }
 
-    setSourceState(sourceState) {
-        if(sourceState) this.sourceState = sourceState
-        else this.sourceState = {}
+    setDataState(dataState) {
+        if(dataState) this.dataState = dataState
+        else this.dataState = {}
 
         //temp implementation for early dev!!!
-        this.internalUpdateData(this.getSourceData())
+        this.internalUpdateData(this.dataState.data)
     }
 
-    getSourceState() {
-        return this.sourceState
+    getDataState() {
+        return this.dataState
     }
     
     /** For edit mode, this is used to save data in the data display editor. */
-    save() {
-        var data;
-        var dataValid = false;
-        try {
-            data = this.getData();
-            dataValid = true;
-        }
-        catch(error) {
-            if(error.stack) console.error(error.stack);
-            apogeeUserAlert("Error loading data from data display: " + error.message);
-        }
+    // save() {
+    //     var data;
+    //     var dataValid = false;
+    //     try {
+    //         data = this.getData();
+    //         dataValid = true;
+    //     }
+    //     catch(error) {
+    //         if(error.stack) console.error(error.stack);
+    //         apogeeUserAlert("Error loading data from data display: " + error.message);
+    //     }
 
-        //save data if we read it out
-        if(dataValid) {
-            var saveComplete;
+    //     //save data if we read it out
+    //     if(dataValid) {
+    //         var saveComplete;
 
-            //figure out if there is a problem with this - we hav to end edit mode before
-            //we save because in edit mode it will not overwrite the data in the display
-            //if we fail, we restart edit mode below
-            this.endEditMode();
+    //         //figure out if there is a problem with this - we hav to end edit mode before
+    //         //we save because in edit mode it will not overwrite the data in the display
+    //         //if we fail, we restart edit mode below
+    //         this.endEditMode();
 
-            if(this.sourcestate && this.sourceState.saveData) {
-                try {
-                    saveComplete = this.sourceState.saveData(data,this.componentId,this);
-                }
-                catch(error) {
-                    if(error.stack) console.error(error.stack);
-                    apogeeUserAlert("Error saving data: " + error.message);
-                    saveComplete = false;
-                }
-            }
-            else {
-                apogeeUserAlert("Error: Data not saved: save callback not set!");
-                saveComplete = false;
-            }
+    //         if(this.dataState && this.dataState.saveData) {
+    //             try {
+    //                 saveComplete = this.dataState.saveData(data,this);
+    //             }
+    //             catch(error) {
+    //                 if(error.stack) console.error(error.stack);
+    //                 apogeeUserAlert("Error saving data: " + error.message);
+    //                 saveComplete = false;
+    //             }
+    //         }
+    //         else {
+    //             apogeeUserAlert("Error: Data not saved: save callback not set!");
+    //             saveComplete = false;
+    //         }
 
-            //end edit mode if we entered it
-            if(!saveComplete) {
-                this.startEditMode();
-            }
-        }
-    }
+    //         //end edit mode if we entered it
+    //         if(!saveComplete) {
+    //             this.startEditMode();
+    //         }
+    //     }
+    // }
 
     /** For edit mode, this is used to cancel editing. */
     cancel() {

@@ -15,8 +15,8 @@ export default class ConfigurableFormEditor extends DataDisplay {
      *  - getDisplayData - This returns the layout for the configurable form.
      *  }
      */
-    constructor(componentId,sourceState) {
-        super(componentId)
+    constructor(sourceState) {
+        super()
 
         //TEMP - to raise the z index
         // let domElement = this.displayContainer.getDisplayElement();

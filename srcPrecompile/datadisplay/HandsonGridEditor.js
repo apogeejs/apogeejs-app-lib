@@ -7,8 +7,8 @@ import Handsontable from "/apogeejs-releases/releases/ext/handsontable/v6.2.2/ha
 /** This is a grid editor using hands on table*/
 export default class HandsonGridEditor extends DataDisplay {
     
-    constructor(componentId) {
-        super(componentId);
+    constructor() {
+        super();
 
         this.resizeHeightMode = DATA_DISPLAY_CONSTANTS.RESIZE_HEIGHT_MODE_SOME;
         this.savedPixelHeight = DEFAULT_PIXEL_HEIGHT;
@@ -71,15 +71,13 @@ export default class HandsonGridEditor extends DataDisplay {
         this.dataError = false;
 
         if(json == apogeeutil.INVALID_VALUE) {
+            //the display should have been hidden externally
             //clear the display
             this.cachedDisplayData = [[]];
-            //the displaly shoudl be hidden, but do it again anyway
-            this.setHideDisplay(true);
             this.dataError = true;
         }
         else if(!this.dataIsValidFormat(json)) {
-            this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in grid: value is not an array of arrays")
-            this.setHideDisplay(true);
+            //the display should have been hidden externally
             //clear the display
             this.cachedDisplayData = [[]];
             this.dataError = true;

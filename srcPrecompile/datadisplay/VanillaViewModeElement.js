@@ -1,4 +1,4 @@
-export default function VanillaViewModeElement({sourceState,getDataDisplay,cellShowing,setEditModeData,size}) {
+export default function VanillaViewModeElement({displayState,dataState,hideDisplay,getDataDisplay,cellShowing,setEditModeData,size}) {
 
     //this is just for debugging
     let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
@@ -6,38 +6,35 @@ export default function VanillaViewModeElement({sourceState,getDataDisplay,cellS
     //Get the mutable object for the vanilla javascript display
     let vanillaRef = React.useRef(null)
 
-    let sourceStateRef = React.useRef(null)
-    let previousState = sourceStateRef.current
-
-    let cellShowingRef = React.useRef(false)
-    let wasCellShowing = cellShowingRef.current
+    let previousStateRef = React.useRef(null)
+    let previousState = previousStateRef.current
 
     let reloadData = false
 
     let dataDisplay = vanillaRef.current
-    if((!dataDisplay)||(previousState && (previousState.displayDataVersion != sourceState.displayDataVersion))) {
+    if( (!dataDisplay) || (previousState && (previousState.displayState != displayState) )) {
         //PRIOBABLY CLEAN UP HOW I DO THIS
-        dataDisplay = getDataDisplay(sourceState)
-        dataDisplay.setSourceState(sourceState)
+        dataDisplay = getDataDisplay(displayState)
+        dataDisplay.setDataState(dataState)
         vanillaRef.current = dataDisplay 
         reloadData = true
     }
-    else if(previousState && (previousState.dataVersion != sourceState.dataVersion))  {
-        dataDisplay.setSourceState(sourceState)
+    else if(previousState && (previousState.dataState != dataState))  {
+        dataDisplay.setDataState(dataState)
         reloadData = true
     }
-    else if((!wasCellShowing)&&(cellShowing)) {
+    else if( ((!previousState.cellShowing)&&(cellShowing)) || ((previousState.hideDisplay)&&(!hideDisplay))) {
         //reload the data if the cell is set to showing from not showing
         reloadData = true
     }
 
-    sourceStateRef.current = sourceState
-    cellShowingRef.current = cellShowing
+    //store the previous state
+    previousStateRef.current = {displayState, dataState, hideDisplay, cellShowing}
 
     dataDisplay.setEditModeCallback(setEditModeData)
 
     //hide/show display element
-    const styleData = sourceState.hideDisplay ? {display: "none"} : {}
+    const styleData = hideDisplay ? {display: "none"} : {}
 
     //---------------
     //manage the vanilla display element

@@ -8,57 +8,92 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 // view code
 ////////////////////////////////////////////////////////
 
-function getDataViewDisplay(componentId,sourceState) {
-    switch(sourceState.dataView) {
+function getDataViewDisplay(displayState) {
+    let dataView = displayState ? displayState.dataView : ""
+    switch(dataView) {
         case COLORIZED_DATA_VEW:
         default:
-            return new AceTextEditor(componentId,"ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
+            return new AceTextEditor("ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
             
         case TEXT_DATA_VEW:
-            return new AceTextEditor(componentId,"ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
+            return new AceTextEditor("ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
             
         case GRID_DATA_VEW:
-            return new HandsonGridEditor(componentId);
+            return new HandsonGridEditor();
+    }
+}
+
+/** This function returns true if the data passed in is a string. */
+function _isText(data) {
+    return apogeeutil.isString(data)
+}
+
+/** This returns true if the data passed in is an array of arrays */
+function _isGrid(data) {
+    if(Array.isArray(data)) {
+        return (data.length > 0)&&(data.every(entry => Array.isArray(entry)))
+    }
+    else {
+        return false
     }
 }
 
 function getSourceState(component,oldSourceState) {
-    let dataSource;
-    let dataView = component.getField("dataView");
-    switch(dataView) {
-        case COLORIZED_DATA_VEW:
-        default:
-            dataSource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataTextDataSource("member"))
-            break
-            
-        case TEXT_DATA_VEW:
-            dataSource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"))
-            break
-            
-        case GRID_DATA_VEW:
-            dataSource = _wrapSourceForViewChange(dataDisplayHelper.getMemberDataJsonDataSource("member"))
-            break
+
+    let dataView = component.getField("dataView")
+    let memberFieldName = "member"
+
+    //value
+    let sourceState = {}
+    let member = component.getMember()
+    let editOk = !member.hasCode()
+
+    if( (!oldSourceState) || (component.isMemberDataUpdated(memberFieldName)) || (dataView != oldSourceState.displayState.dataView) ) {
+        switch(dataView) {
+            case COLORIZED_DATA_VEW:
+            default:
+                dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
+                break
+                
+            case TEXT_DATA_VEW:
+                dataDisplayHelper.loadFormattedJsonSourceState(component,memberFieldName,sourceState,editOk,_isText,"Data value is not text!")
+                break
+                
+            case GRID_DATA_VEW:
+                dataDisplayHelper.loadFormattedJsonSourceState(component,memberFieldName,sourceState,editOk,_isGrid,"Data value is not an array of arrays!")
+                break
+        }
+
+        //pass the date view to the display element and the status element
+        sourceState.displayState = oldSourceState && (oldSourceState.displayState.dataView == dataView) ? oldSourceState.displayState : {dataView: dataView}
+        sourceState.statusState = oldSourceState && (oldSourceState.statusState.dataView == dataView) ? oldSourceState.statusState : {dataView: dataView}
+    }
+    else {
+        dataState = oldDataState
     }
 
-    let sourceState = dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
-
-    //custom fields
-    sourceState.dataView = dataView
+    //save
+    
+    if(editOk) {
+        switch(dataView) {
+            case COLORIZED_DATA_VEW:
+            default:
+                sourceState.save = dataDisplayHelper.getMemberTextToJsonSaveFunction(component,memberFieldName)
+                break
+                
+            case TEXT_DATA_VEW:
+                sourceState.save = dataDisplayHelper.getMemberJsonToJsonSaveFunction(component,memberFieldName)
+                break
+                
+            case GRID_DATA_VEW:
+                sourceState.save = dataDisplayHelper.getMemberJsonToJsonSaveFunction(component,memberFieldName)
+                break
+        }
+    }
 
     return sourceState
 }
 
-/** This method updates the data display source to account for reloading the data display due to 
- * a change in the data view. */
-function _wrapSourceForViewChange(dataDisplaySource) {
-    let originalDoUpdate = dataDisplaySource.doUpdate;
-    dataDisplaySource.doUpdate = (component) => {
-        let returnValue = originalDoUpdate(component)
-        returnValue.reloadDataDisplay = component.isFieldUpdated("dataView")
-        return returnValue;
-    }
-    return dataDisplaySource;
-}
 
 // function _setDisplayContainerStatus(displayContainer,dataView) {
 //     let displayBarElement = displayContainer.getDisplayBarElement();
@@ -111,13 +146,15 @@ const JsonComponentConfig = {
             suffix: "",
             isActive: true,
             getSourceState: getSourceState,
-            getViewModeElement: (componentId,sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-				sourceState={sourceState}
-				getDataDisplay={sourceState => getDataViewDisplay(componentId,sourceState.dataView)}
+            getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
+                displayState={displayState}
+                dataState={dataState}
+                hideDisplay={hideDisplay}
+				getDataDisplay={displayState => getDataViewDisplay(displayState)}
                 setEditModeData={setEditModeData}
 				cellShowing={cellShowing} 
                 size={size} />,
-            getViewStatusElement: (sourceState) => <DataViewStatusElement dataView={sourceState.dataView} />,
+            getViewStatusElement: (statusState) => <DataViewStatusElement statusState={statusState} />,
             sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
         },
         getFormulaViewModeEntry("member"),
@@ -143,7 +180,8 @@ const JsonComponentConfig = {
 export default JsonComponentConfig;
 
 
-function DataViewStatusElement({dataView}) {
+function DataViewStatusElement({statusState}) {
+    let dataView = statusState ? statusState.dataView : "Error - not read!"
     let style = {
         "fontSize": "smaller",
         "color": "gray",

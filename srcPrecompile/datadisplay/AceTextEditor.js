@@ -11,8 +11,8 @@ import ace from "/apogeejs-releases/releases/ext/ace/v1.4.12/ace.es.js";
  */
 export default class AceTextEditor extends DataDisplay {
     
-    constructor(componentId,aceMode,options) {
-        super(componentId);
+    constructor(aceMode,options) {
+        super();
 
         this.destroyed = false;
 
@@ -168,21 +168,14 @@ export default class AceTextEditor extends DataDisplay {
         //The data source should give a text value "" if the data in invalid rather than sending
         //in a json, but we will do this check anyway.
         if(text == apogeeutil.INVALID_VALUE) {
-            throw new Error("Implement handle invalid value for input")
-            // //clear the display
-            // this.cachedDisplayData = "";
-            // //the dispaly shoudl be hidden, but do it again anyway
-
-            // this.setHideDisplay(true);
-            // this.dataError = true;
+            //we should not come here - the data source should prevent loading this
+            this.cachedDisplayData = "Error! Display value is not a valid value!";
+            this.dataError = true;
         }
         else if(!apogeeutil.isString(text)) {
-            throw new Error("Implement handle non-text for input")
-            // this.setMessage(DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO, "Data cannot be shown in editor: value is not text")
-            // this.setHideDisplay(true);
-            // //clear the display
-            // this.cachedDisplayData = "";
-            // this.dataError = true;
+            //we should not come here - the data source should prevent loading this
+            this.cachedDisplayData = "Error! Display value is not text!";
+            this.dataError = true;
         }
     }
 

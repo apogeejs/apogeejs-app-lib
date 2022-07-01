@@ -39,9 +39,9 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 
 /** This is the display/editor for the custom control output. */
 export default class HtmlJsDataDisplay extends DataDisplay {
-    constructor(component,dataSource) {
+    constructor(dataSource) {
         
-        super(component,dataSource);
+        super(dataSource);
         
         this.isLoaded = false;
         this.cachedData = undefined;
