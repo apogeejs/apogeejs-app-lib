@@ -36,19 +36,8 @@ const FolderFunctionComponentConfig = {
 	},
 	defaultComponentJson: {
 		type: "apogeeapp.PageFunctionComponent",
-        // fields: {
-		// 	editorState: {
-		// 		doc: {"type":"doc","content":[{"type":"paragraph"}]}
-		// 	}
-		// }
 	},
 	childParentFolderPath: "body",
-    // fieldFunctions: {
-	// 	editorState: {
-	// 		fieldToJson: (component,fieldValue,modelManager) => component.convertEditorStateToJson(fieldValue),
-	// 		jsonToField: (component,jsonValue,modelManager) => component.convertJsonToEditorState(jsonValue)
-	// 	}
-	// },
     instanceDisplayName: {
         getDisplayName: getDisplayName,
         isDisplayNameUpdated: isDisplayNameUpdated

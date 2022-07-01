@@ -1,4 +1,4 @@
-export default function VanillaViewModeElement({displayState,dataState,hideDisplay,save,inEditMode,setEditModeData,size,cellShowing,getDataDisplay}) {
+export default function VanillaViewModeElement({displayState,dataState,hideDisplay,save,inEditMode,setEditModeData,verticalSize,cellShowing,getDataDisplay}) {
 
     //this is just for debugging
     let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
@@ -71,8 +71,8 @@ export default function VanillaViewModeElement({displayState,dataState,hideDispl
 
     //udpate display size
     React.useEffect(() => {
-        if((dataDisplay.setSize)&&(size !== null)) dataDisplay.setSize(size)
-    },[size])
+        if((dataDisplay.setSize)&&(verticalSize !== null)) dataDisplay.setSize(verticalSize)
+    },[verticalSize])
 
     //---------------
     // Render react element
