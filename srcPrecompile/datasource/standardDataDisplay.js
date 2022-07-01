@@ -15,8 +15,8 @@ export function getErrorViewModeEntry() {
         isTransient: true,
         isErrorView: true,
         getSourceState: getStandardErrorSourceState,
-        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => 
-            <StandardErrorElement dataState={dataState} cellShowing={cellShowing} />,
+        getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => 
+            <StandardErrorElement dataState={sourceState.dataState} cellShowing={cellShowing} />,
         isViewRemoved: isErrorElementRemoved
     }
 }
@@ -60,14 +60,16 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
             let editOk = !doReadOnly && !member.hasCode() 
             return dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
         },
-        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-                displayState={displayState}
-                dataState={dataState}
-                hideDisplay={hideDisplay}
-				getDataDisplay={displayState => getMemberDataTextDisplay(options)}
+        getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-				cellShowing={cellShowing} 
-                size={size} />,
+                verticalSize={verticalSize}
+                cellShowing={cellShowing}
+                getDataDisplay={displayState => getMemberDataTextDisplay(options)} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
@@ -76,19 +78,14 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
 // Member Code View Modes
 //==============================
 export function getFormulaSourceState(component,memberFieldName,oldSourceState) {
-    if( (!oldSourceState) || (component.isMemberFieldUpdated(memberFieldName,"functionBody")) ) {
+    if( (!oldSourceState) || 
+        (component.isMemberFieldUpdated(memberFieldName,"functionBody")) ||
+        (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
+        //note - the save function depends on all the fields listed above
+        //we do a little of extra state rewriting here, but that is ok
         let sourceState = {}
-
         dataDisplayHelper.loadFunctionBodySourceState(component,memberFieldName,sourceState)
-
-        if( (!oldSourceState) || (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
-            //save depends on the three fields listed above, sicne they are all replaced together
-            sourceState.save =  dataDisplayHelper.getFunctionBodySaveFunction(component,memberFieldName)
-        }
-        else {
-            sourceState.save = oldSourceState.save
-        }
-
+        sourceState.save =  dataDisplayHelper.getFunctionBodySaveFunction(component,memberFieldName)
         return sourceState
     }
     else {
@@ -110,32 +107,29 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
         argList: ((options)&&(options.argList !== undefined)) ? options.argList : "",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
         getSourceState:  (component,oldSourceState) => getFormulaSourceState(component,memberFieldName,oldSourceState),
-        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-                displayState={displayState}
-                dataState={dataState}
-                hideDisplay={hideDisplay}
-				getDataDisplay={displayState => getFormulaDataDisplay(options)}
+        getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-				cellShowing={cellShowing} 
-                size={size} />,
+                verticalSize={verticalSize}
+                cellShowing={cellShowing}
+                getDataDisplay={displayState => getFormulaDataDisplay(options)} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
 
 export function getPrivateCodeSourceState(component,memberFieldName,oldSourceState) {
-    if( (!oldSourceState) || (component.isMemberFieldUpdated(memberFieldName,"functionBody")) ) {
+    if( (!oldSourceState) || 
+        (component.isMemberFieldUpdated(memberFieldName,"supplementalCode")) ||
+        (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
+        //note - the save function depends on all the fields listed above    
+        //we do a little of extra state rewriting here, but that is ok
         let sourceState = {}
-
         dataDisplayHelper.loadPrivateCodeDataState(component,memberFieldName,sourceState)
-        
-        if( (!oldSourceState) || (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
-            //save depends on the three fields listed above, sicne they are all replaced together
-            sourceState.save =  dataDisplayHelper.getPrivateCodeSaveFunction(component,memberFieldName)
-        }
-        else {
-            sourceState.save = oldSourceState.save
-        }
-
+        sourceState.save =  dataDisplayHelper.getPrivateCodeSaveFunction(component,memberFieldName)
         return sourceState
     }
     else {
@@ -156,14 +150,16 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
         sourceType: "private code",
         isActive: ((options)&&(options.isActive)) ? options.isActive : false,
         getSourceState: (component,oldSourceState) => getPrivateCodeSourceState(component,memberFieldName,oldSourceState),
-        getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-                displayState={displayState}
-                dataState={dataState}
-                hideDisplay={hideDisplay}
-				getDataDisplay={displayState => getPrivateCodeDataDisplay(options)}
+        getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-				cellShowing={cellShowing} 
-                size={size} />,
+                verticalSize={verticalSize}
+                cellShowing={cellShowing}
+                getDataDisplay={displayState => getPrivateCodeDataDisplay(options)} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 } 

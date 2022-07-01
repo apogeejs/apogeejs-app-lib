@@ -69,7 +69,7 @@ function getSourceState(component,oldSourceState) {
         sourceState.statusState = oldSourceState && (oldSourceState.statusState.dataView == dataView) ? oldSourceState.statusState : {dataView: dataView}
     }
     else {
-        dataState = oldDataState
+        sourceState = oldSourceState
     }
 
     //save
@@ -146,14 +146,16 @@ const JsonComponentConfig = {
             suffix: "",
             isActive: true,
             getSourceState: getSourceState,
-            getViewModeElement: (displayState,dataState,hideDisplay,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-                displayState={displayState}
-                dataState={dataState}
-                hideDisplay={hideDisplay}
-				getDataDisplay={displayState => getDataViewDisplay(displayState)}
+            getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-				cellShowing={cellShowing} 
-                size={size} />,
+                verticalSize={verticalSize}
+				cellShowing={cellShowing}
+                getDataDisplay={displayState => getDataViewDisplay(displayState)} />,
             getViewStatusElement: (statusState) => <DataViewStatusElement statusState={statusState} />,
             sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
         },

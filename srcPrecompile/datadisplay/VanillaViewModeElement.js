@@ -1,4 +1,4 @@
-export default function VanillaViewModeElement({displayState,dataState,hideDisplay,getDataDisplay,cellShowing,setEditModeData,size}) {
+export default function VanillaViewModeElement({displayState,dataState,hideDisplay,save,inEditMode,setEditModeData,size,cellShowing,getDataDisplay}) {
 
     //this is just for debugging
     let [identifier,setIdentifier] = React.useState(() => apogeeutil.getUniqueString())
@@ -23,15 +23,21 @@ export default function VanillaViewModeElement({displayState,dataState,hideDispl
         dataDisplay.setDataState(dataState)
         reloadData = true
     }
-    else if( ((!previousState.cellShowing)&&(cellShowing)) || ((previousState.hideDisplay)&&(!hideDisplay))) {
+    else if(previousState && previousState.inEditMode && !inEditMode) {
+        //edit mode canceled - reload the old data
+        reloadData = true
+    }
+    else if( (previousState) && (((!previousState.cellShowing)&&(cellShowing)) || ((previousState.hideDisplay)&&(!hideDisplay))) ) {
         //reload the data if the cell is set to showing from not showing
         reloadData = true
     }
 
-    //store the previous state
-    previousStateRef.current = {displayState, dataState, hideDisplay, cellShowing}
+    //we don't need to check whether or not there was any change here. Resetting is OK
+    dataDisplay.setEditModeInfo(inEditMode,setEditModeData)
+    dataDisplay.setSave(save)
 
-    dataDisplay.setEditModeCallback(setEditModeData)
+    //store the previous state
+    previousStateRef.current = {displayState, dataState, hideDisplay, cellShowing, inEditMode}
 
     //hide/show display element
     const styleData = hideDisplay ? {display: "none"} : {}

@@ -22,13 +22,10 @@ import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDispla
 export default class DataDisplay {
     constructor() {
         this.dataState = {}
-        this.inEditMode = false
 
+        this.editModeData = null
         this._setEditModeData = undefined
-        this.mesasgeType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE 
-        this.message = ""
-        this._setMsgData = undefined
-        this._setSizeCommandData = null
+        this._save = undefined
 
         this.hideDisplay = false
 
@@ -37,38 +34,18 @@ export default class DataDisplay {
     }
 
     /** This is used to pass is and clear the setEditModeData function */
-    setEditModeCallback(setEditModeData) {
+    setEditModeInfo(inEditMode,setEditModeData) {
+        this.inEditMode = inEditMode
         this._setEditModeData = setEditModeData
     }
 
-    setSizeCommandCallback(setSizeCommandData) {
-        this._setSizeCommandData = setSizeCommandData
+    setSave(saveFunction) {
+        this._save = saveFunction
     }
 
     isInEditMode() {
         return this.inEditMode
     }
-
-    // setMessage(messageType,message) {
-    //     if(!messageType) {
-    //         messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-    //         message = ""
-    //     }
-        
-    //     if((this.messageType != messageType)||(this.message != message)) {
-    //         this.messageType = messageType
-    //         this.message = message
-    //         let msgData = {
-    //             type: messageType,
-    //             msg: message
-    //         }
-    //         if(this._setMsgData) this._setMsgData(msgData)
-    //     }
-    // }
-
-    // getHideDisplay() {
-    //     return this.dataState ? this.dataState.hideDisplay : true
-    // }
 
     getEditOk() {
         return this.dataState ? this.dataState.editOk : false
@@ -84,6 +61,27 @@ export default class DataDisplay {
 
     getDataState() {
         return this.dataState
+    }
+
+    simpleSave(data) {
+        if(this._save) {
+            this._save(data)
+        }
+        else {
+            //we hopefully won't get this message
+            apogeeUserAlert("Save not set inside of data display!")
+        }
+    }
+
+    saveAndExitEditMode(data) {
+        if(this._save) {
+            this._save(data)
+            this.endEditMode()
+        }
+        else {
+            //we hopefully won't get this message
+            apogeeUserAlert("Save not set inside of data display!")
+        }
     }
     
     /** For edit mode, this is used to save data in the data display editor. */
@@ -134,16 +132,6 @@ export default class DataDisplay {
     cancel() {
         this.showDisplay();
         this.endEditMode();
-    }
-
-    getDisplayContainer() {
-        //return this.displayContainer;
-        alert("DOH! getDisplayContainer of DataDisplay")
-    }
-
-    getComponentView() {
-        //return this.displayContainer.getComponentView();
-        alert("DOH! getComponetView of DataDisplay")
     }
     
     //=============================
@@ -215,7 +203,6 @@ export default class DataDisplay {
     /** @protected */
     endEditMode() {
         if((this.isInEditMode())&&(this._setEditModeData)) {
-            this.isEditMode = false
             this._setEditModeData(null)
         }
     }
@@ -223,7 +210,6 @@ export default class DataDisplay {
     /** @protected */
     startEditMode() {
         if((!this.isInEditMode())&&(this._setEditModeData)) {
-            this.isEditMode = true
             this._setEditModeData({getData: () => this.getData()})
         }
     }

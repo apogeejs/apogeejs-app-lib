@@ -397,7 +397,7 @@ dataDisplayHelper.loadStringifiedJsonSourceState = function(component,memberFiel
             }
         }
 
-        if(dataState.dataState === undefined) {
+        if(sourceState.dataState === undefined) {
             sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
             sourceState.hideDisplay = true
         }
