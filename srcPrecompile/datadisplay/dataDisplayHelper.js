@@ -352,23 +352,8 @@ dataDisplayHelper.loadJsonSourceState = function(component,memberFieldName,sourc
 
     let member = component.getField(memberFieldName)
     if(member.getState() != apogeeutil.STATE_NORMAL) {
-
-        //in the error case, check for an error substitute value
-        if(member.getState() == apogeeutil.STATE_ERROR) {
-            let error = member.getError()
-            if((error)&&(error.valueData)&&(error.valueData.valueType == MIME_TYPE_JSON)) {
-                sourceState.dataState = {
-                    data: error.valueData.value,
-                    editOk: editOk
-                }
-            }
-        }
-
-        if(sourceState.dataState === undefined) {
-            sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
-            sourceState.hideDisplay = true
-        }
-
+        sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+        sourceState.hideDisplay = true
         sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
         sourceState.message = "Data Unavailable"
     }
@@ -389,9 +374,9 @@ dataDisplayHelper.loadStringifiedJsonSourceState = function(component,memberFiel
         //in the error case, check for an error substitute value
         if(member.getState() == apogeeutil.STATE_ERROR) {
             let error = member.getError()
-            if((error)&&(error.valueData)&&(error.valueData.valueType == MIME_TYPE_TEXT)) {
+            if((error)&&(error.unparsedData !== undefined)) {
                 sourceState.dataState = {
-                    data: error.valueData.value,
+                    data: error.unparsedData,
                     editOk: editOk
                 }
             }
@@ -464,7 +449,7 @@ dataDisplayHelper.getMemberTextToJsonSaveFunction = function(component,memberFie
     let memberId = member.getId()
 
     return text => {
-        let returnErrorAsData = true //we want any error as a return value rather than being thrown
+        let returnErrorAsData = true //this means an Error is returned rather than thrown
         let data = apogeeutil.parseJsonData(text,returnErrorAsData)
         
         var commandData = {}

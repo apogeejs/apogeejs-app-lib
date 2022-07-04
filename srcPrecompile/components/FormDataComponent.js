@@ -16,77 +16,108 @@ import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaVie
 // view code
 ////////////////////////////////////////////////////////
 
-function getFormViewDisplay(component) {
-    let dataDisplaySource = getFormEditorCallbacks();
-    return new ConfigurableFormEditor(component,dataDisplaySource);
-}
+function getSourceState(component,oldSourceState) {
 
-function getFormEditorCallbacks() {
-
-    var dataDisplaySource = {};
-    dataDisplaySource.doUpdate = (component) => {
-        //update depends on multiplefields
-        let reloadData = component.isMemberDataUpdated("data.member");
-        let reloadDataDisplay = ( (component.isMemberDataUpdated("layout.member")) ||
-            (component.isMemberDataUpdated("isInputValid.member")) );
-        return {reloadData,reloadDataDisplay};
-    },
-
-    //return form layout
-    dataDisplaySource.getDisplayData = (component) => dataDisplayHelper.getWrappedMemberData(component,"layout.member"),
-    
-    //return desired form value
-    dataDisplaySource.getData = (component) => dataDisplayHelper.getWrappedMemberData(component,"data.member");
-    
-    //edit ok - always true
-    dataDisplaySource.getEditOk = (component) => {
-        return true;
-    }
-    
-    //save data - just form value here
-    dataDisplaySource.saveData = (formValue,component) => {
-        let isInputValidFunctionMember = component.getField("isInputValid.member");
-        //validate input
-        var isInputValid = isInputValidFunctionMember.getData();
-        let validateResult;
-        if(isInputValid instanceof Function) {
-            try {
-                validateResult = isInputValid(formValue);
-            }
-            catch(error) {
-                validateResult = "Error running input validation function.";
-                console.error("Error reading form layout: " + component.getName());
+    if(component.getState() != apogeeutil.STATE_NORMAL) {
+        //handle non-normal state - error, pending, invalid value
+        if ( !oldSourceState || component.isStateUpdated() ) {
+            return {
+                hideDisplay: true,
+                messageType: DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO,
+                message: "Data Unavailable"
             }
         }
         else {
-            validateResult = "Input validate function not valid";
+            return oldSourceState
         }
-
-        if(validateResult !== true) {
-            if(typeof validateResult != 'string') {
-                validateResult = "Improper format for isInputValid function. It should return true or an error message";
-            }
-            apogeeUserAlert(validateResult);
-            return false;
-        }
-
-        //save the data - send via messenger to the variable named "data" in code, which is the field 
-        //named "data.member", NOT the field named "data"
-        let runContextLink = component.getApp().getWorkspaceManager().getRunContextLink();
-        let layoutMember = component.getField("layout.member");
-        let messenger = new Messenger(runContextLink,layoutMember.getId());
-        messenger.dataUpdate("data",formValue);
-        return true;
+        
     }
-    
-    return dataDisplaySource;
+    else {
+        //handle normal state
+        let displayStateUpdated, dataStateUpdated, saveFunctionUpdated
+        let displayState, dataState, saveFunction
+
+        //display state
+        if( !oldSourceState || component.isMemberDataUpdated("layout.member") ) {
+            displayStateUpdated = true
+
+            let layoutMember = component.getField("layout.member")
+            displayState = {layout: layoutMember.getData()}
+        }
+
+        //data state
+        if( !oldSourceState || component.isMemberDataUpdated("data.member") ) {
+            dataStateUpdated = true
+
+            let dataMember = component.getField("data.member")
+            dataState = {
+                data: dataMember.getData(),
+                editOk: true
+            }
+        }
+
+        //save function
+        if( !oldSourceState || component.isMemberDataUpdated("isInputValid.member") ) {
+            saveFunctionUpdated = true
+
+            let isInputValidFunctionMember = component.getField("isInputValid.member")
+            let isInputValid = isInputValidFunctionMember.getData();
+
+            let runContextLink = component.getApp().getWorkspaceManager().getRunContextLink();
+            let layoutMember = component.getField("layout.member");
+            let messenger = new Messenger(runContextLink,layoutMember.getId());
+
+            saveFunction = formValue => {
+                
+                let validateResult;
+                if(isInputValid instanceof Function) {
+                    try {
+                        validateResult = isInputValid(formValue);
+                    }
+                    catch(error) {
+                        validateResult = "Error running input validation function.";
+                        console.error("Error reading form layout: " + component.getName());
+                    }
+                }
+                else {
+                    validateResult = "Input validate function not valid";
+                }
+
+                if(validateResult !== true) {
+                    if(typeof validateResult != 'string') {
+                        validateResult = "Improper format for isInputValid function. It should return true or an error message";
+                    }
+                    apogeeUserAlert(validateResult);
+                    return false;
+                }
+
+                //save the data - send via messenger to the variable named "data" in code, which is the field 
+                //named "data.member", NOT the field named "data"
+                messenger.dataUpdate("data",formValue);
+                return true;
+            }
+        }
+
+        if( displayStateUpdated || dataStateUpdated || saveFunctionUpdated ) {
+            return {
+                displayState: displayStateUpdated ? displayState : oldSourceState.displayState,
+                dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+                save: saveFunctionUpdated ? saveFunction : oldSourceState.save,
+            }
+        }
+        else {
+            return oldSourceState
+        }
+
+    }
 }
+
 
 //Config
 
 
 const FormDataComponentConfig = {
-	displayName: "Legacy Data Form Cell (deprecated)",
+	displayName: "Simple Data Form Cell",
 	defaultMemberJson: {
 		"type": "apogee.Folder",
 		"childrenNotWriteable": true,
@@ -124,14 +155,17 @@ const FormDataComponentConfig = {
             name: "Form",
             label: "Form",
             isActive: true,
-            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
-				component={component}
-				getDataDisplay={getFormViewDisplay}
+            getSourceState: getSourceState,
+            getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-                setMsgData={setMsgData}
-				showing={showing} 
-                size={size}
-                setSizeCommandData={setSizeCommandData} />
+                verticalSize={verticalSize}
+				cellShowing={cellShowing}
+                getDataDisplay={displayState => new ConfigurableFormEditor(displayState)} />
         },
         getFormulaViewModeEntry("layout.member",{name:"Layout Code",label:"Layout Code"}),
         getPrivateViewModeEntry("layout.member",{name:"Layout Private",label:"Layout Private"}),

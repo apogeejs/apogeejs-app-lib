@@ -11,9 +11,6 @@ import CustomDataComponentConfig from "/apogeejs-app-lib/src/components/CustomDa
 import WebRequestComponentConfig from "/apogeejs-app-lib/src/components/WebRequestComponent.js";
 import {ErrorComponent, ErrorComponentConfig} from "/apogeejs-app-lib/src/components/ErrorComponent.js";
 
-import FullActionFormComponentConfig from "/apogeejs-app-lib/src/components/FullActionFormComponent.js";
-import FullDataFormComponentConfig from "/apogeejs-app-lib/src/components/FullDataFormComponent.js";
-
 import DesignerDataFormComponentConfig from "/apogeejs-app-lib/src/components/DesignerDataFormComponent.js";
 import DesignerActionFormComponentConfig from "/apogeejs-app-lib/src/components/DesignerActionFormComponent.js";
 
@@ -121,8 +118,6 @@ componentInfo.registerComponent(DesignerActionFormComponentConfig);
 //additional child components
 componentInfo.registerComponent(CustomComponentConfig);
 componentInfo.registerComponent(CustomDataComponentConfig);
-componentInfo.registerComponent(FullActionFormComponentConfig);
-componentInfo.registerComponent(FullDataFormComponentConfig);
 
 //legacy forms
 componentInfo.registerComponent(DynamicFormConfig);

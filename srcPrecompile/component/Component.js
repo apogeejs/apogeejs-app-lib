@@ -178,9 +178,9 @@ export default class Component extends FieldObject {
         
     }
 
-    /** This can be used to see if the component state has been updated. */
+    /** This can be used to see if the component state has been updated - this field included status value and status message. */
     isStateUpdated() {
-        return this.isMemberFieldUpdated("member","state");
+        return this.isMemberFieldUpdated("member","state")
     }
 
     /** This method returns the icon url for the component. */

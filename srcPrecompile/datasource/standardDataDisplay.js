@@ -25,6 +25,25 @@ export function getErrorViewModeEntry() {
 // Member Data View Modes
 //=============================
 
+export function getMemberDataTextSourceState(component,memberFieldName,oldSourceState,options) {
+    if( !oldSourceState || component.isMemberFieldUpdated(memberFieldName,"data") ) {
+        let sourceState = {}
+        let doReadOnly = ((options)&&(options.editorOptions)) ? options.editorOptions.doReadOnly : false;
+        let member = component.getField(memberFieldName)
+        let editOk = !doReadOnly && !member.hasCode() 
+        dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
+
+        if(editOk) {
+            sourceState.save =  dataDisplayHelper.getMemberTextToJsonSaveFunction(component,memberFieldName)
+        }
+
+        return sourceState
+    }
+    else {
+        return oldSourceState
+    }
+}
+
 export function getMemberDataTextDisplay(options) {
     let textDisplayMode = ((options)&&(options.textDisplayMode)) ? options.textDisplayMode : "ace/mode/json";
     let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_SOME;
@@ -54,12 +73,7 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         sourceType: "data",
         suffix: suffix, //default value comes from member field name 
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
-        getSourceState: (component,oldSourceState) => {
-            let doReadOnly = ((options)&&(options.editorOptions)) ? options.editorOptions.doReadOnly : false;
-            let member = component.getField(memberFieldName)
-            let editOk = !doReadOnly && !member.hasCode() 
-            return dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
-        },
+        getSourceState: (component,oldSourceState) => getMemberDataTextSourceState(component,memberFieldName,options),
         getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
                 displayState={sourceState.displayState}
                 dataState={sourceState.dataState}

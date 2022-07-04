@@ -15,7 +15,7 @@ export default class ConfigurableFormEditor extends DataDisplay {
      *  - getDisplayData - This returns the layout for the configurable form.
      *  }
      */
-    constructor(sourceState) {
+    constructor(displayState) {
         super()
 
         //TEMP - to raise the z index
@@ -28,8 +28,8 @@ export default class ConfigurableFormEditor extends DataDisplay {
         this.panel = new ConfigurablePanel()
 
         //get data and handle invalid display
-        if(sourceState.displayData) {
-            this.panel.configureForm(sourceState.displayData)
+        if(displayState.layout) {
+            this.panel.configureForm(displayState.layout)
             this.panel.addOnInput( formValue => this.onFormInput(formValue))
             this.formCreated = true
         }
@@ -79,9 +79,7 @@ export default class ConfigurableFormEditor extends DataDisplay {
 
     onFormInput(formValue) {
         //set change to enable save bar if form value differs from initial data
-        let dataSource = this.getDataSource();
-        let editOk = (dataSource.getEditOk)&&(dataSource.getEditOk()); 
-        if(editOk) {
+        if(this.getEditOk()) {
             if(!apogeeutil.jsonEquals(formValue,this.changeReferenceFormValue)) {
                 
                 this.startEditMode();
