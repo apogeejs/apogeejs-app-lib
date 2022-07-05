@@ -4,7 +4,7 @@ import {defineHardcodedDataMember} from "/apogeejs-model-lib/src/apogeeModelLib.
 
 import {getConfigViewModeEntry} from "/apogeejs-app-lib/src/components/FormInputBaseComponentView.js";
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
-import {getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
+import {getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberStringifiedJsonViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {ConfigurablePanel} from "/apogeejs-ui-lib/src/apogeeUiLib.js"
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
@@ -160,7 +160,7 @@ const DesignerDataFormComponentConfig = {
         getConfigViewModeEntry(getFormLayout,"Form Designer"),
         getFormulaViewModeEntry("isValid.member",{name:"IsValidFunction",label:"IsValid Function",argList:"formValue"}),
         getPrivateViewModeEntry("isValid.member",{name:"IsValidPrivate",label:"IsValid Private"}),
-        getMemberDataTextViewModeEntry("value.member")
+        getMemberStringifiedJsonViewModeEntry("value.member")
     ],
     iconResPath: "/icons3/formCellIcon.png",
     propertyDialogEntries: [

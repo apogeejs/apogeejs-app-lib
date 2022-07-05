@@ -25,32 +25,167 @@ export function getErrorViewModeEntry() {
 // Member Data View Modes
 //=============================
 
-export function getMemberDataTextSourceState(component,memberFieldName,oldSourceState,options) {
-    if( !oldSourceState || component.isMemberFieldUpdated(memberFieldName,"data") ) {
+
+export function getJsonDataSourceState(component,memberFieldName,oldSourceState,doReadOnly,getFormatIsValid,formatInvalidMessage) {
+
+    let member = component.getField(memberFieldName)
+    if(member.getState() != apogeeutil.STATE_NORMAL) {
         let sourceState = {}
-        let doReadOnly = ((options)&&(options.editorOptions)) ? options.editorOptions.doReadOnly : false;
-        let member = component.getField(memberFieldName)
-        let editOk = !doReadOnly && !member.hasCode() 
-        dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
-
-        if(editOk) {
-            sourceState.save =  dataDisplayHelper.getMemberTextToJsonSaveFunction(component,memberFieldName)
-        }
-
+        sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+        sourceState.hideDisplay = true
+        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
+        sourceState.message = "Data Unavailable"
         return sourceState
     }
     else {
-        return oldSourceState
+        let dataState, saveFunction
+        let dataStateUpdated, saveFunctionUpdated
+
+        let editOk = !doReadOnly && !member.hasCode() //do not edit data if member has code
+
+        let data = member.getData()
+
+        //check for invalid data (data that can not properly be showin in data display)
+        if(getFormatIsValid && !getFormatIsValid(data)) {
+            let sourceState = {}
+            sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+            sourceState.hideDisplay = true
+            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
+            sourceState.message = formatInvalidMessage ? formatInvalidMessage : "Data can not be displayed: invalid format"
+            return sourceState
+        }
+
+        //data state
+        if( !oldSourceState || member.isFieldUpdated("data") ) {
+            dataStateUpdated = true
+            dataState = {
+                data: member.getData(),
+                editOk: editOk
+            }
+        }
+        
+        //save function
+        if(editOk) {
+            if( !oldSourceState) {
+                saveFunctionUpdated = true
+
+                let app = component.getApp()
+                let memberId = member.getId()
+
+                saveFunction = json => { 
+                    var commandData = {}
+                    commandData.type = "saveMemberData"
+                    commandData.memberId = memberId
+                    commandData.data = json
+                    
+                    app.executeCommand(commandData)
+                    return true
+                }
+            }
+        }
+
+        //source state
+        if(dataStateUpdated || saveFunctionUpdated) {
+            return {
+                dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+                save: editOk ? (saveFunctionUpdated ? saveFunction : oldSourceState.save) : undefined
+            }
+        }
+        else {
+            return oldSourceState
+        }
     }
 }
 
-export function getMemberDataTextDisplay(options) {
-    let textDisplayMode = ((options)&&(options.textDisplayMode)) ? options.textDisplayMode : "ace/mode/json";
-    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_SOME;
-    return new AceTextEditor(textDisplayMode,editorOptions);        
+export function getStringifiedJsonDataSourceState(component,memberFieldName,oldSourceState,doReadOnly) {
+
+    let member = component.getField(memberFieldName)
+    
+    //special consideration for unparsed data (when we have a parsing error on input)
+    let memberError = (member.getState() == apogeeutil.STATE_ERROR) ? member.getError() : null
+    let unparsedData = memberError ? memberError.unparsedData : null
+
+    if( (member.getState() != apogeeutil.STATE_NORMAL) && (unparsedData === null) ) {
+        let sourceState = {}
+        sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+        sourceState.hideDisplay = true
+        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
+        sourceState.message = "Data Unavailable"
+        return sourceState
+    }
+    else {
+        let dataState, saveFunction
+        let dataStateUpdated, saveFunctionUpdated
+
+        let editOk = !doReadOnly && !member.hasCode() //do not edit data if member has code
+
+        //data state
+        if( !oldSourceState || ((unparsedData !== null)&&(member.isFieldUpdated("state"))) ) {
+            //data for parse error
+            dataStateUpdated = true
+            dataState = {
+                data: unparsedData,
+                editOk: editOk
+            }
+        }
+        if( !oldSourceState || ((unparsedData === null)&&(member.isFieldUpdated("data"))) ) {
+            //normal data
+            dataStateUpdated = true
+
+            let data = member.getData()
+            let editOk = !doReadOnly && !member.hasCode() //no edit value if the member has code
+            try {
+                dataState = {
+                    data: apogeeutil.stringifyJsonData(data),
+                    editOk: editOk
+                }
+            }
+            catch(error) {
+                let sourceState = {}
+                sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+                sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
+                sourceState.message = "Error converting data to text: " + error.toString()
+                return sourceState
+            }
+        }
+        
+        //save function
+        if(editOk) {
+            if( !oldSourceState) {
+                saveFunctionUpdated = true
+
+                let app = component.getApp()
+                let memberId = member.getId()
+
+                saveFunction = text => {
+                    let returnErrorAsData = true //this means an Error is returned rather than thrown
+                    let data = apogeeutil.parseJsonData(text,returnErrorAsData) //this will handle recording a parse error properly
+                    
+                    var commandData = {}
+                    commandData.type = "saveMemberData"
+                    commandData.memberId = memberId
+                    commandData.data = data
+                    
+                    app.executeCommand(commandData)
+                    return true
+                }
+            }
+        }
+
+        //source state
+        if(dataStateUpdated || saveFunctionUpdated) {
+            return {
+                dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+                save: editOk ? (saveFunctionUpdated ? saveFunction : oldSourceState.save) : undefined
+            }
+        }
+        else {
+            return oldSourceState
+        }
+    }
 }
 
-export function getMemberDataTextViewModeEntry(memberFieldName,options) {
+export function getMemberStringifiedJsonViewModeEntry(memberFieldName,options) {
     //derive default suffix from memberFieldName
     //display logic will apply the suffix if it is not falsy (at time this comment added)
     let suffix; 
@@ -66,6 +201,9 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         }
     }
 
+    let doReadOnly = ((options)&&(options.editorOptions)) ? options.editorOptions.doReadOnly : false;
+    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_SOME;
+
     return {
         name: ((options)&&(options.name)) ? options.name : "Value",
         label: ((options)&&(options.label)) ? options.label : "Value",
@@ -73,7 +211,7 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
         sourceType: "data",
         suffix: suffix, //default value comes from member field name 
         isActive: ((options)&&(options.suffix)) ? options.suffix : false,
-        getSourceState: (component,oldSourceState) => getMemberDataTextSourceState(component,memberFieldName,options),
+        getSourceState: (component,oldSourceState) => getStringifiedJsonDataSourceState(component,memberFieldName,oldSourceState,doReadOnly),
         getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
                 displayState={sourceState.displayState}
                 dataState={sourceState.dataState}
@@ -83,7 +221,7 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
                 setEditModeData={setEditModeData}
                 verticalSize={verticalSize}
                 cellShowing={cellShowing}
-                getDataDisplay={displayState => getMemberDataTextDisplay(options)} />,
+                getDataDisplay={displayState => new AceTextEditor("ace/mode/json",editorOptions)} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
@@ -92,27 +230,65 @@ export function getMemberDataTextViewModeEntry(memberFieldName,options) {
 // Member Code View Modes
 //==============================
 export function getFormulaSourceState(component,memberFieldName,oldSourceState) {
-    if( (!oldSourceState) || 
-        (component.isMemberFieldUpdated(memberFieldName,"functionBody")) ||
-        (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
-        //note - the save function depends on all the fields listed above
-        //we do a little of extra state rewriting here, but that is ok
-        let sourceState = {}
-        dataDisplayHelper.loadFunctionBodySourceState(component,memberFieldName,sourceState)
-        sourceState.save =  dataDisplayHelper.getFunctionBodySaveFunction(component,memberFieldName)
-        return sourceState
+
+    let dataState, saveFunction
+    let dataStateUpdated, saveFunctionUpdated
+
+    let member = component.getField(memberFieldName)
+
+    //function body
+    if( !oldSourceState || member.isFieldUpdated("functionBody") ) {
+        dataState = {
+            data: member.getFunctionBody(),
+            editOk: true
+        }
+        dataStateUpdated = true
+    }
+    else {
+        dataState = oldSourceState.dataState
+    }
+
+    //save
+    if( !oldSourceState || component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"]) ) {
+        let app = component.getApp()
+        let memberId = member.getId()
+        let argList = member.getArgList()
+        let privateCode = member.getSupplementalCode()
+
+        saveFunction = functionBody => { 
+            var commandData = {}
+            commandData.type = "saveMemberCode"
+            commandData.memberId = memberId
+            commandData.argList = argList
+            commandData.functionBody = functionBody
+            commandData.supplementalCode = privateCode;
+            
+            app.executeCommand(commandData)
+            return true
+        }
+        saveFunctionUpdated = true
+    }
+    else {
+        saveFunction = oldSourceState.save
+        saveFunctionUpdated = false
+    }
+
+    //combine
+    if( dataStateUpdated || saveFunctionUpdated) {
+        return {
+            dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+            save: saveFunctionUpdated ? saveFunction : oldSourceState.save,
+        }
     }
     else {
         return oldSourceState
     }
-}
 
-export function getFormulaDataDisplay(options) {
-    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
-    return new AceTextEditor("ace/mode/javascript",editorOptions)
 }
 
 export function getFormulaViewModeEntry(memberFieldName,options) {
+    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
+
     return {
         name: ((options)&&(options.name)) ? options.name : "Formula",
         label: ((options)&&(options.label)) ? options.label : "Formula",
@@ -130,33 +306,71 @@ export function getFormulaViewModeEntry(memberFieldName,options) {
                 setEditModeData={setEditModeData}
                 verticalSize={verticalSize}
                 cellShowing={cellShowing}
-                getDataDisplay={displayState => getFormulaDataDisplay(options)} />,
+                getDataDisplay={displayState => new AceTextEditor("ace/mode/javascript",editorOptions)} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 }
 
 export function getPrivateCodeSourceState(component,memberFieldName,oldSourceState) {
-    if( (!oldSourceState) || 
-        (component.isMemberFieldUpdated(memberFieldName,"supplementalCode")) ||
-        (component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"])) ) {
-        //note - the save function depends on all the fields listed above    
-        //we do a little of extra state rewriting here, but that is ok
-        let sourceState = {}
-        dataDisplayHelper.loadPrivateCodeDataState(component,memberFieldName,sourceState)
-        sourceState.save =  dataDisplayHelper.getPrivateCodeSaveFunction(component,memberFieldName)
-        return sourceState
+    
+    let dataState, saveFunction
+    let dataStateUpdated, saveFunctionUpdated
+
+    let member = component.getField(memberFieldName)
+
+    //function body
+    if( !oldSourceState || member.isFieldUpdated("supplementalCode") ) {
+        dataState = {
+            data: member.getSupplementalCode(),
+            editOk: true
+        }
+        dataStateUpdated = true
+    }
+    else {
+        dataState = oldSourceState.dataState
+    }
+
+    //save
+    if( !oldSourceState || component.areAnyMemberFieldsUpdated(memberFieldName,["argList","functionBody","supplementalCode"]) ) {
+        let app = component.getApp()
+        let memberId = member.getId()
+        let argList = member.getArgList()
+        let functionBody = member.getFunctionBody()
+
+        saveFunction = privateCode => { 
+            var commandData = {}
+            commandData.type = "saveMemberCode"
+            commandData.memberId = memberId
+            commandData.argList = argList
+            commandData.functionBody = functionBody
+            commandData.supplementalCode = privateCode;
+            
+            app.executeCommand(commandData)
+            return true
+        }
+        saveFunctionUpdated = true
+    }
+    else {
+        saveFunction = oldSourceState.save
+        saveFunctionUpdated = false
+    }
+
+    //combine
+    if( dataStateUpdated || saveFunctionUpdated) {
+        return {
+            dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+            save: saveFunctionUpdated ? saveFunction : oldSourceState.save,
+        }
     }
     else {
         return oldSourceState
     }
 }
 
-export function getPrivateCodeDataDisplay(options) {
-    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
-    return new AceTextEditor("ace/mode/javascript",editorOptions)
-}
-
 export function getPrivateViewModeEntry(memberFieldName,options) {
+
+    let editorOptions = ((options)&&(options.editorOptions)) ? options.editorOptions : AceTextEditor.OPTION_SET_DISPLAY_MAX
+
     return {
         name: ((options)&&(options.name)) ? options.name : "Private",
         label: ((options)&&(options.label)) ? options.label : "Private",
@@ -173,7 +387,7 @@ export function getPrivateViewModeEntry(memberFieldName,options) {
                 setEditModeData={setEditModeData}
                 verticalSize={verticalSize}
                 cellShowing={cellShowing}
-                getDataDisplay={displayState => getPrivateCodeDataDisplay(options)} />,
+                getDataDisplay={displayState => new AceTextEditor("ace/mode/javascript",editorOptions)} />,
         sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
     }
 } 

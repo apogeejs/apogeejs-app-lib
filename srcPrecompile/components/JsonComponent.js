@@ -1,6 +1,6 @@
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import HandsonGridEditor from "/apogeejs-app-lib/src/datadisplay/HandsonGridEditor.js";
-import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import {getStringifiedJsonDataSourceState,getJsonDataSourceState} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
@@ -16,7 +16,7 @@ function getDataViewDisplay(displayState) {
             return new AceTextEditor("ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME);
             
         case TEXT_DATA_VEW:
-            return new AceTextEditor("ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_MAX);
+            return new AceTextEditor("ace/mode/text",AceTextEditor.OPTION_SET_DISPLAY_SOME);
             
         case GRID_DATA_VEW:
             return new HandsonGridEditor();
@@ -43,52 +43,56 @@ function getSourceState(component,oldSourceState) {
     let dataView = component.getField("dataView")
     let memberFieldName = "member"
 
-    //value
-    let sourceState = {}
-    let member = component.getMember()
-    let editOk = !member.hasCode()
+    //reset state if the data view changes
+    if( oldSourceState && (dataView != oldSourceState.displayState.dataView) ) {
+        oldSourceState = null
+    }
 
-    if( (!oldSourceState) || (component.isMemberDataUpdated(memberFieldName)) || (dataView != oldSourceState.displayState.dataView) ) {
-        switch(dataView) {
-            case COLORIZED_DATA_VEW:
-            default:
-                dataDisplayHelper.loadStringifiedJsonSourceState(component,memberFieldName,sourceState,editOk)
-                break
-                
-            case TEXT_DATA_VEW:
-                dataDisplayHelper.loadFormattedJsonSourceState(component,memberFieldName,sourceState,editOk,_isText,"Data value is not text!")
-                break
-                
-            case GRID_DATA_VEW:
-                dataDisplayHelper.loadFormattedJsonSourceState(component,memberFieldName,sourceState,editOk,_isGrid,"Data value is not an array of arrays!")
-                break
+    let baseSourceState, sourceState
+    switch(dataView) {
+        case COLORIZED_DATA_VEW:
+        default:
+            baseSourceState = getStringifiedJsonDataSourceState(component,memberFieldName,oldSourceState)
+            break
+            
+        case TEXT_DATA_VEW:
+            baseSourceState = getJsonDataSourceState(component,memberFieldName,oldSourceState,false,_isText,"Data value is not text!")
+            break
+            
+        case GRID_DATA_VEW:
+            baseSourceState = getJsonDataSourceState(component,memberFieldName,oldSourceState,false,_isGrid,"Data value is not an array of arrays!")
+            break
+    }
+
+    //update data view variable (display state and status state)
+    if(oldSourceState && (oldSourceState.displayState.dataView == dataView)) {
+        //no change to data view
+
+        if(baseSourceState == oldSourceState) {
+            //we just keep the old source state
+            sourceState = oldSourceState
         }
-
-        //pass the date view to the display element and the status element
-        sourceState.displayState = oldSourceState && (oldSourceState.displayState.dataView == dataView) ? oldSourceState.displayState : {dataView: dataView}
-        sourceState.statusState = oldSourceState && (oldSourceState.statusState.dataView == dataView) ? oldSourceState.statusState : {dataView: dataView}
+        else {
+            //we hav a new base source state - copy the old display and status state to it.
+            sourceState = baseSourceState
+            sourceState.displayState = oldSourceState.displayState
+            sourceState.statusState = oldSourceState.statusState
+        }
     }
     else {
-        sourceState = oldSourceState
-    }
-
-    //save
-    
-    if(editOk) {
-        switch(dataView) {
-            case COLORIZED_DATA_VEW:
-            default:
-                sourceState.save = dataDisplayHelper.getMemberTextToJsonSaveFunction(component,memberFieldName)
-                break
-                
-            case TEXT_DATA_VEW:
-                sourceState.save = dataDisplayHelper.getMemberJsonToJsonSaveFunction(component,memberFieldName)
-                break
-                
-            case GRID_DATA_VEW:
-                sourceState.save = dataDisplayHelper.getMemberJsonToJsonSaveFunction(component,memberFieldName)
-                break
+        //new data view
+        if(baseSourceState == oldSourceState) {
+            //we have the old source state, but we must reassign the display and status states
+            sourceState = {}
+            Object.assign(sourceState,oldSourceState)
         }
+        else {
+            //we have a new base source state - copy the old display and status state to it.
+            sourceState = baseSourceState
+        }
+
+        sourceState.displayState = {dataView: dataView}
+        sourceState.statusState = {dataView: dataView}
     }
 
     return sourceState

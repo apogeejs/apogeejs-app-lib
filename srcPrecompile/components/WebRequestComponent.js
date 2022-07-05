@@ -6,6 +6,7 @@ import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
+import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js";
 
 
 const DATA_MEMBER_FUNCTION_BODY = `
@@ -178,75 +179,118 @@ function getFormLayout() {
 // Private Methods
 //==========================
 
-function _getBodyDataSource() {
-    return {
-        doUpdate: (component) => {
-            //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("data.member");
-            let reloadDataDisplay = false;
-            return {reloadData,reloadDataDisplay};
-        },
 
-        getData: (component) => {
-            //Here we return just the body (not header), converted to text if needed
-            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"data.member");
-            if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
-                let bodyAndMeta = wrappedData.data;
-                if(!bodyAndMeta) {
-                    wrappedData.data = "";
-                }
-                else if(bodyAndMeta.body === undefined) {
-                    //just display an empty body
-                    wrappedData.data = "";
-                }
-                else {
-                    if(typeof bodyAndMeta.body == "string") {
-                        wrappedData.data = bodyAndMeta.body;      
-                    }
-                    else {
-                        wrappedData.data = JSON.stringify(bodyAndMeta.body);
-                    }
-                }
+function getSourceState(component,oldSourceState) {
+
+    let memberFieldName = "data.member"
+    let dataMember = component.getField(memberFieldName)
+
+    if(dataMember.getState() != apogeeutil.STATE_NORMAL) {
+        //handle non-normal state - error, pending, invalid value
+        if ( !oldSourceState || dataMember.isFieldUpdated("state") ) {
+            return {
+                hideDisplay: true,
+                messageType: DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO,
+                message: "Data Unavailable"
             }
-            return wrappedData;
+        }
+        else {
+            return oldSourceState
+        }
+        
+    }
+    else {
+        //handle normal state
+        if( !oldSourceState || (dataMember.isFieldUpdated("data")) ) {
+            let editOk = false
+            return dataDisplayHelper.getStringifiedJsonSourceState(component,"data.member",editOk)
+        }
+        else {
+            return oldSourceState
         }
     }
 }
 
-function _getMetaDataSource() {
-    return {
-        doUpdate: (component) => {
-            //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("data.member");
-            let reloadDataDisplay = false;
-            return {reloadData,reloadDataDisplay};
-        },
+// function _getBodyDataSource() {
+//     return {
+//         doUpdate: (component) => {
+//             //return value is whether or not the data display needs to be udpated
+//             let reloadData = component.isMemberDataUpdated("data.member");
+//             let reloadDataDisplay = false;
+//             return {reloadData,reloadDataDisplay};
+//         },
 
-        getData: (component) => {
-            //Here we return just the meta data, as text
-            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"data.member");
-            if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
-                let bodyAndMeta = wrappedData.data;
-                if((!bodyAndMeta)||(!bodyAndMeta.meta)) {
-                    wrappedData.data = "";
-                }
-                else {
-                    wrappedData.data = JSON.stringify(bodyAndMeta.meta);
-                }
-            }
-            return wrappedData;
-        }
-    }
-}
+//         getData: (component) => {
+//             //Here we return just the body (not header), converted to text if needed
+//             let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"data.member");
+//             if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
+//                 let bodyAndMeta = wrappedData.data;
+//                 if(!bodyAndMeta) {
+//                     wrappedData.data = "";
+//                 }
+//                 else if(bodyAndMeta.body === undefined) {
+//                     //just display an empty body
+//                     wrappedData.data = "";
+//                 }
+//                 else {
+//                     if(typeof bodyAndMeta.body == "string") {
+//                         wrappedData.data = bodyAndMeta.body;      
+//                     }
+//                     else {
+//                         wrappedData.data = JSON.stringify(bodyAndMeta.body);
+//                     }
+//                 }
+//             }
+//             return wrappedData;
+//         }
+//     }
+// }
+
+// function _getMetaDataSource() {
+//     return {
+//         doUpdate: (component) => {
+//             //return value is whether or not the data display needs to be udpated
+//             let reloadData = component.isMemberDataUpdated("data.member");
+//             let reloadDataDisplay = false;
+//             return {reloadData,reloadDataDisplay};
+//         },
+
+//         getData: (component) => {
+//             //Here we return just the meta data, as text
+//             let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"data.member");
+//             if(wrappedData.data !== apogeeutil.INVALID_VALUE) {
+//                 let bodyAndMeta = wrappedData.data;
+//                 if((!bodyAndMeta)||(!bodyAndMeta.meta)) {
+//                     wrappedData.data = "";
+//                 }
+//                 else {
+//                     wrappedData.data = JSON.stringify(bodyAndMeta.meta);
+//                 }
+//             }
+//             return wrappedData;
+//         }
+//     }
+// }
 
 
 //===============================
 // config
 //===============================
 
+const ADDITIONAL_CHILD_MEMBERS = [
+    {
+        "name": "headers",
+        "type": "apogee.DataMember"
+    },
+    {
+        "name": "body",
+        "type": "apogee.DataMember"
+    },
+]
+
 const WebRequestComponentConfig = {
     displayName: "Web Request Cell",
-    defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName),
+    defaultMemberJson: getFormComponentDefaultMemberJson(dataMemberTypeName/*,ADDITIONAL_CHILD_MEMBERS*/),
     defaultComponentJson: {
         type: "apogeeapp.WebRequestCell"
     },
@@ -254,38 +298,57 @@ const WebRequestComponentConfig = {
     viewModes: [
         getErrorViewModeEntry(),
         {
-            name: "Meta",
-            label: "Response Info",
+            name: "Complete Response",
+            label: "Complete Response",
             sourceLayer: "model", 
             sourceType: "data",
-            suffix: ".data.meta",
-            isActive: false,
-            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
-				component={component}
-				getDataDisplay={getMetaViewDisplay}
-                setEditModeData={setEditModeData}
-                setMsgData={setMsgData}
-				showing={showing} 
-                size={size}
-                setSizeCommandData={setSizeCommandData} />
-    
-        },
-        {
-            name: "Body",
-            label: "Response Body",
-            sourceLayer: "model", 
-            sourceType: "data",
-            suffix: ".data.body",
+            suffix: ".data",
             isActive: true,
-            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
-				component={component}
-				getDataDisplay={getMetaViewDisplay}
+            getSourceState: getSourceState,
+            getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-                setMsgData={setMsgData}
-				showing={showing} 
-                size={size}
-                setSizeCommandData={setSizeCommandData} />
+                verticalSize={verticalSize}
+				cellShowing={cellShowing}
+                getDataDisplay={displayState => new AceTextEditor("ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME)} />
         },
+        // {
+        //     name: "Meta",
+        //     label: "Response Info",
+        //     sourceLayer: "model", 
+        //     sourceType: "data",
+        //     suffix: ".data.meta",
+        //     isActive: false,
+        //     getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
+		// 		component={component}
+		// 		getDataDisplay={getMetaViewDisplay}
+        //         setEditModeData={setEditModeData}
+        //         setMsgData={setMsgData}
+		// 		showing={showing} 
+        //         size={size}
+        //         setSizeCommandData={setSizeCommandData} />
+    
+        // },
+        // {
+        //     name: "Body",
+        //     label: "Response Body",
+        //     sourceLayer: "model", 
+        //     sourceType: "data",
+        //     suffix: ".data.body",
+        //     isActive: true,
+        //     getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
+		// 		component={component}
+		// 		getDataDisplay={getMetaViewDisplay}
+        //         setEditModeData={setEditModeData}
+        //         setMsgData={setMsgData}
+		// 		showing={showing} 
+        //         size={size}
+        //         setSizeCommandData={setSizeCommandData} />
+        // },
         getConfigViewModeEntry(getFormLayout),
     ],
     iconResPath: "/icons3/mapCellIcon.png"

@@ -348,173 +348,380 @@ export {dataDisplayHelper as default}
 
 //////////////////////////////////////////////////////////////////
 
-dataDisplayHelper.loadJsonSourceState = function(component,memberFieldName,sourceState,editOk) {
-
-    let member = component.getField(memberFieldName)
-    if(member.getState() != apogeeutil.STATE_NORMAL) {
-        sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
-        sourceState.hideDisplay = true
-        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
-        sourceState.message = "Data Unavailable"
+/** This function handles the typical error case for a component. If the component
+ * is not in the "normal" state (meaning it is: error, pending or invalid value), the
+ * display is hidden and a simple "Data Unavailable" message is shown. 
+ * If there is no non-normal condition, null is returned. */
+dataDisplayHelper.typicalErrorSourceStateCheck = function(component) {
+    if(component.getState() != apogeeutil.STATE_NORMAL) {
+        //handle non-normal state - error, pending, invalid value
+        if ( !oldSourceState || component.isStateUpdated() ) {
+            return {
+                hideDisplay: true,
+                messageType: DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO,
+                message: "Data Unavailable"
+            }
+        }
+        else {
+            return oldSourceState
+        }
+        
     }
     else {
-        sourceState.dataState = {
-            data: member.getData(),
-            editOk: editOk
-        }
-        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+        return null
     }
 }
 
-dataDisplayHelper.loadStringifiedJsonSourceState = function(component,memberFieldName,sourceState,editOk) {
+/** This is a source state check for an error condition intened for use with a data display that
+ * shows stringified parsed data. It allows data with a parsing error to show the original unparsable data.
+ * In the case of a parsing error, the unparsed data is returned in the data field. If "editOk" is true, the 
+ * save function must be appended. If the case of a different non-normal case, a complete sourceState object is returned
+ * hideing the display and showing a simple message. In the case of no non-normal state, null is returned. */
+dataDisplayHelper.parsedErrorSourceStateCheck = function(component,memberFieldName,editOk) {
+    let member = component.getField(memberFieldName);
 
-    let member = component.getField(memberFieldName)
     if(member.getState() != apogeeutil.STATE_NORMAL) {
 
-        //in the error case, check for an error substitute value
+        //in the error case, check for an unparsed subsititue value
         if(member.getState() == apogeeutil.STATE_ERROR) {
             let error = member.getError()
             if((error)&&(error.unparsedData !== undefined)) {
-                sourceState.dataState = {
-                    data: error.unparsedData,
-                    editOk: editOk
+                return {
+                    dataState: {
+                        data: error.unparsedData,
+                        editOk: editOk
+                    }
                 }
             }
         }
-
-        if(sourceState.dataState === undefined) {
-            sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
-            sourceState.hideDisplay = true
+        
+        //standard error handling
+        if ( !oldSourceState || component.isStateUpdated() ) {
+            return {
+                hideDisplay: true,
+                messageType: DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO,
+                message: "Data Unavailable"
+            }
         }
-
-        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
-        sourceState.message = "Data Unavailable"
+        else {
+            return oldSourceState
+        }
+        
     }
     else {
-        let data = member.getData()
-        try {
-            sourceState.dataState = {
-                data: apogeeutil.stringifyJsonData(data),
-                editOk: editOk
-            }
-            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+        return null
+    }
+    
+}
+
+dataDisplayHelper.getJsonDataState = function(component,memberFieldName,editOk) {
+    let member = component.getField(memberFieldName)
+    return {
+        data: member.getData(),
+        editOk: editOk
+    }
+}
+
+dataDisplayHelper.getStringifiedJsonSourceState = function(component,memberFieldName,editOk) {
+    let member = component.getField(memberFieldName)
+    let data = member.getData()
+    try {
+        let sourceState = {}
+        sourceState.dataState = {
+            data: apogeeutil.stringifyJsonData(data),
+            editOk: editOk
         }
-        catch(error) {
-            sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
-            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
-            sourceState.message = "Error converting data to text: " + error.toString()
+        return sourceState
+    }
+    catch(error) {
+        let sourceState = {}
+        sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
+        sourceState.message = "Error converting data to text: " + error.toString()
+        return sourceState
+    }
+
+}
+
+
+
+dataDisplayHelper.getFormattedJsonSourceState = function(component,memberFieldName,editOk,
+    formatIsValidFunction,formatErrorMsg = "Data value can not be displayed") {
+
+    let dataState = dataDisplayHelper.getJsonDataState(component,memberFieldName,editOk)
+    if(!formatIsValidFunction(dataState.data)) {
+        let sourceState = {
+            dataState: dataState
         }
+        return sourceState
     }
-}
-
-dataDisplayHelper.loadFormattedJsonSourceState = function(component,memberFieldName,sourceState,editOk,
-        formatIsValidFunction,formatErrorMsg = "Data value can not be displayed") {
-
-    dataDisplayHelper.loadJsonSourceState(component,memberFieldName,sourceState,editOk)
-    if(!sourceState.hideDisplay) {
-        if(!formatIsValidFunction(sourceState.dataState.data)) {
-            sourceState.dataState = {
-                data: apogeeutil.INVALID_VALUE,
-                editOK: false
-            }
-            sourceState.hideDisplay = true
-            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
-            sourceState.message = formatErrorMsg
+    else {
+        let sourceState = {}
+        sourceState.dataState = {
+            data: apogeeutil.INVALID_VALUE,
+            editOK: false
         }
-    }
+        sourceState.hideDisplay = true
+        sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
+        sourceState.message = formatErrorMsg
+        sourceState
+    }      
 }
 
-dataDisplayHelper.loadFunctionBodySourceState = function(component,memberFieldName,sourceState) {
-    let member = component.getField(memberFieldName)
-    sourceState.dataState = {
-        data: member.getFunctionBody(),
-        editOk: true
-    }
-    sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-}
+////////////////////////////////////////////////
 
-dataDisplayHelper.loadPrivateCodeDataState = function(component,memberFieldName,sourceState) {
-    let member = component.getField(memberFieldName)
-    sourceState.dataState = {
-        data: member.getSupplementalCode(),
-        editOk: true
-    }
-    sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
-}
 
-dataDisplayHelper.getMemberTextToJsonSaveFunction = function(component,memberFieldName) {
+// dataDisplayHelper.getJsonSourceState = function(component,memberFieldName,oldSourceState,editOk) {
 
-    let app = component.getApp()
-    let member = component.getField(memberFieldName);
-    let memberId = member.getId()
+//     let member = component.getField(memberFieldName)
+//     if(member.getState() != apogeeutil.STATE_NORMAL) {
+//         let sourceState = {}
+//         sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+//         sourceState.hideDisplay = true
+//         sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
+//         sourceState.message = "Data Unavailable"
+//         return sourceState
+//     }
+//     else {
+//         let dataState, saveFunction
+//         let dataStateUpdated, saveFunctionUpdated
 
-    return text => {
-        let returnErrorAsData = true //this means an Error is returned rather than thrown
-        let data = apogeeutil.parseJsonData(text,returnErrorAsData)
+//         //data state
+//         if( !oldSourceState || member.isFieldUpdated("data") ) {
+//             dataStateUpdated = true
+//             dataState = {
+//                 data: member.getData(),
+//                 editOk: editOk
+//             }
+//         }
         
-        var commandData = {}
-        commandData.type = "saveMemberData"
-        commandData.memberId = memberId
-        commandData.data = data
+//         //save function
+//         if(editOk) {
+//             if( !oldSourceState) {
+//                 saveFunctionUpdated = true
+
+//                 let app = component.getApp()
+//                 let memberId = member.getId()
+
+//                 saveFunction = json => { 
+//                     var commandData = {}
+//                     commandData.type = "saveMemberData"
+//                     commandData.memberId = memberId
+//                     commandData.data = json
+                    
+//                     app.executeCommand(commandData)
+//                     return true
+//                 }
+//             }
+//         }
+
+//         //source state
+//         if(dataStateUpdated || saveFunctionUpdated) {
+//             return {
+//                 dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+//                 save: editOk ? (saveFunctionUpdated ? saveFunction : oldSourceState.save) : undefined
+//             }
+//         }
+//         else {
+//             return oldSourceState
+//         }
+//     }
+// }
+
+
+
+// dataDisplayHelper.loadStringifiedJsonSourceState = function(component,memberFieldName,sourceState,editOk) {
+
+//     let member = component.getField(memberFieldName)
+    
+//     //special consideration for unparsed data (when we have a parsing error on input)
+//     let memberError = (member.getState == apogeeutil.STATE_ERROR) ? member.getError() : null
+//     let unparsedData = memberError ? memberError.unparsedData : null
+
+//     if( (member.getState() != apogeeutil.STATE_NORMAL) && !(unparsedData === null) ) {
+//         let sourceState = {}
+//         sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+//         sourceState.hideDisplay = true
+//         sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
+//         sourceState.message = "Data Unavailable"
+//         return sourceState
+//     }
+//     else {
+//         let dataState, saveFunction
+//         let dataStateUpdated, saveFunctionUpdated
+
+//         //data state
+//         if( !oldSourceState || ((unparsedData !== null)&&(member.isFieldUpdated("state"))) ) {
+//             //data for parse error
+//             dataStateUpdated = true
+//             dataState = {
+//                 data: unparsedData,
+//                 editOk: editOk
+//             }
+//         }
+//         if( !oldSourceState || member.isFieldUpdated("data") ) {
+//             //normal data
+//             dataStateUpdated = true
+//             let data = member.getData()
+//             try {
+//                 dataState = {
+//                     data: apogeeutil.stringifyJsonData(data),
+//                     editOk: editOk
+//                 }
+//             }
+//             catch(error) {
+//                 let sourceState = {}
+//                 sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
+//                 sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
+//                 sourceState.message = "Error converting data to text: " + error.toString()
+//                 return sourceState
+//             }
+//         }
         
-        app.executeCommand(commandData)
-        return true
-    }
-}
+//         //save function
+//         if(editOk) {
+//             if( !oldSourceState) {
+//                 saveFunctionUpdated = true
 
-dataDisplayHelper.getMemberJsonToJsonSaveFunction = function(component,memberFieldName) {
+//                 let app = component.getApp()
+//                 let memberId = member.getId()
 
-    let app = component.getApp()
-    let member = component.getField(memberFieldName)
-    let memberId = member.getId()
+//                 saveFunction = text => {
+//                     let returnErrorAsData = true //this means an Error is returned rather than thrown
+//                     let data = apogeeutil.parseJsonData(text,returnErrorAsData) //this will handle recording a parse error properly
+                    
+//                     var commandData = {}
+//                     commandData.type = "saveMemberData"
+//                     commandData.memberId = memberId
+//                     commandData.data = data
+                    
+//                     app.executeCommand(commandData)
+//                     return true
+//                 }
+//             }
+//         }
 
-    return json => { 
-        var commandData = {}
-        commandData.type = "saveMemberData"
-        commandData.memberId = memberId
-        commandData.data = json
+//         //source state
+//         if(dataStateUpdated || saveFunctionUpdated) {
+//             return {
+//                 dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
+//                 save: editOk ? (saveFunctionUpdated ? saveFunction : oldSourceState.save) : undefined
+//             }
+//         }
+//         else {
+//             return oldSourceState
+//         }
+// //     }
+// // }
+
+// dataDisplayHelper.loadFormattedJsonSourceState = function(component,memberFieldName,sourceState,editOk,
+//         formatIsValidFunction,formatErrorMsg = "Data value can not be displayed") {
+
+//     dataDisplayHelper.loadJsonSourceState(component,memberFieldName,sourceState,editOk)
+//     if(!sourceState.hideDisplay) {
+//         if(!formatIsValidFunction(sourceState.dataState.data)) {
+//             sourceState.dataState = {
+//                 data: apogeeutil.INVALID_VALUE,
+//                 editOK: false
+//             }
+//             sourceState.hideDisplay = true
+//             sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
+//             sourceState.message = formatErrorMsg
+//         }
+//     }
+// }
+
+// dataDisplayHelper.loadFunctionBodySourceState = function(component,memberFieldName,sourceState) {
+//     let member = component.getField(memberFieldName)
+//     sourceState.dataState = {
+//         data: member.getFunctionBody(),
+//         editOk: true
+//     }
+//     sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+// }
+
+// dataDisplayHelper.loadPrivateCodeDataState = function(component,memberFieldName,sourceState) {
+//     let member = component.getField(memberFieldName)
+//     sourceState.dataState = {
+//         data: member.getSupplementalCode(),
+//         editOk: true
+//     }
+//     sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+// }
+
+// dataDisplayHelper.getMemberTextToJsonSaveFunction = function(component,memberFieldName) {
+
+//     let app = component.getApp()
+//     let member = component.getField(memberFieldName);
+//     let memberId = member.getId()
+
+//     return text => {
+//         let returnErrorAsData = true //this means an Error is returned rather than thrown
+//         let data = apogeeutil.parseJsonData(text,returnErrorAsData)
         
-        app.executeCommand(commandData)
-        return true
-    }
-}
-
-dataDisplayHelper.getFunctionBodySaveFunction = function(component,memberFieldName) {
-    let app = component.getApp()
-    let member = component.getField(memberFieldName)
-    let memberId = member.getId()
-    let argList = member.getArgList()
-    let privateCode = member.getSupplementalCode()
-
-    return functionBody => { 
-        var commandData = {}
-        commandData.type = "saveMemberCode"
-        commandData.memberId = memberId
-        commandData.argList = argList
-        commandData.functionBody = functionBody
-        commandData.supplementalCode = privateCode;
+//         var commandData = {}
+//         commandData.type = "saveMemberData"
+//         commandData.memberId = memberId
+//         commandData.data = data
         
-        app.executeCommand(commandData)
-        return true
-    }
-}
+//         app.executeCommand(commandData)
+//         return true
+//     }
+// }
 
-dataDisplayHelper.getPrivateCodeSaveFunction = function(component,memberFieldName) {
-    let app = component.getApp()
-    let member = component.getField(memberFieldName)
-    let memberId = member.getId()
-    let argList = member.getArgList()
-    let functionBody = member.getFunctionBody()
+// dataDisplayHelper.getMemberJsonToJsonSaveFunction = function(component,memberFieldName) {
 
-    return privateCode => { 
-        var commandData = {}
-        commandData.type = "saveMemberCode"
-        commandData.memberId = memberId
-        commandData.argList = argList
-        commandData.functionBody = functionBody
-        commandData.supplementalCode = privateCode;
+//     let app = component.getApp()
+//     let member = component.getField(memberFieldName)
+//     let memberId = member.getId()
+
+//     return json => { 
+//         var commandData = {}
+//         commandData.type = "saveMemberData"
+//         commandData.memberId = memberId
+//         commandData.data = json
         
-        app.executeCommand(commandData)
-        return true
-    }
-}
+//         app.executeCommand(commandData)
+//         return true
+//     }
+// }
+
+// dataDisplayHelper.getFunctionBodySaveFunction = function(component,memberFieldName) {
+//     let app = component.getApp()
+//     let member = component.getField(memberFieldName)
+//     let memberId = member.getId()
+//     let argList = member.getArgList()
+//     let privateCode = member.getSupplementalCode()
+
+//     return functionBody => { 
+//         var commandData = {}
+//         commandData.type = "saveMemberCode"
+//         commandData.memberId = memberId
+//         commandData.argList = argList
+//         commandData.functionBody = functionBody
+//         commandData.supplementalCode = privateCode;
+        
+//         app.executeCommand(commandData)
+//         return true
+//     }
+// }
+
+// dataDisplayHelper.getPrivateCodeSaveFunction = function(component,memberFieldName) {
+//     let app = component.getApp()
+//     let member = component.getField(memberFieldName)
+//     let memberId = member.getId()
+//     let argList = member.getArgList()
+//     let functionBody = member.getFunctionBody()
+
+//     return privateCode => { 
+//         var commandData = {}
+//         commandData.type = "saveMemberCode"
+//         commandData.memberId = memberId
+//         commandData.argList = argList
+//         commandData.functionBody = functionBody
+//         commandData.supplementalCode = privateCode;
+        
+//         app.executeCommand(commandData)
+//         return true
+//     }
+// }

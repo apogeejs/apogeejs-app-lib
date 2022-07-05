@@ -9,29 +9,33 @@ import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelp
 
 function getSourceState(component,oldSourceState) {
 
-    let sourceState
-    const memberFieldName = "member"
-    if( (!oldSourceState) || (component.isMemberDataUpdated(memberFieldName)) ) {
-        //this call loads the source state, but we want the data output in the displayState field
-        sourceState = {}
-        let member = component.getField(memberFieldName)
-        if(member.getState() != apogeeutil.STATE_NORMAL) {
-            sourceState.dataState = {data: apogeeutil.INVALID_VALUE}
-            sourceState.hideDisplay = true
-            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO
-            sourceState.message = "Data Unavailable"
+    if(component.getState() != apogeeutil.STATE_NORMAL) {
+        //handle non-normal state - error, pending, invalid value
+        if ( !oldSourceState || component.isStateUpdated() ) {
+            return {
+                hideDisplay: true,
+                messageType: DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO,
+                message: "Data Unavailable"
+            }
         }
         else {
-            sourceState.displayState = {layout: member.getData()}
-            sourceState.dataState = oldSourceState ? oldSourceState.dataState : {data:null}
-            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_NONE
+            return oldSourceState
         }
+        
     }
     else {
-        sourcestate = oldSourceState
+        //normal state - only display data here
+        if( !oldSourceState || component.isMemberDataUpdated("member") ) {
+            let member = component.getField("member")
+            return {
+                displayState: {layout: member.getData()},
+                dataState: {data: null}
+            }
+        }
+        else {
+            return oldSourceState
+        }
     }
-
-    return sourceState
 }
 
 //Cnfig

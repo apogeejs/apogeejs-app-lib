@@ -2,7 +2,7 @@ import Component from "/apogeejs-app-lib/src/component/Component.js";
 
 import HtmlJsDataDisplay from "/apogeejs-app-lib/src/datadisplay/HtmlJsDataDisplay.js";
 import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
-import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
+import {getErrorViewModeEntry,getAppCodeViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberStringifiedJsonViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 /** This attempt has a single form edit page which returns an object. */
@@ -219,7 +219,7 @@ const CustomDataComponentConfig = {
         getAppCodeViewModeEntry("uiCode",null,"uiGenerator()","UI Generator"),
         getFormulaViewModeEntry("input.member","Input Code","Input Code"),
         getPrivateViewModeEntry("input.member","Input Private","Input Private"),
-        getMemberDataTextViewModeEntry("mdata.member",{name: "Data Value",label: "Data Value"})
+        getMemberStringifiedJsonViewModeEntry("data.member",{name: "Data Value",label: "Data Value"})
     ]
 }
 export default CustomDataComponentConfig;

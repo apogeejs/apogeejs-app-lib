@@ -1,7 +1,7 @@
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
 import {Messenger} from "/apogeejs-model-lib/src/apogeeModelLib.js";
-import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberDataTextViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
-import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
+import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry,getMemberStringifiedJsonViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
+//import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
 /** This ccomponent represents a data value, with input being from a configurable form.
@@ -171,7 +171,7 @@ const FormDataComponentConfig = {
         getPrivateViewModeEntry("layout.member",{name:"Layout Private",label:"Layout Private"}),
         getFormulaViewModeEntry("isInputValid.member",{name:"isInputValid(formValue)",label:"isInputValid",argList: "formValue"}),
         getPrivateViewModeEntry("isInputValid.member",{name:"isInputValid Private",label:"isInputValid Private"}),
-        getMemberDataTextViewModeEntry("data.member",{name: "Form Value",label: "Form Value"})
+        getMemberStringifiedJsonViewModeEntry("data.member",{name: "Form Value",label: "Form Value"})
     ],
     iconResPath: "/icons3/formCellIcon.png"
 }
