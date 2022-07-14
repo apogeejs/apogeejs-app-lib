@@ -1,10 +1,8 @@
-import Component from "/apogeejs-app-lib/src/component/Component.js";
 import {getFormComponentDefaultMemberJson} from "/apogeejs-app-lib/src/components/formInputComponentUtils.js";
 import {defineHardcodedDataMember} from "/apogeejs-model-lib/src/apogeeModelLib.js";
 
 import {getConfigViewModeEntry} from "/apogeejs-app-lib/src/components/FormInputBaseComponentView.js";
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
-import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {ConfigurablePanel} from "/apogeejs-ui-lib/src/apogeeUiLib.js"
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
 
@@ -18,6 +16,39 @@ else return [];
 ////////////////////////////////////////////////////////
 
 
+function getSourceState(component,oldSourceState) {
+
+    let layoutMember = component.getField("data.member")
+
+    if(layoutMember.getState() != apogeeutil.STATE_NORMAL) {
+        //handle non-normal state - error, pending, invalid value
+        if ( !oldSourceState || component.isStateUpdated() ) {
+            return {
+                hideDisplay: true,
+                messageType: DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_INFO,
+                message: "Form Layout unavailable"
+            }
+        }
+        else {
+            return oldSourceState
+        }
+        
+    }
+    else {
+        //constructu source state - only layout data included here
+        if( !oldSourceState || layoutMember.isFieldUpdated("data") ) {
+            return {
+                displayState: {layout: layoutMember.getData()},
+                dataState: oldSourceState ? oldSourceState.dataState : {data: null}
+            }
+        }
+        else {
+            displayStateUpdated = false
+        }
+    }
+}
+
+
 /** This method returns the form layout.
  * @protected. */
  function getFormLayout(component) {
@@ -26,31 +57,6 @@ else return [];
     }
     return ConfigurablePanel.getFormDesignerLayout(flags);
 }
-
-function getFormViewDataDisplay(component) {
-    let dataDisplaySource = _getOutputFormDataSource(component);
-    return new ConfigurableFormEditor(component,dataDisplaySource);
-}
-
-function _getOutputFormDataSource() {
-
-    return {
-        //This method reloads the component and checks if there is a DATA update. UI update is checked later.
-        doUpdate: (component) => {
-            //return value is whether or not the data display needs to be udpated
-            let reloadData = false;
-            let reloadDataDisplay = component.isMemberFieldUpdated("data.member","data");
-            return {reloadData,reloadDataDisplay};
-        },
-
-        getDisplayData: (component) => dataDisplayHelper.getWrappedMemberData(component,"data.member"),
-
-        getData: (component) => { return {"data": null}; },
-
-        getEditOk: (component) => false
-    }
-}
-
 
 //this defines the hardcoded type we will use
 const dataMemberTypeName = "apogee.DesignerActionFormMember";
@@ -70,15 +76,17 @@ const DesignerActionFormComponentConfig = {
             name: "Form",
             label: "Form", 
             isActive: true,
-            getViewModeElement: (component,showing,setEditModeData,setMsgData,size,setSizeCommandData) => <VanillaViewModeElement
-				component={component}
-				getDataDisplay={getFormViewDataDisplay}
+            getSourceState: getSourceState,
+            getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-                setMsgData={setMsgData}
-				showing={showing} 
-                size={size}
-                setSizeCommandData={setSizeCommandData} />
-
+                verticalSize={verticalSize}
+                cellShowing={cellShowing}
+                getDataDisplay={displayState => new ConfigurableFormEditor(displayState)} />
         },
         getConfigViewModeEntry(getFormLayout,"Form Designer")
     ],
