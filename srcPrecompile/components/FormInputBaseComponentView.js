@@ -1,8 +1,7 @@
 
 import ConfigurableFormEditor from "/apogeejs-app-lib/src/datadisplay/ConfigurableFormEditor.js";
-import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
-import { FormResultFunctionGenerator } from "/apogeejs-ui-lib/src/apogeeUiLib.js";
+import { ConfigurablePanel } from "/apogeejs-ui-lib/src/apogeeUiLib.js";
 
 
 //TO DO
@@ -29,41 +28,45 @@ function getSourceState(component,oldSourceState,getFormLayout,getFormLayoutUpda
     }
     else {
         //handle normal state
-        let displayStateUpdated, dataStateUpdated, saveFunctionUpdated
+        let stateUpdated = false
         let displayState, dataState, saveFunction
 
         //display state
         if( !oldSourceState || (getFormLayoutUpdated && getFormLayoutUpdated(component)) ) {
-            displayStateUpdated = true
+            stateUpdated = true
             displayState = {layout: getFormLayout(component)}
         }
         else {
-            displayStateUpdated = false
+            displayState = oldSourceState.displayState
         }
 
         //data state
         if( !oldSourceState || formDataMember.isFieldUpdated("data") ) {
-            dataStateUpdated = true
+            stateUpdated = true
             dataState = {
                 data: formDataMember.getData(),
                 editOk: true
             }
         }
         else {
-            dataStateUpdated = false
+            dataState = oldSourceState.dataState
         }
 
         //save function
         if( !oldSourceState || component.isMemberDataUpdated("isInputValid.member") ) {
-            saveFunctionUpdated = true
-            saveFunction = _getOnSubmit(component)
+            stateUpdated = true
+            let layout = displayState.layout
+            saveFunction = _getOnSubmit(component,layout)
+        }
+        else {
+            saveFunction = oldSourceState.save
         }
 
-        if( displayStateUpdated || dataStateUpdated || saveFunctionUpdated ) {
+        if(stateUpdated) {
             return {
-                displayState: displayStateUpdated ? displayState : oldSourceState.displayState,
-                dataState: dataStateUpdated ? dataState : oldSourceState.dataState,
-                save: saveFunctionUpdated ? saveFunction : oldSourceState.save,
+                displayState: displayState,
+                dataState: dataState,
+                save: saveFunction
             }
         }
         else {
@@ -96,41 +99,26 @@ function getSourceState(component,oldSourceState,getFormLayout,getFormLayoutUpda
 
 /** This method saves the form result converted to a function body that handles expression inputs.
  * This is saved to the formula for the member object. */
-function _getOnSubmit(component) {
+function _getOnSubmit(component,formLayout) {
 
     let app = component.getApp()
     let dataMemberId = component.getField("formData.member").getId()
     let resultMemberId = component.getField("formResult.member").getId()
 
-    return (formData,formEditor) => {
-        //load the form meta - we have to look it up from the data display (this is a little clumsy)
-        let formMeta;
-        if(formEditor) {
-            formMeta = formEditor.getFormMeta();
-        }
-
-        // if(!formMeta) {
-        //     //data display should be present if the person submitted the form
-        //     console.error("Unknown error loading the form meta value.");
-        //     //return true indicates the submit is completed
-        //     return true;
-        // }
-        if(!formMeta) formMeta = {}
+    return (formValue) => {
 
         var dataCommand = {};
         dataCommand.type = "saveMemberData";
         dataCommand.memberId = dataMemberId;
-        dataCommand.data = formData;
-
-        //set the form result value, either using the compiled function or the plain form value as is appropriate
-        let functionGenerator = new FormResultFunctionGenerator();
-        functionGenerator.setInput(formData,formMeta);
+        dataCommand.data = formValue;
         
         var resultCommand = {};
 
-        if(functionGenerator.getHasExpressions()) {
+        let hasExpression = true //implement this!!!
+
+        if(hasExpression) {
             //save compiled form code
-            let functionBody = functionGenerator.getFunctionBody(formData,formMeta)
+            let functionBody = ConfigurablePanel.getResultFunctionBody(formValue,formLayout)
             resultCommand.type = "saveMemberCode"
             resultCommand.memberId = resultMemberId
             resultCommand.argList = []
