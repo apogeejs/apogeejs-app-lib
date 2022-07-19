@@ -114,11 +114,10 @@ function _getOnSubmit(component,formLayout) {
         
         var resultCommand = {};
 
-        let hasExpression = true //implement this!!!
+        let {hasExpression, functionBody} = ConfigurablePanel.createResultFunctionBody(formValue,formLayout)
 
         if(hasExpression) {
             //save compiled form code
-            let functionBody = ConfigurablePanel.getResultFunctionBody(formValue,formLayout)
             resultCommand.type = "saveMemberCode"
             resultCommand.memberId = resultMemberId
             resultCommand.argList = []
@@ -129,7 +128,7 @@ function _getOnSubmit(component,formLayout) {
             //save plain form value
             resultCommand.type = "saveMemberData"
             resultCommand.memberId = resultMemberId
-            resultCommand.data = formData
+            resultCommand.data = formValue
         }
 
         let command = {
