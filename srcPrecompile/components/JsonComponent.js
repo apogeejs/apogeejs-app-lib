@@ -161,7 +161,7 @@ const JsonComponentConfig = {
 				cellShowing={cellShowing}
                 getDataDisplay={displayState => getDataViewDisplay(displayState)} />,
             getViewStatusElement: (statusState) => <DataViewStatusElement statusState={statusState} />,
-            sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO
+            sizeCommandData: AceTextEditor.SIZE_COMMAND_INFO
         },
         getFormulaViewModeEntry("member"),
         getPrivateViewModeEntry("member")  
