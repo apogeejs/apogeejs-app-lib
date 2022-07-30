@@ -31,7 +31,8 @@ export function getStandardErrorSourceState(component) {
         dataState: {
             status: component.getState(),
             errorInfo: component.getErrorInfo()
-        }
+        },
+        hidden: isErrorElementRemoved(component)
     }
 }
 

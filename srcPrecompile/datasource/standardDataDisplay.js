@@ -12,12 +12,10 @@ export function getErrorViewModeEntry() {
         name: "Info", //unfortunate legacy name
         label: "Error Info",
         isActive: false,
-        isTransient: true,
-        isErrorView: true,
+        tabStyle: {color: "red"},
         getSourceState: getStandardErrorSourceState,
         getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => 
-            <StandardErrorElement dataState={sourceState.dataState} cellShowing={cellShowing} />,
-        isViewRemoved: isErrorElementRemoved
+            <StandardErrorElement dataState={sourceState.dataState} cellShowing={cellShowing} />
     }
 }
 
