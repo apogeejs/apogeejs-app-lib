@@ -1,7 +1,7 @@
 import AceTextEditor from "/apogeejs-app-lib/src/datadisplay/AceTextEditor.js";
-import dataDisplayHelper from "/apogeejs-app-lib/src/datadisplay/dataDisplayHelper.js";
 import {getErrorViewModeEntry,getFormulaViewModeEntry,getPrivateViewModeEntry} from "/apogeejs-app-lib/src/datasource/standardDataDisplay.js";
 import VanillaViewModeElement from "/apogeejs-app-lib/src/datadisplay/VanillaViewModeElement.js";
+import DATA_DISPLAY_CONSTANTS from "/apogeejs-app-lib/src/datadisplay/dataDisplayConstants.js";
 
 /** This component is similar to the JsonComponent except that it
  * also supports function elements. When displaying them it replaces the function
@@ -20,42 +20,44 @@ function getDataDataDisplay() {
     return new AceTextEditor("ace/mode/json",AceTextEditor.OPTION_SET_DISPLAY_SOME)
 }
 
+function getPlusSourceState(component, oldSourceState) {
 
-/** This data source is read only (no edit). It returns text for a json */
-function getDataSource() {
+    let member = component.getMember()
 
-    return {
-        doUpdate: (component) => {
-            //return value is whether or not the data display needs to be udpated
-            let reloadData = component.isMemberDataUpdated("member")
-            let reloadDataDisplay = false;
-            return {reloadData,reloadDataDisplay};
-        },
+    let dataState
+    let dataStateUpdated
 
-        getData: (component) => {
-            let wrappedData = dataDisplayHelper.getWrappedMemberData(component,"member")
-            //if we have valid data, update it to display the functions with the otherwise JSON data.
-            if(wrappedData.data != apogeeutil.INVALID_VALUE) {
-                var textData;
-                if(wrappedData.data === undefined) {
-                    textData = "undefined";
-                }
-                else {
-                    let modifiedValueJson = replaceFunctions(wrappedData.data);
-                    textData = JSON.stringify(modifiedValueJson,null,FORMAT_STRING);
-                }
 
-                wrappedData.data = textData;
+    if (!oldSourceState || member.isFieldUpdated("data")) {
+        //normal data
+        dataStateUpdated = true
+
+        let data = member.getData()
+        try {
+            let jsonizedData = replaceFunctions(data)
+            dataState = {
+                data: apogeeutil.stringifyJsonData(jsonizedData)
             }
-            return wrappedData
+        }
+        catch (error) {
+            let sourceState = {}
+            sourceState.dataState = { data: apogeeutil.INVALID_VALUE }
+            sourceState.messageType = DATA_DISPLAY_CONSTANTS.MESSAGE_TYPE_ERROR
+            sourceState.message = "Error converting data to text: " + error.toString()
+            return sourceState
         }
     }
+
+    //source state
+    if (dataStateUpdated) {
+        return {
+            dataState: dataState
+        }
+    }
+    else {
+        return oldSourceState
+    }
 }
-
-
-
-
-const FORMAT_STRING = "\t";
 
 function replaceFunctions(jsonPlus) {
     var copiedJson;
@@ -119,16 +121,17 @@ const JsonPlusComponentConfig = {
             sourceLayer: "model",
             sourceType: "data",
             isActive: true,
-            getSourceState: (component,oldSourceState) => {
-                let dataSource = getDataSource()
-                return dataDisplayHelper.dataSourceToSourceState(component,dataSource,oldSourceState)
-            },
-            getViewModeElement: (sourceState,cellShowing,setEditModeData,size) => <VanillaViewModeElement
-                sourceState={sourceState}
-                getDataDisplay={getDataDataDisplay}
+            getSourceState: (component,oldSourceState) => getPlusSourceState(component,oldSourceState),
+            getViewModeElement: (sourceState,inEditMode,setEditModeData,verticalSize,cellShowing) => <VanillaViewModeElement
+                displayState={sourceState.displayState}
+                dataState={sourceState.dataState}
+                hideDisplay={sourceState.hideDisplay}
+                save={sourceState.save}
+                inEditMode={inEditMode}
                 setEditModeData={setEditModeData}
-				cellShowing={cellShowing} 
-                size={size} />,
+                verticalSize={verticalSize}
+				cellShowing={cellShowing}
+                getDataDisplay={displayState => getDataDataDisplay(displayState)} />,
             sizeCommandInfo: AceTextEditor.SIZE_COMMAND_INFO,
         },
         getFormulaViewModeEntry("member"),
