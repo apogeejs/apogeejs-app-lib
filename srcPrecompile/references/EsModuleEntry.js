@@ -8,7 +8,7 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
 export default class EsModuleEntry extends ReferenceEntry {
 
     constructor(referenceData,instanceToCopy,specialCaseIdValue) {
-        super(EsModuleEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+        super(referenceData,instanceToCopy,specialCaseIdValue)
     }
 
     getEntryType() {
@@ -54,4 +54,3 @@ export default class EsModuleEntry extends ReferenceEntry {
 }
 
 EsModuleEntry.REFERENCE_TYPE = "es module"
-EsModuleEntry.FIELD_OBJECT_TYPE = "refEs"

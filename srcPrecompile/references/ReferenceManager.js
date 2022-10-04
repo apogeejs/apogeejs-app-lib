@@ -55,10 +55,6 @@ export default class ReferenceManager extends FieldObject {
     // Workspace object interface
     //-------------------------------
 
-    getWorkspaceObjectType() {
-        return "ReferenceManager"
-    }
-
     /** FIX THIS */
     getState() {
         return apogeeutil.STATE_NORMAL
@@ -132,6 +128,20 @@ export default class ReferenceManager extends FieldObject {
 
     getReferenceLists() {
         return this.getField("referenceListArray")
+    }
+
+    getReferenceListById(objectId) {
+        let referenceListArray = this.getField("referenceListArray")
+        return referenceListArray.find(referenceList => referenceList.getId() == objectId)
+    }
+
+    getReferenceEntryById(objectId) {
+        let referenceListArray = this.getField("referenceListArray")
+        for(let index in referenceListArray.length) {
+            refEntry = referenceListArray[index].getRefEntryById(objectId)
+            if(refEntry) return refEntry
+        }
+        return null
     }
 
     getReferenceList(moduleType) {

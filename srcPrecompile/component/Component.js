@@ -52,10 +52,6 @@ export default class Component extends FieldObject {
     // Public Instance Methods
     //==============================
 
-    getWorkspaceObjectType() {
-        return "Component"
-    }
-
     /** This method returns the state of the main member (which is also inherited from child members) */
     getState() {
         return this.getField("member").getState()

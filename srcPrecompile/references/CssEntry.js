@@ -9,7 +9,7 @@ import {getLinkLoader} from "/apogeejs-app-lib/src/references/LinkLoader.js";
 export default class CssEntry extends ReferenceEntry {
 
     constructor(referenceData,instanceToCopy,specialCaseIdValue) {
-        super(CssEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+        super(referenceData,instanceToCopy,specialCaseIdValue)
     }
 
     getEntryType() {
@@ -56,5 +56,4 @@ export default class CssEntry extends ReferenceEntry {
 }
 
 CssEntry.REFERENCE_TYPE = "css link"
-CssEntry.FIELD_OBJECT_TYPE = "refCss"
 

@@ -52,10 +52,6 @@ export default class ReferenceList extends FieldObject {
     // Workspace object interface
     //-------------------------------
 
-    getWorkspaceObjectType() {
-        return "ReferenceList"
-    }
-
     /** FIX THIS */
     getState() {
         return apogeeutil.STATE_NORMAL

@@ -53,9 +53,6 @@ export default class WorkspaceManager extends FieldObject {
     //-------------------------------
     // Workspace object interface
     //-------------------------------
-    getWorkspaceObjectType() {
-        return "WorkspaceManager"
-    }
     
     getState() {
         return apogeeutil.STATE_NORMAL

@@ -8,7 +8,7 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
 export default class NpmModuleEntry extends ReferenceEntry {
 
     constructor(referenceData,instanceToCopy,specialCaseIdValue) {
-        super(NpmModuleEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+        super(referenceData,instanceToCopy,specialCaseIdValue)
     }
 
     //note - we should differentiate the requested version (with wildcard entries like ~) and the actual version
@@ -50,6 +50,5 @@ export default class NpmModuleEntry extends ReferenceEntry {
 }
 
 NpmModuleEntry.REFERENCE_TYPE = "npm module"
-NpmModuleEntry.FIELD_OBJECT_TYPE = "refNpm"
 
 

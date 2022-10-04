@@ -8,7 +8,7 @@ import ReferenceEntry from "/apogeejs-app-lib/src/references/ReferenceEntry.js";
 export default class NodeApogeeModuleEntry extends ReferenceEntry {
 
     constructor(referenceData,instanceToCopy,specialCaseIdValue) {
-        super(NodeApogeeModuleEntry.FIELD_OBJECT_TYPE,referenceData,instanceToCopy,specialCaseIdValue)
+        super(referenceData,instanceToCopy,specialCaseIdValue)
     }
 
     getEntryType() {
@@ -103,5 +103,4 @@ export default class NodeApogeeModuleEntry extends ReferenceEntry {
 }
 
 NodeApogeeModuleEntry.REFERENCE_TYPE = "apogee module"
-NodeApogeeModuleEntry.FIELD_OBJECT_TYPE = "refApogeeModule"
 

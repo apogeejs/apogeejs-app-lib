@@ -36,10 +36,6 @@ export default class ModelManager extends FieldObject {
     // Methods
     //====================================
 
-    getWorkspaceObjectType() {
-        return "ModelManager"
-    }
-
     getState() {
         return apogeeutil.STATE_NORMAL
     }
