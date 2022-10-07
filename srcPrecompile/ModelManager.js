@@ -208,6 +208,17 @@ export default class ModelManager extends FieldObject {
         return this.getField("componentMap")[componentId];
     }
 
+    getComponentByFullName(componentFullName) {
+        let model = this.getModel()
+        let member = model.getMemberByFullName(model,componentFullName)
+        if(member) {
+            let componentId = this.getComponentIdByMemberId(member.getId())
+            return this.getComponentByComponentId(componentId)
+        }
+        //not found
+        return null
+    }
+
     /** This method gets the component associated with a member object. */
     getMutableComponentByComponentId(componentId) {
         let oldComponentMap = this.getField("componentMap");
